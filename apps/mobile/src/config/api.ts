@@ -1,12 +1,6 @@
-import { Platform } from 'react-native';
+import { resolveApiBaseUrl } from './resolveApiBaseUrl'
 
-export const API_BASE_URL = __DEV__
-  ? Platform.select({
-      ios: 'http://localhost:3000',
-      android: 'http://10.0.2.2:3000',
-      default: 'http://localhost:3000',
-    })!
-  : 'https://visamesa-be-1052558133908.europe-west1.run.app';
+export const API_BASE_URL = resolveApiBaseUrl()
 
 export const API_ENDPOINTS = {
   // Auth
@@ -29,4 +23,4 @@ export const API_ENDPOINTS = {
   // Payments
   paymentEntitlements: '/payments/entitlements',
   paymentCheckoutSync: '/payments/checkout/sync',
-};
+} as const

@@ -518,14 +518,17 @@ cd android
 
 ## Environment Variables
 
-Create `.env` file for configuration:
+The production API origin is defined once in `@visamesa/content/site` as `API_BASE_URL` (`https://api.visamesa.com`). Release builds resolve it via `src/config/resolveApiBaseUrl.ts` — do not hardcode URLs in app code.
+
+| Build | API origin |
+|-------|------------|
+| Debug / Metro (`__DEV__`) | `http://localhost:3000` (iOS sim) or `http://10.0.2.2:3000` (Android emulator) |
+| Release | `API_BASE_URL` from `@visamesa/content/site` (validated HTTPS) |
+
+Optional `.env` entries for local tooling only (not read by the app at runtime):
 
 ```bash
-# Backend API
-API_BASE_URL=https://api.visamesa.com
 API_TIMEOUT=30000
-
-# Feature flags
 ENABLE_CRASH_REPORTING=false
 ENABLE_ANALYTICS=false
 ```

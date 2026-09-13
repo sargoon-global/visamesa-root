@@ -65,8 +65,12 @@ export function EntitlementsProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error('Failed to load entitlements:', error);
       reportClientErrorFromException('PAYMENT_ENTITLEMENTS_FAILED', error);
-      setEntitlements([]);
-      return [];
+      let cached: UserEntitlement[] = [];
+      setEntitlements(prev => {
+        cached = prev;
+        return prev;
+      });
+      return cached;
     } finally {
       setIsLoading(false);
     }

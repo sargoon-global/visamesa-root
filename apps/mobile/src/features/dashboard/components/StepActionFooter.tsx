@@ -29,7 +29,7 @@ export function StepActionFooter({
   if (completed) {
     return (
       <View style={styles.container}>
-        <Text variant="labelLarge" color="success" style={styles.completedLabel}>
+        <Text variant="labelLarge" color="secondary" style={styles.completedLabel}>
           {t('stepCompleted')}
         </Text>
       </View>

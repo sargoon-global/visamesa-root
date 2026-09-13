@@ -12,11 +12,11 @@ describe('waitlistEmailContent', () => {
     const message = buildWaitlistConfirmationEmail({
       confirmationToken: 'token-123',
       locale: 'es',
-      appUrl: 'https://visa-mesa.web.app',
+      appUrl: 'https://visamesa.com',
     })
 
     expect(message.subject).toContain('lista de espera')
     expect(message.html).toContain('/es/waitlist/confirm/token-123')
-    expect(message.text).toContain('https://visa-mesa.web.app/es/waitlist/confirm/token-123')
+    expect(message.text).toContain('https://visamesa.com/es/waitlist/confirm/token-123')
   })
 })

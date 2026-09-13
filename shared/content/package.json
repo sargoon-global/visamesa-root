@@ -7,6 +7,7 @@
     "./legal": "./legal/index.ts",
     "./legal/types": "./legal/types.ts",
     "./site": "./siteConstants.ts",
+    "./siteSeo": "./siteSeoRoutes.ts",
     "./tieStepsMarketing": "./tieStepsMarketing.ts",
     "./checkout": "./checkoutContent.ts",
     "./apiErrors": "./apiErrors.ts",

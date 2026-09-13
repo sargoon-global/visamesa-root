@@ -4,9 +4,11 @@ import {useTranslation} from 'react-i18next';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 import {Button} from '@/components/ui/Button';
+import {COMPLETION_COLORS} from '@/components/ui/StatusIndicator';
 import {Icon} from '@/components/ui/Icon';
 import {Text} from '@/components/ui/Text';
 import {createElevationStyle} from '@/theme/elevation';
+import {brandFontStyle} from '@/theme/fonts';
 import {TieStepDetail} from '@/features/home/types/TieStepDetail';
 import {getStepShortLabel} from '@/utils/stepLabel';
 
@@ -77,7 +79,13 @@ export function Stepper({
                 elevationStyle,
               ]}>
               {isCompleted ? (
-                <Icon name="check" size="md" color="success" />
+                <Icon
+                  name="check"
+                  size="md"
+                  color={
+                    isActive ? 'primary' : COMPLETION_COLORS.done
+                  }
+                />
               ) : (
                 <Text
                   variant="labelLarge"
@@ -89,10 +97,12 @@ export function Stepper({
             </Button>
             <Text
               variant="labelSmall"
-              color={
-                isActive ? 'primary' : isCompleted ? 'success' : 'onSurfaceVariant'
-              }
-              style={[styles.stepLabel, !pressable && styles.stepLabelDisabled]}
+              color="primary"
+              style={[
+                styles.stepLabel,
+                isActive && styles.stepLabelActive,
+                !pressable && styles.stepLabelDisabled,
+              ]}
               numberOfLines={1}>
               {getStepShortLabel(step.title)}
             </Text>
@@ -131,7 +141,7 @@ const stylesheet = createStyleSheet(theme => ({
     backgroundColor: theme.colors.surface,
   },
   stepButtonCompleted: {
-    backgroundColor: theme.colors.successContainer,
+    backgroundColor: theme.colors.secondaryContainer,
   },
   stepButtonDisabled: {
     opacity: 0.45,
@@ -143,6 +153,11 @@ const stylesheet = createStyleSheet(theme => ({
     textAlign: 'center',
     maxWidth: theme.sizes.stepper.itemWidth,
   },
+  stepLabelActive: brandFontStyle(
+    '600',
+    theme.typography.labelSmall.fontSize,
+    theme.typography.labelSmall.lineHeight,
+  ),
   stepLabelDisabled: {
     opacity: 0.45,
   },

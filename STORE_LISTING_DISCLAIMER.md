@@ -40,7 +40,7 @@ The app does not represent or claim affiliation with any government entity. Gove
 Users can complete all government procedures themselves for free. VisaMesa charges only for guidance, organization, and optional booking assistance.
 
 Account deletion: visamesa://legal (Legal & Privacy screen in the app).
-Privacy policy: https://visa-mesa.web.app/privacy
+Privacy policy: https://visamesa.com/privacy
 ```
 
 ## Account deletion URL (Apple)
@@ -49,7 +49,7 @@ Privacy policy: https://visa-mesa.web.app/privacy
 
 ## Privacy policy URL
 
-https://visa-mesa.web.app/privacy
+https://visamesa.com/privacy
 
 ---
 

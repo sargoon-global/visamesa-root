@@ -4,13 +4,13 @@ import {useProfileScreen} from '@/features/profile/hooks/useProfileScreen';
 import {createMockNavigation} from '@/test/navigation';
 import {renderHook} from '@/test/renderHook';
 import {ProfileStackParamList, RootStackParamList} from '@/navigation/types';
+import type {ProcessReadinessMissing} from '@/types/processReadiness';
 import {CompositeNavigationProp} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 const mockShowToast = jest.fn();
 const mockLogout = jest.fn();
-const mockHasPaidService = jest.fn();
-const mockRefreshEntitlements = jest.fn();
+const mockRefreshReadiness = jest.fn();
 const mockOpenPricing = jest.fn();
 const mockOpenPricingStatus = jest.fn();
 
@@ -24,11 +24,8 @@ jest.mock('@/contexts/AuthContext', () => ({
   useAuth: jest.fn(),
 }));
 
-jest.mock('@/contexts/EntitlementsContext', () => ({
-  useEntitlements: () => ({
-    hasPaidService: mockHasPaidService,
-    refreshEntitlements: mockRefreshEntitlements,
-  }),
+jest.mock('@/hooks/useProcessReadiness', () => ({
+  useProcessReadiness: jest.fn(),
 }));
 
 jest.mock('@/hooks/usePricingLink', () => ({
@@ -42,9 +39,11 @@ jest.mock('@/features/profile/context/ProfileDataContext', () => ({
   useProfileData: jest.fn(),
 }));
 
+const mockUseFocusEffect = jest.fn();
+
 jest.mock('@react-navigation/native', () => ({
   ...jest.requireActual('@react-navigation/native'),
-  useFocusEffect: jest.fn(),
+  useFocusEffect: (callback: () => void) => mockUseFocusEffect(callback),
 }));
 
 const {useProfileData} = jest.requireMock(
@@ -62,12 +61,39 @@ const {useAuth} = jest.requireMock('@/contexts/AuthContext') as {
   useAuth: jest.Mock;
 };
 
+const {useProcessReadiness} = jest.requireMock('@/hooks/useProcessReadiness') as {
+  useProcessReadiness: jest.Mock;
+};
+
+function mockReadiness({
+  isProfileComplete = false,
+  missing = [
+    'personalInformation',
+    'legalPrivacy',
+    'payment',
+  ] as ProcessReadinessMissing[],
+  isLoading = false,
+}: {
+  isProfileComplete?: boolean;
+  missing?: ProcessReadinessMissing[];
+  isLoading?: boolean;
+} = {}) {
+  useProcessReadiness.mockReturnValue({
+    isProfileComplete,
+    missing: [...missing],
+    isLoading,
+    refreshReadiness: mockRefreshReadiness,
+  });
+}
+
 describe('useProfileScreen', () => {
   beforeEach(() => {
     mockShowToast.mockReset();
     mockLogout.mockReset();
-    mockHasPaidService.mockImplementation(() => false);
-    mockRefreshEntitlements.mockResolvedValue([]);
+    mockRefreshReadiness.mockReset();
+    mockRefreshReadiness.mockResolvedValue(undefined);
+    mockUseFocusEffect.mockReset();
+    mockReadiness();
     mockOpenPricing.mockReset();
     mockOpenPricing.mockResolvedValue(undefined);
     mockOpenPricingStatus.mockReset();
@@ -114,6 +140,29 @@ describe('useProfileScreen', () => {
     expect(navigation.navigate).toHaveBeenCalledWith('Login');
   });
 
+  it('refreshes readiness when the screen gains focus', () => {
+    useAuth.mockReturnValue({
+      user: {id: '1', email: 'user@example.com'},
+      isLoading: false,
+      logout: mockLogout,
+    });
+
+    const navigation = createMockNavigation<
+      ProfileStackParamList,
+      'Profile'
+    >() as ProfileScreenNavigation;
+    renderHook(() => useProfileScreen(navigation));
+
+    expect(mockUseFocusEffect).toHaveBeenCalled();
+    const focusCallback = mockUseFocusEffect.mock.calls[0]?.[0] as () => void;
+
+    act(() => {
+      focusCallback();
+    });
+
+    expect(mockRefreshReadiness).toHaveBeenCalled();
+  });
+
   it('loads profile data when authenticated', () => {
     useAuth.mockReturnValue({
       user: {id: '1', email: 'user@example.com'},
@@ -136,7 +185,7 @@ describe('useProfileScreen', () => {
       isLoading: false,
       logout: mockLogout,
     });
-    mockHasPaidService.mockReturnValue(true);
+    mockReadiness({missing: ['personalInformation', 'legalPrivacy']});
 
     const navigation = createMockNavigation<
       ProfileStackParamList,
@@ -145,6 +194,7 @@ describe('useProfileScreen', () => {
     const getHookState = renderHook(() => useProfileScreen(navigation));
 
     expect(getHookState().hasPaid).toBe(true);
+    expect(getHookState().profileCompleteness.payment).toBe(true);
   });
 
   it('opens pricing website when payment is pressed and user is unpaid', () => {
@@ -173,7 +223,7 @@ describe('useProfileScreen', () => {
       isLoading: false,
       logout: mockLogout,
     });
-    mockHasPaidService.mockImplementation(() => true);
+    mockReadiness({missing: []});
 
     const navigation = createMockNavigation<
       ProfileStackParamList,
@@ -199,7 +249,7 @@ describe('useProfileScreen', () => {
       isLoading: false,
       logout: mockLogout,
     });
-    mockHasPaidService.mockImplementation(() => true);
+    mockReadiness({missing: []});
 
     const navigation = createMockNavigation<
       ProfileStackParamList,

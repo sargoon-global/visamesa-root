@@ -2,6 +2,7 @@ import React from 'react';
 import {Pressable, StyleProp, ViewStyle} from 'react-native';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
+import {COMPLETION_COLORS} from '@/components/ui/StatusIndicator';
 import {Icon} from '@/components/ui/Icon';
 
 export type CheckboxProps = {
@@ -15,7 +16,7 @@ export type CheckboxProps = {
 
 /**
  * Interactive checkbox toggle.
- * - checked: green check circle
+ * - checked: teal check circle (`secondary`)
  * - unchecked: empty circle
  */
 export function Checkbox({
@@ -44,7 +45,7 @@ export function Checkbox({
       <Icon
         name={checked ? 'check-circle' : 'radio-button-unchecked'}
         size={size}
-        color={checked ? 'success' : 'onSurfaceVariant'}
+        color={checked ? COMPLETION_COLORS.done : 'onSurfaceVariant'}
       />
     </Pressable>
   );

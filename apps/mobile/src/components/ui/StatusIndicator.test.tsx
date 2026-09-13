@@ -14,8 +14,10 @@ describe('StatusIndicator', () => {
   it('renders error-outline icon when status is notDone', () => {
     const tree = renderComponent(<StatusIndicator status="notDone" />);
     const json = tree.toJSON();
+    const output = JSON.stringify(json);
 
-    expect(JSON.stringify(json)).toContain('error-outline');
+    expect(output).toContain('error-outline');
+    expect(output).not.toContain('check-circle');
   });
 
   it('supports different sizes', () => {

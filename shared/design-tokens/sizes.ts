@@ -7,6 +7,12 @@ export const sizes = {
     xl: 32,
     hero: 48,
   },
+  /** Header / profile brand mark heights (logotype uses labelLarge / 14px on web). */
+  brand: {
+    markHeightDesktop: 40,
+    markHeightMobile: 32,
+    markHeightHero: 72,
+  },
   stepper: {
     itemWidth: 72,
   },

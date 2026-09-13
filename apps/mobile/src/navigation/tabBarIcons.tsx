@@ -27,7 +27,7 @@ function createTabIcon(
         style={[
           styles.activeIndicator,
           {
-            backgroundColor: theme.colors.secondaryContainer,
+            backgroundColor: theme.colors.secondaryContainerSubtle,
           },
         ]}>
         {icon}

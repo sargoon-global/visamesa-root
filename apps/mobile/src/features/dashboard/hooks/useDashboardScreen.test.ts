@@ -249,6 +249,95 @@ describe('useDashboardScreen', () => {
     expect(getHookState().stepActionDisabledHint).toBeUndefined();
   });
 
+  it('shows completed requirements even when prerequisites are incomplete', async () => {
+    mockUseProcessReadiness.mockReturnValue({
+      canStartProcess: false,
+      isProfileComplete: false,
+      missing: ['personalInformation', 'legalPrivacy', 'payment'],
+      isLoading: false,
+      refreshReadiness: mockRefreshReadiness,
+    });
+    useUserProgress.mockReturnValue({
+      progress: createUserProgress({
+        currentStepId: 1,
+        steps: [
+          {
+            stepId: 1,
+            status: 'in_progress',
+            requirements: {
+              passport: {completed: true, source: {type: 'self_declared'}},
+            },
+          },
+        ],
+      }),
+      isLoading: false,
+      error: null,
+      completeStep,
+      toggleSelfDeclaredRequirement,
+      completeBookingAssistantRequirement,
+      clearBookingAssistantRequirement,
+      completeFormRequirement,
+      refreshProgress: jest.fn(),
+    });
+
+    const navigation = createMockNavigation() as Parameters<
+      typeof useDashboardScreen
+    >[0];
+    const getHookState = await renderDashboardScreen(navigation);
+
+    expect(getHookState().currentStepRequirements[0]?.progress.completed).toBe(
+      true,
+    );
+  });
+
+  it('reconciles progress when empadronamiento profile sync fails', async () => {
+    const refreshProgress = jest.fn();
+    const {getProfile} = jest.requireMock(
+      '@/features/profile/services/profileService',
+    ) as {
+      getProfile: jest.Mock;
+    };
+    const {saveUserProgress} = jest.requireMock(
+      '@/features/dashboard/services/progressService',
+    ) as {
+      saveUserProgress: jest.Mock;
+    };
+
+    getProfile.mockRejectedValueOnce(new Error('Network error'));
+
+    useUserProgress.mockReturnValue({
+      progress: createUserProgress({
+        currentStepId: 1,
+        steps: [
+          {
+            stepId: 1,
+            status: 'completed',
+            requirements: {
+              passport: {completed: false},
+            },
+          },
+        ],
+      }),
+      isLoading: false,
+      error: null,
+      completeStep,
+      toggleSelfDeclaredRequirement,
+      completeBookingAssistantRequirement,
+      clearBookingAssistantRequirement,
+      completeFormRequirement,
+      refreshProgress,
+    });
+
+    const navigation = createMockNavigation() as Parameters<
+      typeof useDashboardScreen
+    >[0];
+    await renderDashboardScreen(navigation);
+    await flushAsyncEffects();
+
+    expect(saveUserProgress).toHaveBeenCalled();
+    expect(refreshProgress).toHaveBeenCalled();
+  });
+
   it('shows prerequisites dialog when not ready', async () => {
     // Set mock before rendering hook
     mockUseProcessReadiness.mockReturnValue({

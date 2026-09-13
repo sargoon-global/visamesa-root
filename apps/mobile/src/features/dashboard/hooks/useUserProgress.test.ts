@@ -5,6 +5,8 @@ import {createUserProgress} from '@/test/fixtures/userProgress';
 
 import {useUserProgress} from './useUserProgress';
 
+const mockSubscribeToProgressStoreChange = jest.fn((_listener: () => void) => () => {});
+
 jest.mock('@/features/dashboard/services/progressService', () => ({
   fetchUserProgress: jest.fn(),
   saveUserProgress: jest.fn(),
@@ -12,6 +14,8 @@ jest.mock('@/features/dashboard/services/progressService', () => ({
   updateRequirementProgress: jest.fn(),
   updateStepStatus: jest.fn(),
   subscribeToProgressReset: jest.fn(() => () => {}),
+  subscribeToProgressStoreChange: (listener: () => void) =>
+    mockSubscribeToProgressStoreChange(listener),
 }));
 
 type UserProgressAuthMockValue = {
@@ -57,6 +61,12 @@ describe('useUserProgress', () => {
 
   afterEach(() => {
     unmountRenderedHook();
+  });
+
+  it('subscribes to progress store changes', async () => {
+    await mountUserProgress();
+
+    expect(mockSubscribeToProgressStoreChange).toHaveBeenCalled();
   });
 
   it('loads progress on mount', async () => {

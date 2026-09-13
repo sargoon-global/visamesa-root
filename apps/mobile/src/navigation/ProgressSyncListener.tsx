@@ -2,7 +2,15 @@ import {useEffect} from 'react';
 import {AppState} from 'react-native';
 
 import {useAuth} from '@/contexts/AuthContext';
-import {syncStoredProgressToBackend} from '@/features/dashboard/services/progressSyncService';
+import {
+  syncStoredProgressToBackend,
+  tryHydrateProgressFromServer,
+} from '@/features/dashboard/services/progressService';
+
+async function syncProgressOnForeground(): Promise<void> {
+  await tryHydrateProgressFromServer();
+  await syncStoredProgressToBackend();
+}
 
 export function ProgressSyncListener() {
   const {user} = useAuth();
@@ -12,9 +20,11 @@ export function ProgressSyncListener() {
       return;
     }
 
+    syncProgressOnForeground().catch(() => {});
+
     const subscription = AppState.addEventListener('change', nextState => {
       if (nextState === 'active') {
-        syncStoredProgressToBackend().catch(() => {});
+        syncProgressOnForeground().catch(() => {});
       }
     });
 

@@ -124,7 +124,7 @@ Under GDPR and Spanish data protection law, users have the right to:
 - **Withdraw Consent:** Revoke consent at any time
 
 ## Privacy Policy Link
-https://visa-mesa.web.app/privacy
+https://visamesa.com/privacy
 
 ## Support Contact
 **Email:** privacy@visamesa.com
