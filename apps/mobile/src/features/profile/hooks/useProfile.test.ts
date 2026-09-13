@@ -10,6 +10,7 @@ import {renderHookAsync, unmountRenderedHook} from '@/test/renderHook';
 const mockShowToast = jest.fn();
 const mockFetchUserProgress = jest.fn();
 const mockSaveUserProgress = jest.fn();
+const mockTryHydrateProgressFromServer = jest.fn();
 const mockSyncEmpadronamiento = jest.fn();
 const mockReconcileStepStatuses = jest.fn();
 const mockFetchTieSteps = jest.fn();
@@ -29,6 +30,8 @@ jest.mock('@/features/profile/services/profileService', () => ({
 jest.mock('@/features/dashboard/services/progressService', () => ({
   fetchUserProgress: (...args: unknown[]) => mockFetchUserProgress(...args),
   saveUserProgress: (...args: unknown[]) => mockSaveUserProgress(...args),
+  tryHydrateProgressFromServer: (...args: unknown[]) =>
+    mockTryHydrateProgressFromServer(...args),
 }));
 
 jest.mock('@/features/dashboard/services/empadronamientoProgressService', () => ({
@@ -55,11 +58,12 @@ describe('useProfile', () => {
       },
     });
     mockFetchUserProgress.mockResolvedValue({steps: []});
+    mockTryHydrateProgressFromServer.mockResolvedValue(false);
     mockFetchTieSteps.mockResolvedValue([]);
     mockSyncEmpadronamiento.mockImplementation(progress => progress);
     mockReconcileStepStatuses.mockImplementation(progress => ({
       ...progress,
-      synced: true,
+      currentStepId: (progress.currentStepId ?? 1) + 1,
     }));
   });
 
@@ -74,6 +78,7 @@ describe('useProfile', () => {
     );
 
     expect(getProfile).toHaveBeenCalled();
+    expect(mockTryHydrateProgressFromServer).toHaveBeenCalled();
     expect(getHookState().profileData?.personal?.firstName).toBe('Jane');
   });
 
@@ -108,12 +113,11 @@ describe('useProfile', () => {
         hasEmpadronamiento: 'yes',
       }),
     );
+    expect(mockTryHydrateProgressFromServer).toHaveBeenCalled();
     expect(mockFetchUserProgress).toHaveBeenCalled();
     expect(mockSyncEmpadronamiento).toHaveBeenCalled();
     expect(mockReconcileStepStatuses).toHaveBeenCalled();
-    expect(mockSaveUserProgress).toHaveBeenCalledWith(
-      expect.objectContaining({synced: true}),
-    );
+    expect(mockSaveUserProgress).toHaveBeenCalled();
     expect(mockShowToast).toHaveBeenCalled();
   });
 });

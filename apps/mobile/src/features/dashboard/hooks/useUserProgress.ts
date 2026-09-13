@@ -10,6 +10,7 @@ import {
   saveUserProgress,
   setCurrentStepId,
   subscribeToProgressReset,
+  subscribeToProgressStoreChange,
   updateRequirementProgress,
   updateStepStatus,
 } from '@/features/dashboard/services/progressService';
@@ -83,6 +84,12 @@ export function useUserProgress(): UseUserProgressResult {
 
   useEffect(() => {
     loadProgress();
+  }, [loadProgress]);
+
+  useEffect(() => {
+    return subscribeToProgressStoreChange(() => {
+      loadProgress();
+    });
   }, [loadProgress]);
 
   useEffect(() => {

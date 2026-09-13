@@ -8,6 +8,7 @@ import {isUserProgressEqual} from '@/features/dashboard/utils/userProgressEquali
 import {
   fetchUserProgress,
   saveUserProgress,
+  tryHydrateProgressFromServer,
 } from '@/features/dashboard/services/progressService';
 import {fetchTieSteps} from '@/features/home/services/tieStepsService';
 import {phoneToString, stringToPhone} from '@/features/forms/utils/phoneUtils';
@@ -62,6 +63,13 @@ export function useProfile(isEnabled: boolean): UseProfileResult {
     try {
       const data = await getProfile();
       setProfileData(data);
+
+      try {
+        await tryHydrateProgressFromServer();
+      } catch {
+        // Progress hydration is best-effort after profile load
+      }
+
       return isProfileComplete(data);
     } catch (err) {
       if (err instanceof ProfileDecryptionError) {
@@ -144,6 +152,7 @@ export function useProfile(isEnabled: boolean): UseProfileResult {
 
       if (section === 'personal') {
         try {
+          await tryHydrateProgressFromServer();
           const progress = await fetchUserProgress();
           const tieSteps = await fetchTieSteps();
           let synced = await syncEmpadronamientoStepFromProfile(progress, result);

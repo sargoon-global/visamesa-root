@@ -2,20 +2,27 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {fetchTieSteps} from '@/features/home/services/tieStepsService';
 import {Requirement} from '@/features/home/types/TieStepDetail';
+import type {LocalProgressStore} from '@/features/dashboard/types/ProgressStore';
 import {
   RequirementProgress,
   StepStatus,
   UserProgress,
   UserStepProgress,
 } from '@/features/dashboard/types/UserProgress';
+import {fetchMergedProgressStore} from '@/features/dashboard/services/progressHydrationService';
+import {
+  hasPendingProgressSync,
+  syncProgressSnapshot,
+} from '@/features/dashboard/services/progressSyncService';
 
 const PROGRESS_STORAGE_KEY = '@visamesa_user_progress';
 
-let inMemoryProgress: UserProgress | null = null;
+let inMemoryStore: LocalProgressStore | null = null;
 const progressResetListeners = new Set<() => void>();
+const progressStoreChangeListeners = new Set<() => void>();
 
 export function clearProgressMemoryCache(): void {
-  inMemoryProgress = null;
+  inMemoryStore = null;
 }
 
 export function subscribeToProgressReset(listener: () => void): () => void {
@@ -28,6 +35,18 @@ export function subscribeToProgressReset(listener: () => void): () => void {
   return () => {
     progressResetListeners.delete(listener);
   };
+}
+
+export function subscribeToProgressStoreChange(listener: () => void): () => void {
+  progressStoreChangeListeners.add(listener);
+
+  return () => {
+    progressStoreChangeListeners.delete(listener);
+  };
+}
+
+export function notifyProgressStoreChanged(): void {
+  progressStoreChangeListeners.forEach(listener => listener());
 }
 
 const createEmptyRequirementProgress = (): RequirementProgress => ({
@@ -63,6 +82,14 @@ export function buildInitialProgressFromSteps(
     steps: steps.map(step =>
       buildInitialStepProgress(step.id, step.requirements),
     ),
+  };
+}
+
+function createInitialStore(progress: UserProgress): LocalProgressStore {
+  return {
+    progress,
+    clientUpdatedAt: null,
+    lastSyncedClientUpdatedAt: null,
   };
 }
 
@@ -102,47 +129,140 @@ const mergeProgressWithSteps = async (
   };
 };
 
-export async function fetchUserProgress(): Promise<UserProgress> {
-  if (inMemoryProgress) {
-    return mergeProgressWithSteps(inMemoryProgress);
-  }
+async function mergeStoreWithSteps(
+  store: LocalProgressStore,
+): Promise<LocalProgressStore> {
+  return {
+    ...store,
+    progress: await mergeProgressWithSteps(store.progress),
+  };
+}
 
+async function readStoredProgressStore(): Promise<LocalProgressStore | null> {
   try {
     const raw = await AsyncStorage.getItem(PROGRESS_STORAGE_KEY);
 
-    if (raw) {
-      const parsed = JSON.parse(raw) as UserProgress;
-      inMemoryProgress = await mergeProgressWithSteps(parsed);
-      return inMemoryProgress;
+    if (!raw) {
+      return null;
     }
+
+    const parsed = JSON.parse(raw) as LocalProgressStore;
+
+    if (!parsed?.progress?.steps) {
+      return null;
+    }
+
+    return parsed;
   } catch {
-    // Fall through to initial progress
+    return null;
   }
-
-  inMemoryProgress = await createInitialProgress();
-  await AsyncStorage.setItem(
-    PROGRESS_STORAGE_KEY,
-    JSON.stringify(inMemoryProgress),
-  );
-
-  return inMemoryProgress;
 }
 
-async function persistProgress(progress: UserProgress): Promise<UserProgress> {
-  inMemoryProgress = progress;
-  await AsyncStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(progress));
+async function writeStoredProgressStore(store: LocalProgressStore): Promise<void> {
+  inMemoryStore = store;
+  await AsyncStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(store));
+}
 
-  import('@/features/dashboard/services/progressSyncService')
-    .then(({syncProgressSnapshot}) => syncProgressSnapshot(progress))
-    .catch(() => {});
+async function loadProgressStore(): Promise<LocalProgressStore> {
+  if (inMemoryStore) {
+    return mergeStoreWithSteps(inMemoryStore);
+  }
 
-  return progress;
+  const stored = await readStoredProgressStore();
+
+  if (stored) {
+    const merged = await mergeStoreWithSteps(stored);
+    inMemoryStore = merged;
+    return merged;
+  }
+
+  const initial = createInitialStore(await createInitialProgress());
+  await writeStoredProgressStore(initial);
+  return initial;
+}
+
+export async function fetchUserProgress(): Promise<UserProgress> {
+  const store = await loadProgressStore();
+  return store.progress;
+}
+
+export async function fetchLocalProgressStore(): Promise<LocalProgressStore> {
+  return loadProgressStore();
+}
+
+/**
+ * Restores dashboard progress from the server when this install is device-authorized.
+ * No-op on other-device state (encrypted profile from another device).
+ */
+export async function tryHydrateProgressFromServer(): Promise<boolean> {
+  const local = await loadProgressStore();
+  const merged = await fetchMergedProgressStore(local);
+
+  if (!merged) {
+    return false;
+  }
+
+  const hydrated = await mergeStoreWithSteps(merged);
+  await writeStoredProgressStore(hydrated);
+  notifyProgressStoreChanged();
+  return true;
+}
+
+async function persistProgressStore(
+  store: LocalProgressStore,
+  options: {sync?: boolean} = {},
+): Promise<LocalProgressStore> {
+  const merged = await mergeStoreWithSteps(store);
+  await writeStoredProgressStore(merged);
+
+  const shouldSync = options.sync !== false && hasPendingProgressSync(merged);
+
+  if (shouldSync) {
+    syncProgressSnapshot(merged)
+      .then(async synced => {
+        const next = await mergeStoreWithSteps(synced);
+        await writeStoredProgressStore(next);
+        notifyProgressStoreChanged();
+      })
+      .catch(() => {});
+  }
+
+  return merged;
+}
+
+async function persistProgressMutation(
+  progress: UserProgress,
+): Promise<UserProgress> {
+  const current = await loadProgressStore();
+  const clientUpdatedAt = new Date().toISOString();
+  const store: LocalProgressStore = {
+    progress,
+    clientUpdatedAt,
+    lastSyncedClientUpdatedAt: current.lastSyncedClientUpdatedAt,
+  };
+
+  const saved = await persistProgressStore(store);
+  return saved.progress;
 }
 
 export async function saveUserProgress(
   progress: UserProgress,
 ): Promise<UserProgress> {
-  return persistProgress(progress);
+  return persistProgressMutation(progress);
+}
+
+/** Saves hydrated/server progress without pushing to the backend. */
+export async function saveUserProgressWithoutSync(
+  progress: UserProgress,
+  clientUpdatedAt: string | null,
+): Promise<UserProgress> {
+  const store: LocalProgressStore = {
+    progress,
+    clientUpdatedAt,
+    lastSyncedClientUpdatedAt: clientUpdatedAt,
+  };
+  const saved = await persistProgressStore(store, {sync: false});
+  return saved.progress;
 }
 
 export async function updateStepStatus(
@@ -176,7 +296,7 @@ export async function updateStepStatus(
     return {...step, status};
   });
 
-  return persistProgress({...progress, steps});
+  return persistProgressMutation({...progress, steps});
 }
 
 export async function updateRequirementProgress(
@@ -199,14 +319,39 @@ export async function updateRequirementProgress(
     };
   });
 
-  return persistProgress({...progress, steps});
+  return persistProgressMutation({...progress, steps});
 }
 
 export async function setCurrentStepId(
   progress: UserProgress,
   currentStepId: number,
 ): Promise<UserProgress> {
-  return persistProgress({...progress, currentStepId});
+  return persistProgressMutation({...progress, currentStepId});
+}
+
+export async function syncStoredProgressToBackend(): Promise<void> {
+  const store = await loadProgressStore();
+
+  if (!hasPendingProgressSync(store)) {
+    return;
+  }
+
+  const {isDeviceAuthorizedForProgress} = await import(
+    '@/features/dashboard/services/progressHydrationService'
+  );
+
+  if (!(await isDeviceAuthorizedForProgress())) {
+    return;
+  }
+
+  try {
+    const synced = await syncProgressSnapshot(store);
+    const next = await mergeStoreWithSteps(synced);
+    await writeStoredProgressStore(next);
+    notifyProgressStoreChanged();
+  } catch {
+    // Best-effort foreground sync
+  }
 }
 
 /** Clears stored progress — dev and test only */
@@ -215,7 +360,7 @@ export async function resetUserProgress(): Promise<void> {
     return;
   }
 
-  inMemoryProgress = null;
+  inMemoryStore = null;
   await AsyncStorage.removeItem(PROGRESS_STORAGE_KEY);
   progressResetListeners.forEach(listener => listener());
 }

@@ -16,6 +16,16 @@ jest.mock('@/features/home/services/tieStepsService', () => ({
   fetchTieSteps: jest.fn(),
 }));
 
+jest.mock('@/features/dashboard/services/progressSyncService', () => ({
+  hasPendingProgressSync: jest.fn(() => false),
+  syncProgressSnapshot: jest.fn(async (store: unknown) => store),
+}));
+
+jest.mock('@/features/dashboard/services/progressHydrationService', () => ({
+  fetchMergedProgressStore: jest.fn(),
+  isDeviceAuthorizedForProgress: jest.fn(),
+}));
+
 const {fetchTieSteps} = jest.requireMock(
   '@/features/home/services/tieStepsService',
 ) as {fetchTieSteps: jest.Mock};
