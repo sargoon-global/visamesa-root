@@ -105,6 +105,35 @@ describe('EntitlementsContext', () => {
     expect(getEntitlements.mock.calls.length).toBeGreaterThanOrEqual(3);
   });
 
+  it('keeps existing entitlements when refresh fails', async () => {
+    getEntitlements
+      .mockResolvedValueOnce({
+        entitlements: [
+          {
+            type: EntitlementType.FULL_SERVICE,
+            grantedAt: '2026-01-01T00:00:00.000Z',
+            expiresAt: null,
+          },
+        ],
+      })
+      .mockRejectedValueOnce(new Error('Network error'));
+
+    const getHookState = await renderHookAsync(
+      () => useEntitlements(),
+      state => !state.isLoading,
+      EntitlementsWrapper,
+    );
+
+    expect(getHookState().hasPaidService()).toBe(true);
+
+    await act(async () => {
+      await getHookState().refreshEntitlements();
+    });
+
+    expect(getHookState().hasPaidService()).toBe(true);
+    expect(getEntitlements).toHaveBeenCalledTimes(2);
+  });
+
   it('returns false when paid service never arrives', async () => {
     jest.useFakeTimers();
     getEntitlements.mockResolvedValue({entitlements: []});

@@ -9,10 +9,14 @@ export const lightColors = {
   primaryContainer: '#E8EAED',
   onPrimaryContainer: '#1B1B1F',
 
-  secondary: '#FC4101',
+  /** Done icons, completed labels, secondary CTAs. */
+  secondary: '#00C49F',
   onSecondary: '#FFFFFF',
-  secondaryContainer: '#FFE8DE',
-  onSecondaryContainer: '#3A0B00',
+  /** Pale teal surfaces: completed step pills. */
+  secondaryContainer: '#B2F0E4',
+  onSecondaryContainer: '#00251F',
+  /** Lighter pale teal: tab bar active pill background. */
+  secondaryContainerSubtle: '#E8FAF6',
 
   tertiary: '#735B0F',
   onTertiary: '#FFFFFF',
@@ -24,10 +28,9 @@ export const lightColors = {
   errorContainer: '#FFDAD6',
   onErrorContainer: '#410002',
 
-  success: '#1B7A3D',
-  onSuccess: '#FFFFFF',
-  successContainer: '#D4EDDA',
-  onSuccessContainer: '#0D3D1F',
+  /** Incomplete / missing-item indicator (checklists, profile rows). Not form validation error. */
+  incomplete: '#D82020',
+  onIncomplete: '#FFFFFF',
 
   surface: '#FFFFFF',
   onSurface: '#1B1B1F',
@@ -55,10 +58,11 @@ export const darkColors = {
   primaryContainer: '#3A3A3F',
   onPrimaryContainer: '#E4E2E6',
 
-  secondary: '#FFB59D',
-  onSecondary: '#5C1900',
-  secondaryContainer: '#832600',
-  onSecondaryContainer: '#FFE8DE',
+  secondary: '#5DE4C4',
+  onSecondary: '#003830',
+  secondaryContainer: '#005244',
+  onSecondaryContainer: '#B2F0E4',
+  secondaryContainerSubtle: '#1A4039',
 
   tertiary: '#E5C16E',
   onTertiary: '#3E2E00',
@@ -70,10 +74,8 @@ export const darkColors = {
   errorContainer: '#93000A',
   onErrorContainer: '#FFDAD6',
 
-  success: '#81C995',
-  onSuccess: '#0D3D1F',
-  successContainer: '#145A2E',
-  onSuccessContainer: '#D4EDDA',
+  incomplete: '#FF897D',
+  onIncomplete: '#601410',
 
   surface: '#1B1B1F',
   onSurface: '#E4E2E6',

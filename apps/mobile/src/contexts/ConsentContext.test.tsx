@@ -88,6 +88,35 @@ describe('ConsentContext', () => {
     expect(getHookState().hasConsent).toBe(false);
   });
 
+  it('keeps existing consent when refresh fails', async () => {
+    useAuth.mockReturnValue({
+      user: {id: 'user-1', email: 'user@example.com'},
+    });
+    (consentService.getConsentStatus as jest.Mock)
+      .mockResolvedValueOnce({
+        privacyPolicy: true,
+        termsOfService: true,
+        privacyAcceptedAt: '2026-01-01T00:00:00.000Z',
+        termsAcceptedAt: '2026-01-01T00:00:00.000Z',
+      })
+      .mockRejectedValueOnce(new Error('Network error'));
+
+    const getHookState = await renderHookAsync(
+      () => useConsent(),
+      state => !state.isLoading,
+      ConsentWrapper,
+    );
+
+    expect(getHookState().hasConsent).toBe(true);
+
+    await act(async () => {
+      await getHookState().refreshConsent();
+    });
+
+    expect(getHookState().hasConsent).toBe(true);
+    expect(consentService.getConsentStatus).toHaveBeenCalledTimes(2);
+  });
+
   it('refreshes consent when the app returns to the foreground', async () => {
     useAuth.mockReturnValue({
       user: {id: 'user-1', email: 'user@example.com'},

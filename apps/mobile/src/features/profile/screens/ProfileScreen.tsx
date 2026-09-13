@@ -17,10 +17,7 @@ import {PaymentAlreadyPaidDialog} from '@/features/profile/components/PaymentAlr
 import {ProfileActions} from '@/features/profile/components/ProfileActions';
 import {ProfileHeader} from '@/features/profile/components/ProfileHeader';
 import {ProfileUnauthenticated} from '@/features/profile/components/ProfileUnauthenticated';
-import {useProfileData} from '@/features/profile/context/ProfileDataContext';
 import {useProfileScreen} from '@/features/profile/hooks/useProfileScreen';
-import {selectProfileCompleteness} from '@/features/profile/selectors/selectProfileCompleteness';
-import {useConsent} from '@/contexts/ConsentContext';
 import {ProfileStackParamList} from '@/navigation/types';
 import {useTabBarInset} from '@/navigation/useTabBarInset';
 
@@ -38,13 +35,12 @@ const ProfileScreen = ({navigation}: ProfileScreenProps) => {
   const {t} = useTranslation('profile');
   const {t: tSupport} = useTranslation('support');
   const tabBarInset = useTabBarInset();
-  const {profileData} = useProfileData();
   const {
     isAuthLoading,
     userEmail,
-    isProfileLoading,
+    isStatusLoading,
     profileError,
-    hasPaid,
+    profileCompleteness,
     onSectionPress,
     onSignInPress,
     onSignOutPress,
@@ -53,13 +49,6 @@ const ProfileScreen = ({navigation}: ProfileScreenProps) => {
     onDismissAlreadyPaidDialog,
     onSeePaymentStatus,
   } = useProfileScreen(navigation);
-  const {hasConsent} = useConsent();
-
-  const completeness = selectProfileCompleteness(
-    profileData,
-    hasConsent,
-    hasPaid,
-  );
 
   const handleLegalPress = () => {
     navigation.navigate('Legal');
@@ -73,7 +62,7 @@ const ProfileScreen = ({navigation}: ProfileScreenProps) => {
     navigation.navigate('Settings');
   };
 
-  if (isAuthLoading || (userEmail && isProfileLoading)) {
+  if (isAuthLoading || (userEmail && isStatusLoading)) {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.centered}>
@@ -118,21 +107,21 @@ const ProfileScreen = ({navigation}: ProfileScreenProps) => {
             title={t('personalTitle')}
             description={t('personalDescription')}
             onPress={() => onSectionPress('personal')}
-            status={completeness.personalInformation ? 'done' : 'notDone'}
+            status={profileCompleteness.personalInformation ? 'done' : 'notDone'}
           />
 
           <DetailLinkRow
             title={t('legalTitle')}
             description={t('legalDescription')}
             onPress={handleLegalPress}
-            status={completeness.legalPrivacy ? 'done' : 'notDone'}
+            status={profileCompleteness.legalPrivacy ? 'done' : 'notDone'}
           />
 
           <DetailLinkRow
             title={t('paymentTitle')}
             description={t('paymentDescription')}
             onPress={onPaymentPress}
-            status={completeness.payment ? 'done' : 'notDone'}
+            status={profileCompleteness.payment ? 'done' : 'notDone'}
           />
 
           <DetailLinkRow

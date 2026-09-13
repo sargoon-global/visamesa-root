@@ -48,8 +48,12 @@ export function ConsentProvider({children}: {children: ReactNode}) {
       setConsentStatus(status);
       return status.privacyPolicy && status.termsOfService;
     } catch {
-      setConsentStatus(EMPTY_CONSENT_STATUS);
-      return false;
+      let hasConsent = false;
+      setConsentStatus(prev => {
+        hasConsent = prev.privacyPolicy && prev.termsOfService;
+        return prev;
+      });
+      return hasConsent;
     } finally {
       setIsLoading(false);
     }

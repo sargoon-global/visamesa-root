@@ -34,6 +34,7 @@ import {
   ProgressContext,
   UserProgress,
 } from '@/features/dashboard/types/UserProgress';
+import {isUserProgressEqual} from '@/features/dashboard/utils/userProgressEquality';
 import {formatCompletedInHint} from '@/features/dashboard/utils/completionHints';
 import {getRequirementToggleState} from '@/features/dashboard/utils/requirementDependencies';
 import {
@@ -117,9 +118,7 @@ function buildRequirementsWithProgress(
       context,
     );
 
-    const displayProgress = canStartProcess
-      ? effectiveProgress
-      : {completed: false};
+    const displayProgress = effectiveProgress;
 
     const isReferenced =
       canStartProcess && isRequirementExternallyCompleted(effectiveProgress);
@@ -240,14 +239,25 @@ export function useDashboardScreen(
         );
         next = reconcileStepStatuses(next, steps, progressContext);
 
-        if (JSON.stringify(next) !== JSON.stringify(progress)) {
+        if (!isUserProgressEqual(next, progress)) {
           await saveUserProgress(next);
           await refreshProgress();
         }
 
         setHasSyncedEmpadronamiento(true);
       })
-      .catch(() => {
+      .catch(async () => {
+        if (cancelled) {
+          return;
+        }
+
+        const next = reconcileStepStatuses(progress, steps, progressContext);
+
+        if (!isUserProgressEqual(next, progress)) {
+          await saveUserProgress(next);
+          await refreshProgress();
+        }
+
         setHasSyncedEmpadronamiento(true);
       });
 

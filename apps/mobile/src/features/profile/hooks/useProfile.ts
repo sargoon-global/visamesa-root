@@ -4,6 +4,7 @@ import {i18n} from '@visamesa/content/i18n';
 import {useToast} from '@/components/Toast/ToastProvider';
 import {syncEmpadronamientoStepFromProfile} from '@/features/dashboard/services/empadronamientoProgressService';
 import {reconcileStepStatuses} from '@/features/dashboard/services/progressReconciliationService';
+import {isUserProgressEqual} from '@/features/dashboard/utils/userProgressEquality';
 import {
   fetchUserProgress,
   saveUserProgress,
@@ -151,7 +152,7 @@ export function useProfile(isEnabled: boolean): UseProfileResult {
             allSteps: tieSteps,
           });
 
-          if (JSON.stringify(synced) !== JSON.stringify(progress)) {
+          if (!isUserProgressEqual(synced, progress)) {
             await saveUserProgress(synced);
           }
         } catch {

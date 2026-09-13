@@ -93,6 +93,8 @@ function layoutVariables() {
     `--icon-size-sm: ${sizes.icon.sm}px;`,
     `--icon-size-md: ${sizes.icon.md}px;`,
     `--icon-size-lg: ${sizes.icon.lg}px;`,
+    `--brand-mark-height: ${sizes.brand.markHeightDesktop}px;`,
+    `--brand-mark-height-mobile: ${sizes.brand.markHeightMobile}px;`,
     `--vm-size-touch-target-min: ${sizes.touchTargetMin}px;`,
   ].join('\n  ')
 }
