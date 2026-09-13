@@ -4,6 +4,7 @@ import {useProfileScreen} from '@/features/profile/hooks/useProfileScreen';
 import {createMockNavigation} from '@/test/navigation';
 import {renderHook} from '@/test/renderHook';
 import {ProfileStackParamList, RootStackParamList} from '@/navigation/types';
+import type {ProcessReadinessMissing} from '@/types/processReadiness';
 import {CompositeNavigationProp} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
@@ -66,8 +67,16 @@ const {useProcessReadiness} = jest.requireMock('@/hooks/useProcessReadiness') as
 
 function mockReadiness({
   isProfileComplete = false,
-  missing = ['personalInformation', 'legalPrivacy', 'payment'] as const,
+  missing = [
+    'personalInformation',
+    'legalPrivacy',
+    'payment',
+  ] as ProcessReadinessMissing[],
   isLoading = false,
+}: {
+  isProfileComplete?: boolean;
+  missing?: ProcessReadinessMissing[];
+  isLoading?: boolean;
 } = {}) {
   useProcessReadiness.mockReturnValue({
     isProfileComplete,
