@@ -40,12 +40,9 @@ const {fetchMergedProgressStore} = jest.requireMock(
   '@/features/dashboard/services/progressHydrationService',
 ) as {fetchMergedProgressStore: jest.Mock};
 
-const {hasPendingProgressSync, syncProgressSnapshot} = jest.requireMock(
+const {hasPendingProgressSync} = jest.requireMock(
   '@/features/dashboard/services/progressSyncService',
-) as {
-  hasPendingProgressSync: jest.Mock;
-  syncProgressSnapshot: jest.Mock;
-};
+) as {hasPendingProgressSync: jest.Mock};
 
 const asyncStorage = AsyncStorage as jest.Mocked<typeof AsyncStorage>;
 
@@ -130,9 +127,9 @@ describe('progressService', () => {
   });
 
   it('sets clientUpdatedAt when progress is edited', async () => {
-    let progress = await fetchUserProgress();
+    const progress = await fetchUserProgress();
 
-    progress = await updateStepStatus(progress, 1, 'in_progress');
+    await updateStepStatus(progress, 1, 'in_progress');
     const store = await fetchLocalProgressStore();
 
     expect(store.clientUpdatedAt).toEqual(expect.any(String));
