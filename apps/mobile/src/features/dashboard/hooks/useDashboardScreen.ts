@@ -91,11 +91,6 @@ export type UseDashboardScreenResult = {
   onBookingAssistantPress: (bookingAssistantId: BookingAssistantId, label: string) => void;
   onViewAppointmentPress: (label: string) => void;
   onClearBookingAssistantPress: (label: string) => void;
-  onDevMarkBookingAssistantBookedPress?: (
-    bookingAssistantId: BookingAssistantId,
-    label: string,
-  ) => void;
-  onDevConfirmFormPress?: (formId: string, label: string) => void;
   onFormPress: (formId: string, label: string) => void;
   onClosePrerequisitesDialog: () => void;
   onGoToProfilePress: () => void;
@@ -590,60 +585,6 @@ export function useDashboardScreen(
     showToast(tDashboard('bookingStatusReset'));
   };
 
-  const onDevMarkBookingAssistantBookedPress = async (
-    bookingAssistantId: BookingAssistantId,
-    requirementKey: string,
-  ) => {
-    if (!__DEV__ || !currentStep || !progress || !canInteractWithRequirements) {
-      return;
-    }
-
-    const toggleState = getRequirementToggleState(
-      progress,
-      currentStep,
-      requirementKey,
-      progressContext,
-      steps,
-    );
-
-    if (!toggleState.canUseActions) {
-      showToast(tDashboard('requirementDependencyHint'));
-      return;
-    }
-
-    await completeBookingAssistantRequirement(
-      currentStep.id,
-      requirementKey,
-      bookingAssistantId,
-    );
-    showToast(tDashboard('bookingAssistantSuccess'));
-  };
-
-  const onDevConfirmFormPress = async (
-    formId: string,
-    requirementKey: string,
-  ) => {
-    if (!__DEV__ || !currentStep || !progress || !canInteractWithRequirements) {
-      return;
-    }
-
-    const toggleState = getRequirementToggleState(
-      progress,
-      currentStep,
-      requirementKey,
-      progressContext,
-      steps,
-    );
-
-    if (!toggleState.canUseActions) {
-      showToast(tDashboard('requirementDependencyHint'));
-      return;
-    }
-
-    await completeFormRequirement(currentStep.id, requirementKey, formId);
-    showToast(tDashboard('devFormConfirmedSuccess'));
-  };
-
   const confirmFormRequirement = (formId: string, requirementKey: string) => {
     if (!currentStep || !progress) {
       return;
@@ -752,10 +693,6 @@ export function useDashboardScreen(
     onBookingAssistantPress,
     onViewAppointmentPress,
     onClearBookingAssistantPress,
-    onDevMarkBookingAssistantBookedPress: __DEV__
-      ? onDevMarkBookingAssistantBookedPress
-      : undefined,
-    onDevConfirmFormPress: __DEV__ ? onDevConfirmFormPress : undefined,
     onFormPress,
     onClosePrerequisitesDialog,
     onGoToProfilePress,

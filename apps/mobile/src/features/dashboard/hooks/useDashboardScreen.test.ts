@@ -557,18 +557,4 @@ describe('useDashboardScreen', () => {
     );
   });
 
-  it('does not expose dev-only checklist shortcuts when __DEV__ is false', async () => {
-    const originalDev = (global as {__DEV__?: boolean}).__DEV__;
-    (global as {__DEV__?: boolean}).__DEV__ = false;
-
-    const navigation = createMockNavigation() as Parameters<
-      typeof useDashboardScreen
-    >[0];
-    const getHookState = await renderDashboardScreen(navigation);
-
-    expect(getHookState().onDevMarkBookingAssistantBookedPress).toBeUndefined();
-    expect(getHookState().onDevConfirmFormPress).toBeUndefined();
-
-    (global as {__DEV__?: boolean}).__DEV__ = originalDev;
-  });
 });

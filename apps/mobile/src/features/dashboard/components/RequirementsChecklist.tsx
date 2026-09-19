@@ -29,11 +29,6 @@ type RequirementsChecklistProps = {
   onBookingAssistantPress: (bookingAssistantId: BookingAssistantId, requirementKey: string) => void;
   onViewAppointmentPress: (requirementKey: string) => void;
   onClearBookingAssistantPress: (requirementKey: string) => void;
-  onDevMarkBookingAssistantBookedPress?: (
-    bookingAssistantId: BookingAssistantId,
-    requirementKey: string,
-  ) => void;
-  onDevConfirmFormPress?: (formId: string, requirementKey: string) => void;
   onFormPress: (formId: string, requirementKey: string) => void;
   onSupportPress: () => void;
 };
@@ -45,8 +40,6 @@ export function RequirementsChecklist({
   onBookingAssistantPress,
   onViewAppointmentPress,
   onClearBookingAssistantPress,
-  onDevMarkBookingAssistantBookedPress,
-  onDevConfirmFormPress,
   onFormPress,
   onSupportPress,
 }: RequirementsChecklistProps) {
@@ -118,30 +111,9 @@ export function RequirementsChecklist({
                 onClearBookingAssistantPress={() =>
                   onClearBookingAssistantPress(requirement.key)
                 }
-                onDevMarkBookingAssistantBookedPress={
-                  onDevMarkBookingAssistantBookedPress && requirement.bookingAssistantId
-                    ? () => {
-                        const {bookingAssistantId} = requirement;
-                        if (!bookingAssistantId) {
-                          return;
-                        }
-
-                        onDevMarkBookingAssistantBookedPress(
-                          bookingAssistantId,
-                          requirement.key,
-                        );
-                      }
-                    : undefined
-                }
                 onFormPress={() =>
                   requirement.formId
                     ? onFormPress(requirement.formId, requirement.key)
-                    : undefined
-                }
-                onDevConfirmFormPress={
-                  onDevConfirmFormPress && requirement.formId
-                    ? () =>
-                        onDevConfirmFormPress(requirement.formId!, requirement.key)
                     : undefined
                 }
               />

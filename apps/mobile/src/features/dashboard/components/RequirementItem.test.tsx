@@ -64,7 +64,7 @@ describe('RequirementItem', () => {
 
     const output = JSON.stringify(tree.toJSON());
     expect(output).toContain('Book via VisaMesa');
-    expect(output).toContain('Complete the items above first.');
+    expect(output).toContain('"accessibilityHint":"Complete the items above first."');
     expect(output).toContain('"accessibilityState":{"disabled":true}');
   });
 });

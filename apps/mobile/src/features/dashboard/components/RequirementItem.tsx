@@ -1,18 +1,18 @@
-import React from 'react'
-import { useTranslation } from 'react-i18next'
-import { Pressable, Share, View } from 'react-native'
-import { createStyleSheet, useStyles } from 'react-native-unistyles'
+import React from 'react';
+import {useTranslation} from 'react-i18next';
+import {Pressable, Share, View} from 'react-native';
+import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
-import { Button } from '@/components/ui/Button'
-import { Checkbox } from '@/components/ui/Checkbox'
-import { Icon } from '@/components/ui/Icon'
-import { Text } from '@/components/ui/Text'
-import { RequirementProgress } from '@/features/dashboard/types/UserProgress'
-import { getRequirementShareMessage } from '@/features/dashboard/utils/requirementGroups'
+import {Button} from '@/components/ui/Button';
+import {Checkbox} from '@/components/ui/Checkbox';
+import {Icon} from '@/components/ui/Icon';
+import {Text} from '@/components/ui/Text';
+import {RequirementProgress} from '@/features/dashboard/types/UserProgress';
+import {getRequirementShareMessage} from '@/features/dashboard/utils/requirementGroups';
 import {
   ASSISTED_BOOKING_REQUIREMENT_TYPE,
   Requirement,
-} from '@/features/home/types/TieStepDetail'
+} from '@/features/home/types/TieStepDetail';
 
 type RequirementItemProps = {
   requirement: Requirement;
@@ -28,8 +28,6 @@ type RequirementItemProps = {
   onBookingAssistantPress?: () => void;
   onViewAppointmentPress?: () => void;
   onClearBookingAssistantPress?: () => void;
-  onDevMarkBookingAssistantBookedPress?: () => void;
-  onDevConfirmFormPress?: () => void;
   onFormPress?: () => void;
 };
 
@@ -47,8 +45,6 @@ export function RequirementItem({
   onBookingAssistantPress,
   onViewAppointmentPress,
   onClearBookingAssistantPress,
-  onDevMarkBookingAssistantBookedPress,
-  onDevConfirmFormPress,
   onFormPress,
 }: RequirementItemProps) {
   const {styles, theme} = useStyles(stylesheet);
@@ -85,12 +81,9 @@ export function RequirementItem({
       : true;
   const actionsEnabled = interactive && canPerformActions;
   const dependencyHint =
-    canPerformActions || !interactive ? undefined : t('requirementDependencyHint');
-  const showDisabledHint =
-    Boolean(dependencyHint) &&
-    !actionsEnabled &&
-    interactive &&
-    (showBookAction || showFormAction);
+    canPerformActions || !interactive
+      ? undefined
+      : t('requirementDependencyHint');
   const hasAppointmentAction =
     requirement.type === ASSISTED_BOOKING_REQUIREMENT_TYPE && completed;
 
@@ -174,11 +167,6 @@ export function RequirementItem({
       {titleRow}
       {showBookAction ? (
         <View style={styles.actionGroup}>
-          {showDisabledHint ? (
-            <Text variant="bodySmall" color="onSurfaceVariant" style={styles.actionHint}>
-              {dependencyHint}
-            </Text>
-          ) : null}
           <Button
             label={t('bookViaVisaMesa')}
             variant="primary"
@@ -190,27 +178,10 @@ export function RequirementItem({
             accessibilityHint={dependencyHint}
             style={styles.actionButtonNested}
           />
-          {__DEV__ && onDevMarkBookingAssistantBookedPress ? (
-            <Button
-              label={t('devMarkAsBooked')}
-              variant="outline"
-              disabled={!actionsEnabled}
-              onPress={onDevMarkBookingAssistantBookedPress}
-              accessibilityLabel={t('devMarkAsBookedAccessibilityLabel', {
-                label: requirement.label,
-              })}
-              style={styles.actionButtonNested}
-            />
-          ) : null}
         </View>
       ) : null}
       {showFormAction ? (
         <View style={styles.actionGroup}>
-          {showDisabledHint ? (
-            <Text variant="bodySmall" color="onSurfaceVariant" style={styles.actionHint}>
-              {dependencyHint}
-            </Text>
-          ) : null}
           <Button
             label={t('reviewForm')}
             variant="primary"
@@ -222,18 +193,6 @@ export function RequirementItem({
             accessibilityHint={dependencyHint}
             style={styles.actionButtonNested}
           />
-          {__DEV__ && onDevConfirmFormPress ? (
-            <Button
-              label={t('devConfirmForm')}
-              variant="outline"
-              disabled={!actionsEnabled}
-              onPress={onDevConfirmFormPress}
-              accessibilityLabel={t('devConfirmFormAccessibilityLabel', {
-                label: requirement.label,
-              })}
-              style={styles.actionButtonNested}
-            />
-          ) : null}
         </View>
       ) : null}
       {hasAppointmentAction ? (
@@ -308,9 +267,6 @@ const stylesheet = createStyleSheet(theme => ({
     gap: theme.spacing.sm,
     marginLeft: theme.sizes.icon.lg + theme.spacing.sm,
     marginTop: theme.spacing.sm,
-  },
-  actionHint: {
-    lineHeight: 18,
   },
   completedActions: {
     alignSelf: 'stretch',
