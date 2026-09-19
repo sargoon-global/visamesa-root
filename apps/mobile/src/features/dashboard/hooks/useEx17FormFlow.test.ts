@@ -7,7 +7,7 @@ import {RequirementWithProgress} from '@/features/dashboard/components/Requireme
 import {useEx17FormFlow} from '@/features/dashboard/hooks/useEx17FormFlow';
 import {EX17_FORM_ID} from '@/features/pdfGeneration/forms/ex17/ex17Constants';
 import {createUserProgress} from '@/test/fixtures/userProgress';
-import {flushAsyncEffects, renderHook, rerenderRenderedHook, unmountRenderedHook} from '@/test/renderHook';
+import {renderHook, rerenderRenderedHook, unmountRenderedHook} from '@/test/renderHook';
 
 const mockShowToast = jest.fn();
 const mockShowAlert = jest.fn();
