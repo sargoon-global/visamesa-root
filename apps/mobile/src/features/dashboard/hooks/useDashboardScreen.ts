@@ -18,7 +18,10 @@ import {RequirementWithProgress} from '@/features/dashboard/components/Requireme
 import {formatAppointmentDetailsMessage} from '@/features/dashboard/data/dashboardContent';
 import {syncEmpadronamientoStepFromProfile} from '@/features/dashboard/services/empadronamientoProgressService';
 import {
+  downloadEx17PdfToDevice,
+  GeneratedPdfFile,
   openGeneratedPdf,
+  PdfDownloadDismissedError,
   saveEx17Pdf,
   shareGeneratedPdf,
 } from '@/features/pdfGeneration/forms/ex17/ex17PdfService';
@@ -92,6 +95,8 @@ export type UseDashboardScreenResult = {
   onViewAppointmentPress: (label: string) => void;
   onClearBookingAssistantPress: (label: string) => void;
   onFormPress: (formId: string, label: string) => void;
+  onApproveAndDownloadForm: (formId: string, requirementKey: string) => void;
+  onFormView: (formId: string, requirementKey: string) => void;
   onClosePrerequisitesDialog: () => void;
   onGoToProfilePress: () => void;
   onSupportPress: () => void;
@@ -179,6 +184,13 @@ export function useDashboardScreen(
   const [selectedStepId, setSelectedStepId] = useState<number | null>(null);
   const [hasSyncedEmpadronamiento, setHasSyncedEmpadronamiento] =
     useState(false);
+  const [pendingEx17Review, setPendingEx17Review] = useState<{
+    requirementKey: string;
+    formId: string;
+    file: GeneratedPdfFile;
+  } | null>(null);
+  const [isEx17FormLoading, setIsEx17FormLoading] = useState(false);
+  const [isEx17DownloadLoading, setIsEx17DownloadLoading] = useState(false);
 
   const isAuthenticated = Boolean(user);
 
@@ -279,6 +291,10 @@ export function useDashboardScreen(
 
   const currentStepId = selectedStepId ?? activeStepId;
 
+  useEffect(() => {
+    setPendingEx17Review(null);
+  }, [currentStepId]);
+
   const currentStep = useMemo(
     () => steps.find(step => step.id === currentStepId),
     [currentStepId, steps],
@@ -299,7 +315,7 @@ export function useDashboardScreen(
       return [];
     }
 
-    return buildRequirementsWithProgress(
+    const requirements = buildRequirementsWithProgress(
       displayProgress,
       currentStep,
       progressContext,
@@ -307,10 +323,30 @@ export function useDashboardScreen(
       tDashboard,
       canStartProcess,
     );
+
+    return requirements.map(requirement => {
+      if (requirement.formId !== 'ex-17') {
+        return requirement;
+      }
+
+      const isPendingEx17 =
+        pendingEx17Review?.requirementKey === requirement.key;
+
+      return {
+        ...requirement,
+        showApproveDownload: !requirement.progress.completed,
+        canApproveDownload: isPendingEx17,
+        formReviewLoading: isEx17FormLoading,
+        formDownloadLoading: isEx17DownloadLoading,
+      };
+    });
   }, [
     canStartProcess,
     currentStep,
     displayProgress,
+    isEx17DownloadLoading,
+    isEx17FormLoading,
+    pendingEx17Review,
     progressContext,
     steps,
     tDashboard,
@@ -631,15 +667,16 @@ export function useDashboardScreen(
     );
   };
 
-  const onFormPress = async (formId: string, requirementKey: string) => {
-    if (!currentStep || !progress || !canInteractWithRequirements) {
+  const previewEx17Form = async (
+    requirementKey: string,
+    formId: string,
+    options: {trackReview: boolean},
+  ) => {
+    if (isEx17FormLoading || isEx17DownloadLoading) {
       return;
     }
 
-    if (formId !== 'ex-17') {
-      confirmFormRequirement(formId, requirementKey);
-      return;
-    }
+    setIsEx17FormLoading(true);
 
     try {
       const profileData = await getProfile();
@@ -651,7 +688,19 @@ export function useDashboardScreen(
       } catch {
         await shareGeneratedPdf(generatedFile);
       }
-      confirmFormRequirement(formId, requirementKey);
+
+      if (options.trackReview) {
+        setPendingEx17Review({
+          requirementKey,
+          formId,
+          file: generatedFile,
+        });
+        showAlert(
+          tDashboard('ex17ReviewNextStepsTitle'),
+          tDashboard('ex17ReviewNextStepsMessage'),
+          [{text: tCommon('actions.gotIt')}],
+        );
+      }
     } catch (formError) {
       showAlert(
         tCommon('errors.title'),
@@ -659,6 +708,99 @@ export function useDashboardScreen(
           ? formError.message
           : tCommon('errors.generic'),
       );
+    } finally {
+      setIsEx17FormLoading(false);
+    }
+  };
+
+  const onFormPress = async (formId: string, requirementKey: string) => {
+    if (!currentStep || !progress || !canInteractWithRequirements) {
+      return;
+    }
+
+    if (formId !== 'ex-17') {
+      confirmFormRequirement(formId, requirementKey);
+      return;
+    }
+
+    await previewEx17Form(requirementKey, formId, {trackReview: true});
+  };
+
+  const onFormView = async (formId: string, requirementKey: string) => {
+    if (formId !== 'ex-17' || !currentStep || !progress) {
+      return;
+    }
+
+    const requirementWithProgress = currentStepRequirements.find(
+      requirement => requirement.key === requirementKey,
+    );
+
+    if (!requirementWithProgress?.progress.completed) {
+      showToast(tDashboard('documentViewDisabledHint'));
+      return;
+    }
+
+    await previewEx17Form(requirementKey, formId, {trackReview: false});
+  };
+
+  const onApproveAndDownloadForm = async (
+    formId: string,
+    requirementKey: string,
+  ) => {
+    if (
+      !currentStep ||
+      !progress ||
+      !canInteractWithRequirements ||
+      !pendingEx17Review
+    ) {
+      return;
+    }
+
+    if (
+      pendingEx17Review.requirementKey !== requirementKey ||
+      pendingEx17Review.formId !== formId
+    ) {
+      return;
+    }
+
+    const toggleState = getRequirementToggleState(
+      progress,
+      currentStep,
+      requirementKey,
+      progressContext,
+      steps,
+    );
+
+    if (!toggleState.canUseActions) {
+      showToast(tDashboard('requirementDependencyHint'));
+      return;
+    }
+
+    if (isEx17DownloadLoading || isEx17FormLoading) {
+      return;
+    }
+
+    setIsEx17DownloadLoading(true);
+
+    try {
+      await downloadEx17PdfToDevice(pendingEx17Review.file);
+      await completeFormRequirement(currentStep.id, requirementKey, formId);
+      setPendingEx17Review(null);
+      showToast(tDashboard('formDownloaded'));
+    } catch (downloadError) {
+      if (downloadError instanceof PdfDownloadDismissedError) {
+        showToast(tDashboard('formDownloadCancelled'));
+        return;
+      }
+
+      showAlert(
+        tCommon('errors.title'),
+        downloadError instanceof Error
+          ? downloadError.message
+          : tCommon('errors.generic'),
+      );
+    } finally {
+      setIsEx17DownloadLoading(false);
     }
   };
 
@@ -693,6 +835,8 @@ export function useDashboardScreen(
     onViewAppointmentPress,
     onClearBookingAssistantPress,
     onFormPress,
+    onApproveAndDownloadForm,
+    onFormView,
     onClosePrerequisitesDialog,
     onGoToProfilePress,
     onSupportPress,

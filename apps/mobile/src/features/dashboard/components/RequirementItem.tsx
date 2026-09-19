@@ -1,6 +1,6 @@
 import React from 'react';
 import {useTranslation} from 'react-i18next';
-import {Pressable, Share, View} from 'react-native';
+import {ActivityIndicator, Pressable, Share, View} from 'react-native';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 import {Button} from '@/components/ui/Button';
@@ -8,7 +8,10 @@ import {Checkbox} from '@/components/ui/Checkbox';
 import {Icon} from '@/components/ui/Icon';
 import {Text} from '@/components/ui/Text';
 import {RequirementProgress} from '@/features/dashboard/types/UserProgress';
-import {getRequirementShareMessage} from '@/features/dashboard/utils/requirementGroups';
+import {
+  getRequirementShareMessage,
+  isGeneratedFormView,
+} from '@/features/dashboard/utils/requirementGroups';
 import {
   ASSISTED_BOOKING_REQUIREMENT_TYPE,
   Requirement,
@@ -29,6 +32,12 @@ type RequirementItemProps = {
   onViewAppointmentPress?: () => void;
   onClearBookingAssistantPress?: () => void;
   onFormPress?: () => void;
+  showApproveDownload?: boolean;
+  canApproveDownload?: boolean;
+  formReviewLoading?: boolean;
+  formDownloadLoading?: boolean;
+  onApproveAndDownload?: () => void;
+  onFormView?: () => void;
 };
 
 export function RequirementItem({
@@ -46,6 +55,12 @@ export function RequirementItem({
   onViewAppointmentPress,
   onClearBookingAssistantPress,
   onFormPress,
+  showApproveDownload = false,
+  canApproveDownload = false,
+  formReviewLoading = false,
+  formDownloadLoading = false,
+  onApproveAndDownload,
+  onFormView,
 }: RequirementItemProps) {
   const {styles, theme} = useStyles(stylesheet);
   const {t} = useTranslation('dashboard');
@@ -87,6 +102,9 @@ export function RequirementItem({
   const hasAppointmentAction =
     requirement.type === ASSISTED_BOOKING_REQUIREMENT_TYPE && completed;
 
+  const showGeneratedFormView =
+    isGeneratedFormView(requirement) && completed;
+
   const handleShareDocument = async () => {
     const {message, url} = getRequirementShareMessage(requirement);
     await Share.share({message, url});
@@ -102,7 +120,40 @@ export function RequirementItem({
     />
   );
 
-  const documentActions = showDocumentActions ? (
+  const documentActions = showGeneratedFormView ? (
+    <View style={styles.documentActions}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{
+          disabled: formReviewLoading,
+          busy: formReviewLoading,
+        }}
+        accessibilityLabel={t('documentViewAccessibilityLabel', {
+          label: requirement.label,
+        })}
+        disabled={formReviewLoading}
+        onPress={onFormView}
+        android_ripple={
+          !formReviewLoading
+            ? {
+                color: theme.colors.primaryContainer,
+                borderless: true,
+                radius: theme.sizes.touchTargetMin / 2,
+              }
+            : undefined
+        }
+        style={({pressed}) => [
+          styles.iconButton,
+          !formReviewLoading && pressed && styles.iconButtonPressed,
+        ]}>
+        {formReviewLoading ? (
+          <ActivityIndicator size="small" color={theme.colors.primary} />
+        ) : (
+          <Icon name="visibility" size="md" color="primary" />
+        )}
+      </Pressable>
+    </View>
+  ) : showDocumentActions ? (
     <View style={styles.documentActions}>
       <Pressable
         accessibilityRole="button"
@@ -183,16 +234,72 @@ export function RequirementItem({
       {showFormAction ? (
         <View style={styles.actionGroup}>
           <Button
-            label={t('reviewForm')}
             variant="primary"
-            disabled={!actionsEnabled}
+            disabled={
+              !actionsEnabled || formReviewLoading || formDownloadLoading
+            }
             onPress={onFormPress}
             accessibilityLabel={t('reviewAccessibilityLabel', {
               label: requirement.label,
             })}
             accessibilityHint={dependencyHint}
-            style={styles.actionButtonNested}
-          />
+            accessibilityState={{busy: formReviewLoading}}
+            style={styles.actionButtonNested}>
+            {formReviewLoading ? (
+              <View style={styles.buttonContent}>
+                <ActivityIndicator
+                  size="small"
+                  color={theme.colors.onPrimary}
+                />
+                <Text variant="labelLarge" color="onPrimary">
+                  {t('reviewForm')}
+                </Text>
+              </View>
+            ) : (
+              <Text variant="labelLarge" color="onPrimary">
+                {t('reviewForm')}
+              </Text>
+            )}
+          </Button>
+          {showApproveDownload ? (
+            <Button
+              variant="tonal"
+              disabled={
+                !actionsEnabled ||
+                !canApproveDownload ||
+                formReviewLoading ||
+                formDownloadLoading
+              }
+              onPress={onApproveAndDownload}
+              accessibilityLabel={t('approveDownloadAccessibilityLabel', {
+                label: requirement.label,
+              })}
+              accessibilityHint={
+                canApproveDownload
+                  ? dependencyHint
+                  : t('approveDownloadDisabledHint')
+              }
+              accessibilityState={{busy: formDownloadLoading}}
+              style={styles.actionButtonNested}>
+              <View style={styles.buttonContent}>
+                {formDownloadLoading ? (
+                  <ActivityIndicator
+                    size="small"
+                    color={theme.colors.onSecondaryContainer}
+                  />
+                ) : (
+                  <Icon
+                    name="download"
+                    size="sm"
+                    color="onSecondaryContainer"
+                  />
+                )}
+                <Text variant="labelLarge" color="onSecondaryContainer">
+                  {t('approveAndDownload')}
+                </Text>
+              </View>
+            </Button>
+          ) : null}
         </View>
       ) : null}
       {hasAppointmentAction ? (
@@ -247,10 +354,17 @@ const stylesheet = createStyleSheet(theme => ({
     gap: theme.spacing.xs,
   },
   iconButton: {
-    width: theme.spacing.xxxl,
-    height: theme.spacing.xxxl,
+    width: theme.sizes.touchTargetMin,
+    height: theme.sizes.touchTargetMin,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: theme.radii.full,
+  },
+  iconButtonDisabled: {
+    opacity: 0.38,
+  },
+  iconButtonPressed: {
+    backgroundColor: theme.colors.primaryContainer,
   },
   actionButton: {
     alignSelf: 'flex-start',
@@ -267,6 +381,11 @@ const stylesheet = createStyleSheet(theme => ({
     gap: theme.spacing.sm,
     marginLeft: theme.sizes.icon.lg + theme.spacing.sm,
     marginTop: theme.spacing.sm,
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.xs,
   },
   completedActions: {
     alignSelf: 'stretch',

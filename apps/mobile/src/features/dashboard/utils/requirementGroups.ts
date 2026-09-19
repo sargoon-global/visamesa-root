@@ -40,6 +40,10 @@ export const FORM_SHARE_URLS: Record<string, string> = {
   'modelo-790-012': 'https://sede.policia.gob.es/Tasa790_012/',
 }
 
+export function isGeneratedFormView(requirement: Requirement): boolean {
+  return requirement.formId === 'ex-17' && Boolean(requirement.shareableForm)
+}
+
 export function getRequirementShareMessage(
   requirement: Requirement,
 ): {message: string; url?: string} {

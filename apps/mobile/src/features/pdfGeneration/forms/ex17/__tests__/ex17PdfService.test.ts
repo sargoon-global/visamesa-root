@@ -1,6 +1,11 @@
 import {PDFDocument} from 'pdf-lib';
+import {Share} from 'react-native';
 
-import {generateEx17PdfBytes} from '@/features/pdfGeneration/forms/ex17/ex17PdfService';
+import {
+  downloadEx17PdfToDevice,
+  generateEx17PdfBytes,
+  PdfDownloadDismissedError,
+} from '@/features/pdfGeneration/forms/ex17/ex17PdfService';
 import {mapProfileToEx17Data} from '@/features/pdfGeneration/forms/ex17/mapProfileToEx17Data';
 
 import type {ProfileData} from '@/features/profile/types/ProfileData';
@@ -37,5 +42,36 @@ describe('ex17PdfService', () => {
       '1234567',
     );
     expect(form.getTextField('applicant.nie.checkDigit').getText()).toBe('L');
+  });
+});
+
+describe('downloadEx17PdfToDevice', () => {
+  const file = {
+    fileName: 'ex17-tie-test.pdf',
+    path: '/tmp/ex17-tie-test.pdf',
+    uri: 'file:///tmp/ex17-tie-test.pdf',
+  };
+
+  beforeEach(() => {
+    jest.spyOn(Share, 'share').mockReset();
+  });
+
+  it('shares the generated PDF when the user completes the download flow', async () => {
+    jest.spyOn(Share, 'share').mockResolvedValue({action: Share.sharedAction});
+
+    await downloadEx17PdfToDevice(file);
+
+    expect(Share.share).toHaveBeenCalledWith({
+      title: file.fileName,
+      url: file.uri,
+    });
+  });
+
+  it('throws when the user dismisses the download sheet', async () => {
+    jest.spyOn(Share, 'share').mockResolvedValue({action: Share.dismissedAction});
+
+    await expect(downloadEx17PdfToDevice(file)).rejects.toBeInstanceOf(
+      PdfDownloadDismissedError,
+    );
   });
 });

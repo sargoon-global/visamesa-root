@@ -31,6 +31,13 @@ export type GeneratedPdfFile = {
   uri: string;
 };
 
+export class PdfDownloadDismissedError extends Error {
+  constructor() {
+    super('PDF download dismissed');
+    this.name = 'PdfDownloadDismissedError';
+  }
+}
+
 function getPathValue(data: Ex17PdfData, source?: string | null): unknown {
   if (!source) {
     return undefined;
@@ -210,7 +217,17 @@ export async function openGeneratedPdf(file: GeneratedPdfFile) {
 export async function shareGeneratedPdf(file: GeneratedPdfFile) {
   await Share.share({
     title: file.fileName,
-    message: file.fileName,
     url: file.uri,
   });
+}
+
+export async function downloadEx17PdfToDevice(file: GeneratedPdfFile) {
+  const result = await Share.share({
+    title: file.fileName,
+    url: file.uri,
+  });
+
+  if (result.action === Share.dismissedAction) {
+    throw new PdfDownloadDismissedError();
+  }
 }
