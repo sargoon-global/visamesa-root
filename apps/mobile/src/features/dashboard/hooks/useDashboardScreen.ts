@@ -162,7 +162,6 @@ export function useDashboardScreen(
     toggleSelfDeclaredRequirement,
     clearBookingAssistantRequirement,
     completeFormRequirement,
-    completeBookingAssistantRequirement,
   } = useUserProgress();
   const {
     canStartProcess,
