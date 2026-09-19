@@ -128,13 +128,8 @@ export function useEx17FormFlow({
             [{text: tCommon('actions.gotIt')}],
           );
         }
-      } catch (formError) {
-        showAlert(
-          tCommon('errors.title'),
-          formError instanceof Error
-            ? formError.message
-            : tCommon('errors.generic'),
-        );
+      } catch {
+        showAlert(tCommon('errors.title'), tCommon('errors.generic'));
       } finally {
         setIsEx17FormLoading(false);
       }
@@ -236,12 +231,7 @@ export function useEx17FormFlow({
           return;
         }
 
-        showAlert(
-          tCommon('errors.title'),
-          downloadError instanceof Error
-            ? downloadError.message
-            : tCommon('errors.generic'),
-        );
+        showAlert(tCommon('errors.title'), tCommon('errors.generic'));
       } finally {
         setIsEx17DownloadLoading(false);
       }

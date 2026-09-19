@@ -32,6 +32,15 @@ describe('bookingAssistantProfile mappers', () => {
     })
   })
 
+  it('maps object-shaped phone numbers for empadronamiento', () => {
+    expect(
+      mapPersonalToEmpadronamientoBookingAssistantProfile({
+        ...personal,
+        phoneNumber: {countryCode: '34', number: '600123456'},
+      })?.personalInfo.phone,
+    ).toBe('+34 600123456')
+  })
+
   it('uses fallback email for empadronamiento when profile email is missing', () => {
     const withoutEmail = {
       firstName: personal.firstName,

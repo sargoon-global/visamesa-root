@@ -38,7 +38,7 @@ export function findRequirementInSteps(
 }
 
 export const FORM_SHARE_URLS: Record<string, string> = {
-  'ex-17': 'https://sede.administracionespublicas.gob.es/pagina/index/directorio/ex17',
+  [EX17_FORM_ID]: 'https://sede.administracionespublicas.gob.es/pagina/index/directorio/ex17',
   'modelo-790-012': 'https://sede.policia.gob.es/Tasa790_012/',
 }
 

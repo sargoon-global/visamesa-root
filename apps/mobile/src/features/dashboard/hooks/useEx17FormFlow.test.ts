@@ -254,4 +254,59 @@ describe('useEx17FormFlow', () => {
       EX17_FORM_ID,
     );
   });
+
+  it('shows a generic error when PDF preview fails', async () => {
+    mockGetProfile.mockRejectedValueOnce(new Error('Internal crypto failure'));
+    const tCommon = i18n.getFixedT('en', 'common') as TFunction<'common'>;
+    const getState = renderHook(() => useEx17FormFlow(hookOptions));
+
+    await act(async () => {
+      await getState().onFormPress(EX17_FORM_ID, 'ex-17-form');
+    });
+
+    expect(mockShowAlert).toHaveBeenCalledWith(
+      tCommon('errors.title'),
+      tCommon('errors.generic'),
+    );
+  });
+
+  it('shows a generic error when approve and download fails', async () => {
+    mockDownloadEx17PdfToDevice.mockRejectedValueOnce(new Error('Share failed'));
+    const tCommon = i18n.getFixedT('en', 'common') as TFunction<'common'>;
+    const getState = renderHook(() => useEx17FormFlow(hookOptions));
+
+    await act(async () => {
+      await getState().onFormPress(EX17_FORM_ID, 'ex-17-form');
+    });
+    await act(async () => {
+      await getState().onApproveAndDownloadForm(EX17_FORM_ID, 'ex-17-form');
+    });
+
+    expect(mockShowAlert).toHaveBeenCalledWith(
+      tCommon('errors.title'),
+      tCommon('errors.generic'),
+    );
+    expect(mockCompleteFormRequirement).not.toHaveBeenCalled();
+  });
+
+  it('shows a cancelled toast when download is dismissed', async () => {
+    const {PdfDownloadDismissedError} = jest.requireMock(
+      '@/features/pdfGeneration/forms/ex17/ex17PdfService',
+    ) as {PdfDownloadDismissedError: new () => Error};
+
+    mockDownloadEx17PdfToDevice.mockRejectedValueOnce(new PdfDownloadDismissedError());
+    const getState = renderHook(() => useEx17FormFlow(hookOptions));
+
+    await act(async () => {
+      await getState().onFormPress(EX17_FORM_ID, 'ex-17-form');
+    });
+    await act(async () => {
+      await getState().onApproveAndDownloadForm(EX17_FORM_ID, 'ex-17-form');
+    });
+
+    expect(mockCompleteFormRequirement).not.toHaveBeenCalled();
+    expect(mockShowToast).toHaveBeenCalledWith(
+      i18n.t('formDownloadCancelled', {ns: 'dashboard'}),
+    );
+  });
 });

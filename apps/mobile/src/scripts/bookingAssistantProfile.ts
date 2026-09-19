@@ -1,5 +1,7 @@
 import type { BookingAssistantId } from '@visamesa/content/tieSteps/detail'
 
+import { phoneToString } from '@/features/forms/utils/phoneUtils'
+
 import {
   CITA_PREVIA_BOOKING_DEFAULTS,
   emptyCitaPreviaBookingAssistantProfile,
@@ -15,6 +17,22 @@ function readString(value: unknown): string {
   return typeof value === 'string' ? value.trim() : ''
 }
 
+function readPhone(value: unknown): string {
+  if (typeof value === 'string') {
+    return value.trim()
+  }
+
+  if (value && typeof value === 'object') {
+    const phone = value as { countryCode?: string; number?: string }
+    if (phone.number) {
+      const countryCode = phone.countryCode?.replace(/^\+/, '') ?? ''
+      return phoneToString({ countryCode, number: phone.number })
+    }
+  }
+
+  return ''
+}
+
 export function mapPersonalToEmpadronamientoBookingAssistantProfile(
   personal: Record<string, unknown>,
   fallbackEmail?: string | null,
@@ -25,7 +43,7 @@ export function mapPersonalToEmpadronamientoBookingAssistantProfile(
   const passportNumber = readString(personal.passportNumber)
   const identifier = nieNumber || passportNumber
   const identifierType = nieNumber ? 'NIE' : 'PASSAPORT'
-  const phone = readString(personal.phoneNumber)
+  const phone = readPhone(personal.phoneNumber)
   const email = readString(personal.email) || readString(fallbackEmail)
 
   if (!name || !surname || !identifier || !phone || !email) {
