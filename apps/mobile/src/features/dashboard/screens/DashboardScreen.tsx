@@ -54,8 +54,6 @@ const DashboardScreen = ({navigation}: DashboardScreenProps) => {
     onBookingAssistantPress,
     onViewAppointmentPress,
     onClearBookingAssistantPress,
-    onDevMarkBookingAssistantBookedPress,
-    onDevConfirmFormPress,
     onFormPress,
     onClosePrerequisitesDialog,
     onGoToProfilePress,
@@ -122,8 +120,6 @@ const DashboardScreen = ({navigation}: DashboardScreenProps) => {
             onBookingAssistantPress={onBookingAssistantPress}
             onViewAppointmentPress={onViewAppointmentPress}
             onClearBookingAssistantPress={onClearBookingAssistantPress}
-            onDevMarkBookingAssistantBookedPress={onDevMarkBookingAssistantBookedPress}
-            onDevConfirmFormPress={onDevConfirmFormPress}
             onFormPress={onFormPress}
             onSupportPress={onSupportPress}
           />

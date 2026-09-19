@@ -1,6 +1,6 @@
 import React from 'react';
-import {View} from 'react-native';
 import {useTranslation} from 'react-i18next';
+import {View} from 'react-native';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 import {Button} from '@/components/ui/Button';
@@ -29,7 +29,10 @@ export function StepActionFooter({
   if (completed) {
     return (
       <View style={styles.container}>
-        <Text variant="labelLarge" color="secondary" style={styles.completedLabel}>
+        <Text
+          variant="labelLarge"
+          color="primary"
+          style={styles.completedLabel}>
           {t('stepCompleted')}
         </Text>
       </View>
