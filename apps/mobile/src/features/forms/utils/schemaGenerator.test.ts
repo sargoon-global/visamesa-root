@@ -88,6 +88,60 @@ describe('generateZodSchema', () => {
     expect(result.success).toBe(true);
   });
 
+  it('rejects invalid email format', () => {
+    const validationSchema = generateZodSchema(personalSchema, translate);
+
+    const result = validationSchema.safeParse({
+      ...basePersonalData,
+      email: 'not-an-email',
+      hasEmpadronamiento: 'no',
+      empadronamientoIssuedAt: '',
+    });
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues.some(issue => issue.path[0] === 'email')).toBe(
+        true,
+      );
+    }
+  });
+
+  it('rejects invalid passport format', () => {
+    const validationSchema = generateZodSchema(personalSchema, translate);
+
+    const result = validationSchema.safeParse({
+      ...basePersonalData,
+      passportNumber: 'AB',
+      hasEmpadronamiento: 'no',
+      empadronamientoIssuedAt: '',
+    });
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(
+        result.error.issues.some(issue => issue.path[0] === 'passportNumber'),
+      ).toBe(true);
+    }
+  });
+
+  it('rejects invalid NIE format', () => {
+    const validationSchema = generateZodSchema(personalSchema, translate);
+
+    const result = validationSchema.safeParse({
+      ...basePersonalData,
+      nieNumber: 'INVALID',
+      hasEmpadronamiento: 'no',
+      empadronamientoIssuedAt: '',
+    });
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(
+        result.error.issues.some(issue => issue.path[0] === 'nieNumber'),
+      ).toBe(true);
+    }
+  });
+
   it('requires both phone code and number', () => {
     const validationSchema = generateZodSchema(personalSchema, translate);
 

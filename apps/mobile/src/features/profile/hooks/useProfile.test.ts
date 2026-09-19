@@ -91,6 +91,39 @@ describe('useProfile', () => {
     expect(getHookState().personalInitialValues.email).toBe('jane@example.com');
   });
 
+  it('treats auth email as complete when profile email is empty', async () => {
+    (getProfile as jest.Mock).mockResolvedValue({
+      personal: {
+        firstName: 'Jane',
+        lastName: 'Doe',
+        gender: 'female',
+        dateOfBirth: '1990-01-01',
+        cityOfBirth: 'Madrid',
+        countryOfBirth: 'Spain',
+        nationality: 'Spain',
+        maritalStatus: 'single',
+        fatherName: 'John Doe',
+        motherName: 'Mary Doe',
+        nieNumber: 'X1234567A',
+        passportNumber: 'AB123456',
+        phoneNumber: {countryCode: '+34', number: '600000000'},
+        address: 'Carrer Example',
+        addressNumber: '1',
+        city: 'Barcelona',
+        province: 'Barcelona',
+        postalCode: '08001',
+        hasEmpadronamiento: 'no',
+      },
+    });
+
+    const getHookState = await renderHookAsync(
+      () => useProfile(true, 'jane@example.com'),
+      state => !state.isLoading,
+    );
+
+    expect(getHookState().isProfileComplete).toBe(true);
+  });
+
   it('keeps stored profile email over the authenticated user email', async () => {
     (getProfile as jest.Mock).mockResolvedValue({
       personal: {

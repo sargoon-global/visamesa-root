@@ -12,6 +12,8 @@ import {
   PDFTextField,
 } from 'pdf-lib';
 
+import { ensureEx17TextFieldWidgetWidth } from './ex17-pdf-text-field-utils.mjs';
+
 const [
   ,
   ,
@@ -43,23 +45,6 @@ async function readBytes(source) {
   }
 
   return Buffer.from(await response.arrayBuffer());
-}
-
-const MIN_TEXT_FIELD_WIDTHS = {
-  'signature.day': 24,
-  'applicant.birthDate.day': 22,
-};
-
-function ensureTextFieldWidgetWidth(field, semanticId) {
-  const minWidth = MIN_TEXT_FIELD_WIDTHS[semanticId];
-  if (!minWidth) return;
-
-  for (const widget of field.acroField.getWidgets()) {
-    const rect = widget.getRectangle();
-    if (rect.width < minWidth) {
-      widget.setRectangle({ ...rect, width: minWidth });
-    }
-  }
 }
 
 function clearField(field) {
@@ -106,7 +91,7 @@ for (const schemaField of schema.fields) {
   const field = form.getField(schemaField.pdfFieldName);
   clearField(field);
   if (field instanceof PDFTextField) {
-    ensureTextFieldWidgetWidth(field, schemaField.semanticId);
+    ensureEx17TextFieldWidgetWidth(field, schemaField.semanticId);
   }
   field.acroField.setPartialName(schemaField.semanticId);
 

@@ -105,7 +105,10 @@ describe('RequirementItem', () => {
           formId: 'ex-17',
           shareableForm: true,
         }}
-        progress={{completed: true, source: {type: 'form', formId: 'ex-17'}}}
+        progress={{
+          completed: true,
+          source: {type: 'form', formId: 'ex-17', confirmedAt: '2026-01-01'},
+        }}
         interactive
         onFormView={jest.fn()}
       />,
@@ -154,7 +157,10 @@ describe('RequirementItem', () => {
           formId: 'ex-17',
           shareableForm: true,
         }}
-        progress={{completed: true, source: {type: 'form', formId: 'ex-17'}}}
+        progress={{
+          completed: true,
+          source: {type: 'form', formId: 'ex-17', confirmedAt: '2026-01-01'},
+        }}
         interactive
         formReviewLoading
         onFormView={jest.fn()}

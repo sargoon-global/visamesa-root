@@ -682,7 +682,11 @@ describe('useDashboardScreen', () => {
             requirements: {
               'ex-17-form': {
                 completed: true,
-                source: {type: 'form', formId: 'ex-17'},
+                source: {
+                  type: 'form',
+                  formId: 'ex-17',
+                  confirmedAt: '2026-01-01',
+                },
               },
             },
           },
@@ -775,6 +779,7 @@ describe('useDashboardScreen', () => {
     });
     await flushAsyncEffects();
 
+    expect(mockSaveEx17Pdf).toHaveBeenCalledTimes(2);
     expect(mockDownloadEx17PdfToDevice).toHaveBeenCalled();
     expect(completeFormRequirement).toHaveBeenCalledWith(
       2,
@@ -782,6 +787,75 @@ describe('useDashboardScreen', () => {
       'ex-17',
     );
     expect(mockShowToast).toHaveBeenCalledWith('Form saved to your device');
+  });
+
+  it('shows a cancelled toast when EX-17 download is dismissed', async () => {
+    const {PdfDownloadDismissedError} = jest.requireMock(
+      '@/features/pdfGeneration/forms/ex17/ex17PdfService',
+    ) as {PdfDownloadDismissedError: new () => Error};
+
+    mockDownloadEx17PdfToDevice.mockRejectedValue(
+      new PdfDownloadDismissedError(),
+    );
+
+    const translateTieSteps = createTieStepsTranslator(i18n);
+    const realSteps = buildTieSteps(translateTieSteps);
+
+    useTieSteps.mockReturnValue({
+      steps: realSteps,
+      isLoading: false,
+      error: null,
+    });
+
+    useUserProgress.mockReturnValue({
+      progress: createUserProgress({
+        currentStepId: 2,
+        steps: [
+          {
+            stepId: 1,
+            status: 'completed',
+            requirements: {},
+          },
+          {
+            stepId: 2,
+            status: 'in_progress',
+            requirements: {
+              'ex-17-form': {completed: false},
+            },
+          },
+        ],
+      }),
+      isLoading: false,
+      error: null,
+      completeStep,
+      toggleSelfDeclaredRequirement,
+      completeBookingAssistantRequirement,
+      clearBookingAssistantRequirement,
+      completeFormRequirement,
+      refreshProgress: jest.fn(),
+    });
+
+    const navigation = createMockNavigation() as Parameters<
+      typeof useDashboardScreen
+    >[0];
+    const getHookState = await renderDashboardScreen(navigation);
+
+    act(() => {
+      getHookState().onStepPress(2);
+    });
+
+    await act(async () => {
+      await getHookState().onFormPress('ex-17', 'ex-17-form');
+    });
+    await flushAsyncEffects();
+
+    await act(async () => {
+      await getHookState().onApproveAndDownloadForm('ex-17', 'ex-17-form');
+    });
+    await flushAsyncEffects();
+
+    expect(completeFormRequirement).not.toHaveBeenCalled();
+    expect(mockShowToast).toHaveBeenCalledWith('Download cancelled');
   });
 
   it('shows a dependency hint when booking assistant prerequisites are incomplete', async () => {

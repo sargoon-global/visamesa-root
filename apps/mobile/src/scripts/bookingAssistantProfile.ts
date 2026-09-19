@@ -15,27 +15,14 @@ function readString(value: unknown): string {
   return typeof value === 'string' ? value.trim() : ''
 }
 
-function readLegacyDocumentFields(personal: Record<string, unknown>) {
-  const legacyType = readString(personal.documentType)
-  const legacyNumber = readString(personal.documentNumber)
-
-  return {
-    nieNumber:
-      readString(personal.nieNumber) ||
-      (legacyType === 'nie' ? legacyNumber : ''),
-    passportNumber:
-      readString(personal.passportNumber) ||
-      (legacyType === 'passport' ? legacyNumber : ''),
-  }
-}
-
 export function mapPersonalToEmpadronamientoBookingAssistantProfile(
   personal: Record<string, unknown>,
   fallbackEmail?: string | null,
 ): EmpadronamientoBookingAssistantProfile | null {
   const name = readString(personal.firstName)
   const surname = readString(personal.lastName)
-  const {nieNumber, passportNumber} = readLegacyDocumentFields(personal)
+  const nieNumber = readString(personal.nieNumber)
+  const passportNumber = readString(personal.passportNumber)
   const identifier = nieNumber || passportNumber
   const identifierType = nieNumber ? 'NIE' : 'PASSAPORT'
   const phone = readString(personal.phoneNumber)
@@ -64,7 +51,7 @@ export function mapPersonalToCitaPreviaBookingAssistantProfile(
 ): CitaPreviaBookingAssistantProfile | null {
   const firstName = readString(personal.firstName)
   const lastName = readString(personal.lastName)
-  const {nieNumber} = readLegacyDocumentFields(personal)
+  const nieNumber = readString(personal.nieNumber)
 
   if (!firstName || !nieNumber) {
     return null

@@ -1,30 +1,10 @@
+import {
+  completeEx17Personal,
+  completeEx17Profile,
+} from '@/features/pdfGeneration/forms/ex17/__tests__/fixtures/completeEx17Profile';
 import {mapProfileToEx17Data} from '@/features/pdfGeneration/forms/ex17/mapProfileToEx17Data';
 
 import type {ProfileData} from '@/features/profile/types/ProfileData';
-
-const completePersonal = {
-  firstName: 'Juan',
-  lastName: 'Garcia',
-  secondLastName: 'Martinez',
-  gender: 'male',
-  dateOfBirth: '1990-05-15',
-  cityOfBirth: 'Buenos Aires',
-  countryOfBirth: 'Argentina',
-  nationality: 'Argentina',
-  maritalStatus: 'single',
-  fatherName: 'Carlos Garcia',
-  motherName: 'Maria Martinez',
-  nieNumber: 'X1234567L',
-  passportNumber: 'P12345678',
-  phoneNumber: {countryCode: '+34', number: '600123456'},
-  address: 'Calle Mayor',
-  addressNumber: '10',
-  addressFloor: '3B',
-  city: 'Barcelona',
-  province: 'Barcelona',
-  postalCode: '28013',
-  email: 'juan@example.com',
-};
 
 describe('mapProfileToEx17Data', () => {
   beforeEach(() => {
@@ -37,11 +17,7 @@ describe('mapProfileToEx17Data', () => {
   });
 
   it('maps profile personal fields into EX-17 applicant and notification data', () => {
-    const profile: ProfileData = {
-      personal: completePersonal,
-    };
-
-    const data = mapProfileToEx17Data(profile);
+    const data = mapProfileToEx17Data(completeEx17Profile);
 
     expect(data).toMatchObject({
       applicant: {
@@ -65,7 +41,7 @@ describe('mapProfileToEx17Data', () => {
           number: '10',
           floor: '3B',
           city: 'BARCELONA',
-          postalCode: '28013',
+          postalCode: '08001',
           province: 'BARCELONA',
         },
       },
@@ -84,30 +60,26 @@ describe('mapProfileToEx17Data', () => {
     });
   });
 
-  it('maps legacy document fields when nie and passport numbers are missing', () => {
-    const data = mapProfileToEx17Data({
-      personal: {
-        documentType: 'passport',
-        documentNumber: 'LEGACY123',
-      },
-    });
+  it('maps gender values to EX-17 sex codes', () => {
+    expect(
+      mapProfileToEx17Data({personal: {...completeEx17Personal, gender: 'female'}})
+        .applicant.sex,
+    ).toBe('M');
+    expect(
+      mapProfileToEx17Data({personal: {...completeEx17Personal, gender: 'other'}})
+        .applicant.sex,
+    ).toBe('X');
+  });
 
-    expect(data.applicant.passportNumber).toBe('LEGACY123');
-    expect(data.applicant.nie).toEqual({
+  it('leaves NIE parts empty when the NIE format is invalid', () => {
+    const profile: ProfileData = {
+      personal: {...completeEx17Personal, nieNumber: 'INVALID'},
+    };
+
+    expect(mapProfileToEx17Data(profile).applicant.nie).toEqual({
       prefix: '',
       number: '',
       checkDigit: '',
     });
-  });
-
-  it('maps gender values to EX-17 sex codes', () => {
-    expect(
-      mapProfileToEx17Data({personal: {...completePersonal, gender: 'female'}})
-        .applicant.sex,
-    ).toBe('M');
-    expect(
-      mapProfileToEx17Data({personal: {...completePersonal, gender: 'other'}})
-        .applicant.sex,
-    ).toBe('X');
   });
 });

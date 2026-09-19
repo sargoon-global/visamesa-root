@@ -360,9 +360,6 @@ const stylesheet = createStyleSheet(theme => ({
     justifyContent: 'center',
     borderRadius: theme.radii.full,
   },
-  iconButtonDisabled: {
-    opacity: 0.38,
-  },
   iconButtonPressed: {
     backgroundColor: theme.colors.primaryContainer,
   },

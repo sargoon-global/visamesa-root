@@ -20,8 +20,14 @@ describe('localizeFormSchema', () => {
       i18n.getFixedT('en', 'forms') as TFunction<'forms'>,
     );
 
+    const genderField = localized.fields.find(field => field.id === 'gender');
+    const passportField = localized.fields.find(
+      field => field.id === 'passportNumber',
+    );
+
     expect(localized.title).toBe('Personal Information');
     expect(localized.fields[0]?.label).toBe('First Name');
-    expect(localized.fields[5]?.options?.[1]?.label).toBe('Passport');
+    expect(genderField?.options?.[1]?.label).toBe('Female');
+    expect(passportField?.label).toBe('Passport Number');
   });
 });

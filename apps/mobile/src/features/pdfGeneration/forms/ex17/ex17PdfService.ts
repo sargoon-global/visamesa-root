@@ -10,6 +10,7 @@ import {
 } from 'pdf-lib';
 
 import {EX17_TIE_BLANK_SEMANTIC_PDF_BASE64} from '@/features/pdfGeneration/forms/ex17/assets/ex17TieBlankSemanticPdfBase64';
+import {ensureEx17TextFieldWidgetWidth} from '@/features/pdfGeneration/forms/ex17/ensureEx17TextFieldWidgetWidth';
 
 import curatedSchema from './schemas/ex17-tie.curated.schema.json';
 
@@ -109,26 +110,6 @@ function valueAsText(value: unknown) {
   return '';
 }
 
-/** Original EX-17 widgets for day fields are too narrow to show two digits. */
-const MIN_TEXT_FIELD_WIDTHS: Record<string, number> = {
-  'signature.day': 24,
-  'applicant.birthDate.day': 22,
-};
-
-function ensureTextFieldWidgetWidth(field: PDFTextField, semanticId: string) {
-  const minWidth = MIN_TEXT_FIELD_WIDTHS[semanticId];
-  if (!minWidth) {
-    return;
-  }
-
-  for (const widget of field.acroField.getWidgets()) {
-    const rect = widget.getRectangle();
-    if (rect.width < minWidth) {
-      widget.setRectangle({...rect, width: minWidth});
-    }
-  }
-}
-
 function shouldCheckField(
   value: unknown,
   checkedWhen?: string | boolean | null,
@@ -155,7 +136,7 @@ function fillField(
   const value = resolveValue(data, schemaField.source);
 
   if (field instanceof PDFTextField) {
-    ensureTextFieldWidgetWidth(field, schemaField.semanticId);
+    ensureEx17TextFieldWidgetWidth(field, schemaField.semanticId);
     field.setText(valueAsText(value));
     return;
   }
@@ -235,20 +216,27 @@ export async function openGeneratedPdf(file: GeneratedPdfFile) {
   await pdfViewer.openPdf(file.path);
 }
 
-export async function shareGeneratedPdf(file: GeneratedPdfFile) {
-  await Share.share({
-    title: file.fileName,
-    url: file.uri,
-  });
-}
-
-export async function downloadEx17PdfToDevice(file: GeneratedPdfFile) {
+async function sharePdfFile(
+  file: GeneratedPdfFile,
+  options?: {rejectOnDismiss?: boolean},
+) {
   const result = await Share.share({
     title: file.fileName,
     url: file.uri,
   });
 
-  if (result.action === Share.dismissedAction) {
+  if (
+    options?.rejectOnDismiss &&
+    result.action === Share.dismissedAction
+  ) {
     throw new PdfDownloadDismissedError();
   }
+}
+
+export async function shareGeneratedPdf(file: GeneratedPdfFile) {
+  await sharePdfFile(file);
+}
+
+export async function downloadEx17PdfToDevice(file: GeneratedPdfFile) {
+  await sharePdfFile(file, {rejectOnDismiss: true});
 }

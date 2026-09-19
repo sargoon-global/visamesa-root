@@ -119,14 +119,16 @@
       "label": "schemas.profilePersonal.fields.nieNumber.label",
       "type": "text",
       "required": true,
-      "placeholder": "schemas.profilePersonal.fields.nieNumber.placeholder"
+      "placeholder": "schemas.profilePersonal.fields.nieNumber.placeholder",
+      "pattern": "^[XYZxyz]\\d{7}[A-Za-z]$"
     },
     {
       "id": "passportNumber",
       "label": "schemas.profilePersonal.fields.passportNumber.label",
       "type": "text",
       "required": true,
-      "placeholder": "schemas.profilePersonal.fields.passportNumber.placeholder"
+      "placeholder": "schemas.profilePersonal.fields.passportNumber.placeholder",
+      "pattern": "^[A-Za-z0-9]{5,20}$"
     },
     {
       "id": "phoneNumber",
@@ -183,7 +185,8 @@
       "type": "text",
       "required": true,
       "placeholder": "schemas.profilePersonal.fields.email.placeholder",
-      "helperText": "schemas.profilePersonal.fields.email.helperText"
+      "helperText": "schemas.profilePersonal.fields.email.helperText",
+      "pattern": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
     },
     {
       "id": "hasEmpadronamiento",

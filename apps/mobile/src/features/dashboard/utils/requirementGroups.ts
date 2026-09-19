@@ -1,6 +1,8 @@
 import type { Requirement, TieStepDetail } from '@/features/home/types/TieStepDetail'
 import type { RequirementLocation } from '@visamesa/content/tieSteps/detail'
 
+import { EX17_FORM_ID } from '@/features/pdfGeneration/forms/ex17/ex17Constants'
+
 export type RequirementGroup<T extends Requirement = Requirement> = {
   location?: RequirementLocation
   requirements: T[]
@@ -41,7 +43,7 @@ export const FORM_SHARE_URLS: Record<string, string> = {
 }
 
 export function isGeneratedFormView(requirement: Requirement): boolean {
-  return requirement.formId === 'ex-17' && Boolean(requirement.shareableForm)
+  return requirement.formId === EX17_FORM_ID && Boolean(requirement.shareableForm)
 }
 
 export function getRequirementShareMessage(

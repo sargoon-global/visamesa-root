@@ -25,8 +25,8 @@ function phoneToText(value: unknown) {
   return '';
 }
 
-function parseNie(documentNumber: string) {
-  const normalized = documentNumber.replace(/\s+/g, '').toUpperCase();
+function parseNie(nieNumber: string) {
+  const normalized = nieNumber.replace(/\s+/g, '').toUpperCase();
   const match = normalized.match(/^([XYZ])(\d+)([A-Z])$/);
 
   if (!match) {
@@ -53,20 +53,6 @@ function mapGenderToSex(gender: unknown) {
   }
 }
 
-function readLegacyDocumentFields(personal: Record<string, unknown>) {
-  const legacyType = text(personal.documentType);
-  const legacyNumber = text(personal.documentNumber);
-
-  return {
-    nieNumber:
-      text(personal.nieNumber) ||
-      (legacyType === 'nie' ? legacyNumber : ''),
-    passportNumber:
-      text(personal.passportNumber) ||
-      (legacyType === 'passport' ? legacyNumber : ''),
-  };
-}
-
 function todayIsoDate() {
   const now = new Date();
   const year = now.getFullYear();
@@ -78,7 +64,8 @@ function todayIsoDate() {
 
 export function mapProfileToEx17Data(profileData: ProfileData) {
   const personal = profileData.personal ?? {};
-  const {nieNumber, passportNumber} = readLegacyDocumentFields(personal);
+  const nieNumber = text(personal.nieNumber);
+  const passportNumber = text(personal.passportNumber);
   const nie = parseNie(nieNumber);
   const fullName = [
     upper(personal.firstName),

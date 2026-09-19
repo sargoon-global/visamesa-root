@@ -103,11 +103,6 @@ export function useProfile(
     refreshProfile().catch(() => {});
   }, [isEnabled, refreshProfile]);
 
-  const isPersonalInfoComplete = useMemo(
-    () => isProfileComplete(profileData),
-    [profileData],
-  );
-
   const personalInitialValues = useMemo(() => {
     const values = {...(profileData?.personal ?? {})};
 
@@ -126,6 +121,27 @@ export function useProfile(
 
     return values;
   }, [authEmail, profileData?.personal]);
+
+  const profileForCompleteness = useMemo(() => {
+    if (!profileData?.personal && !authEmail) {
+      return profileData;
+    }
+
+    const personal = {...(profileData?.personal ?? {})};
+    const storedEmail =
+      typeof personal.email === 'string' ? personal.email.trim() : '';
+
+    if (!storedEmail && authEmail) {
+      personal.email = authEmail;
+    }
+
+    return {personal};
+  }, [authEmail, profileData]);
+
+  const isPersonalInfoComplete = useMemo(
+    () => isProfileComplete(profileForCompleteness),
+    [profileForCompleteness],
+  );
 
   const submitSection = async (
     section: ProfileSection,

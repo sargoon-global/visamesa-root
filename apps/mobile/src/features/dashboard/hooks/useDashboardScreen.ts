@@ -17,15 +17,8 @@ import {usePricingLink} from '@/hooks/usePricingLink';
 import {RequirementWithProgress} from '@/features/dashboard/components/RequirementsChecklist';
 import {formatAppointmentDetailsMessage} from '@/features/dashboard/data/dashboardContent';
 import {syncEmpadronamientoStepFromProfile} from '@/features/dashboard/services/empadronamientoProgressService';
-import {
-  downloadEx17PdfToDevice,
-  GeneratedPdfFile,
-  openGeneratedPdf,
-  PdfDownloadDismissedError,
-  saveEx17Pdf,
-  shareGeneratedPdf,
-} from '@/features/pdfGeneration/forms/ex17/ex17PdfService';
-import {mapProfileToEx17Data} from '@/features/pdfGeneration/forms/ex17/mapProfileToEx17Data';
+import {EX17_FORM_ID} from '@/features/pdfGeneration/forms/ex17/ex17Constants';
+import {useEx17FormFlow} from '@/features/dashboard/hooks/useEx17FormFlow';
 import {reconcileStepStatuses} from '@/features/dashboard/services/progressReconciliationService';
 import {
   buildInitialProgressFromSteps,
@@ -94,7 +87,7 @@ export type UseDashboardScreenResult = {
   onBookingAssistantPress: (bookingAssistantId: BookingAssistantId, label: string) => void;
   onViewAppointmentPress: (label: string) => void;
   onClearBookingAssistantPress: (label: string) => void;
-  onFormPress: (formId: string, label: string) => void;
+  onFormPress: (formId: string, requirementKey: string) => void;
   onApproveAndDownloadForm: (formId: string, requirementKey: string) => void;
   onFormView: (formId: string, requirementKey: string) => void;
   onClosePrerequisitesDialog: () => void;
@@ -184,13 +177,6 @@ export function useDashboardScreen(
   const [selectedStepId, setSelectedStepId] = useState<number | null>(null);
   const [hasSyncedEmpadronamiento, setHasSyncedEmpadronamiento] =
     useState(false);
-  const [pendingEx17Review, setPendingEx17Review] = useState<{
-    requirementKey: string;
-    formId: string;
-    file: GeneratedPdfFile;
-  } | null>(null);
-  const [isEx17FormLoading, setIsEx17FormLoading] = useState(false);
-  const [isEx17DownloadLoading, setIsEx17DownloadLoading] = useState(false);
 
   const isAuthenticated = Boolean(user);
 
@@ -291,10 +277,6 @@ export function useDashboardScreen(
 
   const currentStepId = selectedStepId ?? activeStepId;
 
-  useEffect(() => {
-    setPendingEx17Review(null);
-  }, [currentStepId]);
-
   const currentStep = useMemo(
     () => steps.find(step => step.id === currentStepId),
     [currentStepId, steps],
@@ -310,43 +292,54 @@ export function useDashboardScreen(
       getStepStatus(displayProgress, currentStepId) === 'completed',
   );
 
+  const canInteractWithRequirements = Boolean(
+    isAuthenticated &&
+      displayProgress &&
+      currentStep &&
+      !isCurrentStepCompleted &&
+      (currentStepId === 1 ||
+        arePreviousStepsCompleted(displayProgress, currentStepId, steps)) &&
+      canStartProcess,
+  );
+
+  const {
+    enrichRequirements,
+    onFormPress: onEx17FormPress,
+    onFormView,
+    onApproveAndDownloadForm,
+  } = useEx17FormFlow({
+    currentStep,
+    currentStepId,
+    progress,
+    canInteractWithRequirements,
+    progressContext,
+    steps,
+    isAuthenticated,
+    tDashboard,
+    tCommon,
+    completeFormRequirement,
+  });
+
   const currentStepRequirements = useMemo(() => {
     if (!displayProgress || !currentStep) {
       return [];
     }
 
-    const requirements = buildRequirementsWithProgress(
-      displayProgress,
-      currentStep,
-      progressContext,
-      steps,
-      tDashboard,
-      canStartProcess,
+    return enrichRequirements(
+      buildRequirementsWithProgress(
+        displayProgress,
+        currentStep,
+        progressContext,
+        steps,
+        tDashboard,
+        canStartProcess,
+      ),
     );
-
-    return requirements.map(requirement => {
-      if (requirement.formId !== 'ex-17') {
-        return requirement;
-      }
-
-      const isPendingEx17 =
-        pendingEx17Review?.requirementKey === requirement.key;
-
-      return {
-        ...requirement,
-        showApproveDownload: !requirement.progress.completed,
-        canApproveDownload: isPendingEx17,
-        formReviewLoading: isEx17FormLoading,
-        formDownloadLoading: isEx17DownloadLoading,
-      };
-    });
   }, [
     canStartProcess,
     currentStep,
     displayProgress,
-    isEx17DownloadLoading,
-    isEx17FormLoading,
-    pendingEx17Review,
+    enrichRequirements,
     progressContext,
     steps,
     tDashboard,
@@ -359,16 +352,6 @@ export function useDashboardScreen(
       !isCurrentStepCompleted &&
       arePreviousStepsCompleted(displayProgress, currentStepId, steps) &&
       areAllRequirementsComplete(displayProgress, currentStep, progressContext) &&
-      canStartProcess,
-  );
-
-  const canInteractWithRequirements = Boolean(
-    isAuthenticated &&
-      displayProgress &&
-      currentStep &&
-      !isCurrentStepCompleted &&
-      (currentStepId === 1 ||
-        arePreviousStepsCompleted(displayProgress, currentStepId, steps)) &&
       canStartProcess,
   );
 
@@ -667,141 +650,17 @@ export function useDashboardScreen(
     );
   };
 
-  const previewEx17Form = async (
-    requirementKey: string,
-    formId: string,
-    options: {trackReview: boolean},
-  ) => {
-    if (isEx17FormLoading || isEx17DownloadLoading) {
-      return;
-    }
-
-    setIsEx17FormLoading(true);
-
-    try {
-      const profileData = await getProfile();
-      const generatedFile = await saveEx17Pdf(
-        mapProfileToEx17Data(profileData),
-      );
-      try {
-        await openGeneratedPdf(generatedFile);
-      } catch {
-        await shareGeneratedPdf(generatedFile);
-      }
-
-      if (options.trackReview) {
-        setPendingEx17Review({
-          requirementKey,
-          formId,
-          file: generatedFile,
-        });
-        showAlert(
-          tDashboard('ex17ReviewNextStepsTitle'),
-          tDashboard('ex17ReviewNextStepsMessage'),
-          [{text: tCommon('actions.gotIt')}],
-        );
-      }
-    } catch (formError) {
-      showAlert(
-        tCommon('errors.title'),
-        formError instanceof Error
-          ? formError.message
-          : tCommon('errors.generic'),
-      );
-    } finally {
-      setIsEx17FormLoading(false);
-    }
-  };
-
   const onFormPress = async (formId: string, requirementKey: string) => {
     if (!currentStep || !progress || !canInteractWithRequirements) {
       return;
     }
 
-    if (formId !== 'ex-17') {
-      confirmFormRequirement(formId, requirementKey);
+    if (formId === EX17_FORM_ID) {
+      await onEx17FormPress(formId, requirementKey);
       return;
     }
 
-    await previewEx17Form(requirementKey, formId, {trackReview: true});
-  };
-
-  const onFormView = async (formId: string, requirementKey: string) => {
-    if (formId !== 'ex-17' || !currentStep || !progress) {
-      return;
-    }
-
-    const requirementWithProgress = currentStepRequirements.find(
-      requirement => requirement.key === requirementKey,
-    );
-
-    if (!requirementWithProgress?.progress.completed) {
-      showToast(tDashboard('documentViewDisabledHint'));
-      return;
-    }
-
-    await previewEx17Form(requirementKey, formId, {trackReview: false});
-  };
-
-  const onApproveAndDownloadForm = async (
-    formId: string,
-    requirementKey: string,
-  ) => {
-    if (
-      !currentStep ||
-      !progress ||
-      !canInteractWithRequirements ||
-      !pendingEx17Review
-    ) {
-      return;
-    }
-
-    if (
-      pendingEx17Review.requirementKey !== requirementKey ||
-      pendingEx17Review.formId !== formId
-    ) {
-      return;
-    }
-
-    const toggleState = getRequirementToggleState(
-      progress,
-      currentStep,
-      requirementKey,
-      progressContext,
-      steps,
-    );
-
-    if (!toggleState.canUseActions) {
-      showToast(tDashboard('requirementDependencyHint'));
-      return;
-    }
-
-    if (isEx17DownloadLoading || isEx17FormLoading) {
-      return;
-    }
-
-    setIsEx17DownloadLoading(true);
-
-    try {
-      await downloadEx17PdfToDevice(pendingEx17Review.file);
-      await completeFormRequirement(currentStep.id, requirementKey, formId);
-      setPendingEx17Review(null);
-      showToast(tDashboard('formDownloaded'));
-    } catch (downloadError) {
-      if (downloadError instanceof PdfDownloadDismissedError) {
-        showToast(tDashboard('formDownloadCancelled'));
-        return;
-      }
-
-      showAlert(
-        tCommon('errors.title'),
-        downloadError instanceof Error
-          ? downloadError.message
-          : tCommon('errors.generic'),
-      );
-    } finally {
-      setIsEx17DownloadLoading(false);
-    }
+    confirmFormRequirement(formId, requirementKey);
   };
 
   const isLoading = isStepsLoading || (isAuthenticated && isProgressLoading);
