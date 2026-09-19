@@ -21,7 +21,7 @@
   "approveDownloadDisabledHint": "请先查看表格",
   "requirementDependencyHint": "请先完成上方项目。",
   "requirementLockedHint": "请先取消勾选下方步骤，再修改此项。",
-  "appointmentDetailsPlaceholder": "VisaMesa 确认预约成功后，您的预约办事处、日期和时间将显示在此。",
+  "appointmentDetailsPlaceholder": "您的预约办事处、日期和时间将发送到您的电子邮箱。请在该中心指定的日期和时间到场。",
   "appointmentOffice": "办事处：{{office}}",
   "appointmentDate": "日期：{{date}}",
   "appointmentTime": "时间：{{time}}",
