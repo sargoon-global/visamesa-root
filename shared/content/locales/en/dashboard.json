@@ -21,7 +21,7 @@
   "approveDownloadDisabledHint": "Review the form first",
   "requirementDependencyHint": "Complete the items above first.",
   "requirementLockedHint": "Uncheck the steps below before changing this.",
-  "appointmentDetailsPlaceholder": "Your appointment office, date, and time will appear here once VisaMesa confirms a successful booking.",
+  "appointmentDetailsPlaceholder": "Your appointment office, date, and time will be sent to your email. Please attend that center on the specified date and time.",
   "appointmentOffice": "Office: {{office}}",
   "appointmentDate": "Date: {{date}}",
   "appointmentTime": "Time: {{time}}",

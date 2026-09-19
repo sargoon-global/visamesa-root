@@ -21,7 +21,7 @@
   "approveDownloadDisabledHint": "Revisa el formulario primero",
   "requirementDependencyHint": "Completa primero los elementos anteriores.",
   "requirementLockedHint": "Desmarca los pasos siguientes antes de cambiar esto.",
-  "appointmentDetailsPlaceholder": "La oficina, fecha y hora de tu cita aparecerán aquí cuando VisaMesa confirme una reserva exitosa.",
+  "appointmentDetailsPlaceholder": "La oficina, la fecha y la hora de tu cita se enviarán a tu correo electrónico. Debes acudir a ese centro en la fecha y hora indicadas.",
   "appointmentOffice": "Oficina: {{office}}",
   "appointmentDate": "Fecha: {{date}}",
   "appointmentTime": "Hora: {{time}}",
