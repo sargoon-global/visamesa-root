@@ -15,10 +15,18 @@ function readString(value: unknown): string {
   return typeof value === 'string' ? value.trim() : ''
 }
 
-function mapDocumentTypeToEmpadronamientoIdentifier(
-  documentType: unknown,
-): string {
-  return documentType === 'passport' ? 'PASSAPORT' : 'NIE'
+function readLegacyDocumentFields(personal: Record<string, unknown>) {
+  const legacyType = readString(personal.documentType)
+  const legacyNumber = readString(personal.documentNumber)
+
+  return {
+    nieNumber:
+      readString(personal.nieNumber) ||
+      (legacyType === 'nie' ? legacyNumber : ''),
+    passportNumber:
+      readString(personal.passportNumber) ||
+      (legacyType === 'passport' ? legacyNumber : ''),
+  }
 }
 
 export function mapPersonalToEmpadronamientoBookingAssistantProfile(
@@ -27,7 +35,9 @@ export function mapPersonalToEmpadronamientoBookingAssistantProfile(
 ): EmpadronamientoBookingAssistantProfile | null {
   const name = readString(personal.firstName)
   const surname = readString(personal.lastName)
-  const identifier = readString(personal.documentNumber)
+  const {nieNumber, passportNumber} = readLegacyDocumentFields(personal)
+  const identifier = nieNumber || passportNumber
+  const identifierType = nieNumber ? 'NIE' : 'PASSAPORT'
   const phone = readString(personal.phoneNumber)
   const email = readString(personal.email) || readString(fallbackEmail)
 
@@ -37,9 +47,7 @@ export function mapPersonalToEmpadronamientoBookingAssistantProfile(
 
   return {
     personalInfo: {
-      identifierType: mapDocumentTypeToEmpadronamientoIdentifier(
-        personal.documentType,
-      ),
+      identifierType,
       identifier,
       name,
       surname,
@@ -56,21 +64,18 @@ export function mapPersonalToCitaPreviaBookingAssistantProfile(
 ): CitaPreviaBookingAssistantProfile | null {
   const firstName = readString(personal.firstName)
   const lastName = readString(personal.lastName)
-  const documentNumber = readString(personal.documentNumber)
+  const {nieNumber} = readLegacyDocumentFields(personal)
 
-  if (!firstName || !documentNumber) {
+  if (!firstName || !nieNumber) {
     return null
   }
 
-  const documentType =
-    personal.documentType === 'passport' ? 'passport' : 'nie'
-
   return {
     details: {
-      nie: documentType === 'nie' ? documentNumber : '',
+      nie: nieNumber,
       Name: [firstName, lastName].filter(Boolean).join(' '),
       nationality: CITA_PREVIA_BOOKING_DEFAULTS.defaultNationality,
-      documentType,
+      documentType: 'nie',
     },
     provinceOptionIndex: CITA_PREVIA_BOOKING_DEFAULTS.provinceOptionIndex,
     tramitesOptionIndex: CITA_PREVIA_BOOKING_DEFAULTS.tramitesOptionIndex,

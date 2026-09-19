@@ -68,8 +68,8 @@ jest.mock('@/features/profile/services/profileService', () => ({
       personal: {
         firstName: 'Jane',
         lastName: 'Doe',
-        documentType: 'passport',
-        documentNumber: 'A12345678',
+        nieNumber: 'X1234567L',
+        passportNumber: 'A12345678',
         phoneNumber: '600123456',
         email: 'jane@example.com',
       },

@@ -62,6 +62,23 @@ function valueAsText(value) {
   return '';
 }
 
+const MIN_TEXT_FIELD_WIDTHS = {
+  'signature.day': 24,
+  'applicant.birthDate.day': 22,
+};
+
+function ensureTextFieldWidgetWidth(field, semanticId) {
+  const minWidth = MIN_TEXT_FIELD_WIDTHS[semanticId];
+  if (!minWidth) return;
+
+  for (const widget of field.acroField.getWidgets()) {
+    const rect = widget.getRectangle();
+    if (rect.width < minWidth) {
+      widget.setRectangle({ ...rect, width: minWidth });
+    }
+  }
+}
+
 function shouldCheckField(value, checkedWhen) {
   if (typeof checkedWhen === 'boolean') {
     return value === checkedWhen;
@@ -73,6 +90,7 @@ function fillField(field, schemaField, data) {
   const value = resolveValue(data, schemaField.source);
 
   if (field instanceof PDFTextField) {
+    ensureTextFieldWidgetWidth(field, schemaField.semanticId);
     field.setText(valueAsText(value));
     return;
   }

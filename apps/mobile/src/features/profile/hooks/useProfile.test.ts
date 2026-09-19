@@ -82,6 +82,31 @@ describe('useProfile', () => {
     expect(getHookState().profileData?.personal?.firstName).toBe('Jane');
   });
 
+  it('prefills email from the authenticated user when profile email is empty', async () => {
+    const getHookState = await renderHookAsync(
+      () => useProfile(true, 'jane@example.com'),
+      state => !state.isLoading,
+    );
+
+    expect(getHookState().personalInitialValues.email).toBe('jane@example.com');
+  });
+
+  it('keeps stored profile email over the authenticated user email', async () => {
+    (getProfile as jest.Mock).mockResolvedValue({
+      personal: {
+        firstName: 'Jane',
+        email: 'saved@example.com',
+      },
+    });
+
+    const getHookState = await renderHookAsync(
+      () => useProfile(true, 'jane@example.com'),
+      state => !state.isLoading,
+    );
+
+    expect(getHookState().personalInitialValues.email).toBe('saved@example.com');
+  });
+
   it('syncs dashboard progress after saving personal information', async () => {
     (updateProfile as jest.Mock).mockResolvedValue({
       personal: {

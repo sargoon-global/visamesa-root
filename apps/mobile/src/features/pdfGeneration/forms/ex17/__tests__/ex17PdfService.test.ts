@@ -19,11 +19,11 @@ describe('ex17PdfService', () => {
         secondLastName: 'Martinez',
         dateOfBirth: '1990-05-15',
         nationality: 'Argentina',
-        documentType: 'nie',
-        documentNumber: 'X1234567L',
+        nieNumber: 'X1234567L',
+        passportNumber: 'P12345678',
         phoneNumber: {countryCode: '+34', number: '600123456'},
         address: 'Calle Mayor 10',
-        city: 'Madrid',
+        city: 'Barcelona',
         postalCode: '28013',
       },
     };
@@ -42,6 +42,23 @@ describe('ex17PdfService', () => {
       '1234567',
     );
     expect(form.getTextField('applicant.nie.checkDigit').getText()).toBe('L');
+    expect(form.getTextField('applicant.passportNumber').getText()).toBe(
+      'P12345678',
+    );
+    const now = new Date();
+    const expectedDay = String(now.getDate());
+    const expectedMonth = String(now.getMonth() + 1).padStart(2, '0');
+    const expectedYear = String(now.getFullYear());
+
+    const signatureDayField = form.getTextField('signature.day');
+
+    expect(form.getTextField('signature.place').getText()).toBe('BARCELONA');
+    expect(signatureDayField.getText()).toBe(expectedDay);
+    expect(signatureDayField.acroField.getWidgets()[0].getRectangle().width).toBeGreaterThanOrEqual(
+      24,
+    );
+    expect(form.getTextField('signature.month').getText()).toBe(expectedMonth);
+    expect(form.getTextField('signature.year').getText()).toBe(expectedYear);
   });
 });
 

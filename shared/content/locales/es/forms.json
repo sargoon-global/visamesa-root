@@ -38,36 +38,76 @@
           "label": "Segundo apellido",
           "placeholder": "Introduce tu segundo apellido (opcional)"
         },
+        "gender": {
+          "label": "Sexo"
+        },
         "dateOfBirth": {
           "label": "Fecha de nacimiento",
           "placeholder": "Tu fecha de nacimiento"
+        },
+        "cityOfBirth": {
+          "label": "Localidad de nacimiento",
+          "placeholder": "Ciudad donde naciste"
+        },
+        "countryOfBirth": {
+          "label": "País de nacimiento",
+          "placeholder": "País donde naciste"
         },
         "nationality": {
           "label": "Nacionalidad",
           "placeholder": "Tu país de ciudadanía"
         },
-        "documentType": {
-          "label": "Tipo de documento"
+        "maritalStatus": {
+          "label": "Estado civil"
         },
-        "documentNumber": {
-          "label": "Número de documento",
-          "placeholder": "p. ej., X1234567A o AB123456"
+        "fatherName": {
+          "label": "Nombre del padre",
+          "placeholder": "Introduce el nombre completo de tu padre"
+        },
+        "motherName": {
+          "label": "Nombre de la madre",
+          "placeholder": "Introduce el nombre completo de tu madre"
+        },
+        "nieNumber": {
+          "label": "NIE",
+          "placeholder": "p. ej., X1234567A"
+        },
+        "passportNumber": {
+          "label": "Número de pasaporte",
+          "placeholder": "p. ej., AB123456"
         },
         "phoneNumber": {
           "label": "Teléfono"
         },
         "address": {
           "label": "Dirección registrada",
-          "placeholder": "Calle, edificio, piso, apartamento",
+          "placeholder": "Nombre de la calle",
           "helperText": "Es la dirección donde estás empadronado. La usamos para citas y trámites fiscales, aunque vivas en otro sitio."
         },
+        "addressNumber": {
+          "label": "Número",
+          "placeholder": "p. ej., 10"
+        },
+        "addressFloor": {
+          "label": "Piso / Puerta",
+          "placeholder": "p. ej., 3B (opcional)"
+        },
         "city": {
-          "label": "Ciudad",
+          "label": "Localidad",
+          "placeholder": "p. ej., Barcelona"
+        },
+        "province": {
+          "label": "Provincia",
           "placeholder": "p. ej., Barcelona"
         },
         "postalCode": {
           "label": "Código postal",
           "placeholder": "p. ej., 08001"
+        },
+        "email": {
+          "label": "Correo electrónico",
+          "placeholder": "tu.correo@ejemplo.com",
+          "helperText": "Rellenado con tu cuenta. Puedes editarlo si lo necesitas."
         },
         "hasEmpadronamiento": {
           "label": "¿Ya tienes empadronamiento?"
@@ -79,13 +119,21 @@
         }
       },
       "options": {
-        "documentType": {
-          "nie": "NIE",
-          "passport": "Pasaporte"
-        },
         "hasEmpadronamiento": {
           "no": "No",
           "yes": "Sí"
+        },
+        "gender": {
+          "male": "Hombre",
+          "female": "Mujer",
+          "other": "Otro"
+        },
+        "maritalStatus": {
+          "single": "Soltero/a",
+          "married": "Casado/a",
+          "widowed": "Viudo/a",
+          "divorced": "Divorciado/a",
+          "separated": "Separado/a"
         }
       }
     }

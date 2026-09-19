@@ -109,6 +109,26 @@ function valueAsText(value: unknown) {
   return '';
 }
 
+/** Original EX-17 widgets for day fields are too narrow to show two digits. */
+const MIN_TEXT_FIELD_WIDTHS: Record<string, number> = {
+  'signature.day': 24,
+  'applicant.birthDate.day': 22,
+};
+
+function ensureTextFieldWidgetWidth(field: PDFTextField, semanticId: string) {
+  const minWidth = MIN_TEXT_FIELD_WIDTHS[semanticId];
+  if (!minWidth) {
+    return;
+  }
+
+  for (const widget of field.acroField.getWidgets()) {
+    const rect = widget.getRectangle();
+    if (rect.width < minWidth) {
+      widget.setRectangle({...rect, width: minWidth});
+    }
+  }
+}
+
 function shouldCheckField(
   value: unknown,
   checkedWhen?: string | boolean | null,
@@ -135,6 +155,7 @@ function fillField(
   const value = resolveValue(data, schemaField.source);
 
   if (field instanceof PDFTextField) {
+    ensureTextFieldWidgetWidth(field, schemaField.semanticId);
     field.setText(valueAsText(value));
     return;
   }

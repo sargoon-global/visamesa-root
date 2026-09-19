@@ -41,7 +41,10 @@ export type UseProfileResult = {
   refreshProfile: () => Promise<boolean>;
 };
 
-export function useProfile(isEnabled: boolean): UseProfileResult {
+export function useProfile(
+  isEnabled: boolean,
+  authEmail?: string | null,
+): UseProfileResult {
   const {showToast} = useToast();
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(isEnabled);
@@ -106,11 +109,7 @@ export function useProfile(isEnabled: boolean): UseProfileResult {
   );
 
   const personalInitialValues = useMemo(() => {
-    if (!profileData?.personal) {
-      return {};
-    }
-
-    const values = {...profileData.personal};
+    const values = {...(profileData?.personal ?? {})};
 
     if (values.phoneNumber && typeof values.phoneNumber === 'string') {
       const phoneObj = stringToPhone(values.phoneNumber as string);
@@ -119,8 +118,14 @@ export function useProfile(isEnabled: boolean): UseProfileResult {
       }
     }
 
+    const storedEmail =
+      typeof values.email === 'string' ? values.email.trim() : '';
+    if (!storedEmail && authEmail) {
+      values.email = authEmail;
+    }
+
     return values;
-  }, [profileData?.personal]);
+  }, [authEmail, profileData?.personal]);
 
   const submitSection = async (
     section: ProfileSection,

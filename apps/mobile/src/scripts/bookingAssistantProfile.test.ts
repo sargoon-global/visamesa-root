@@ -9,19 +9,19 @@ describe('bookingAssistantProfile mappers', () => {
     firstName: 'Jane',
     lastName: 'Doe',
     secondLastName: 'Smith',
-    documentType: 'passport',
-    documentNumber: 'A12345678',
+    nieNumber: 'X1234567L',
+    passportNumber: 'A12345678',
     phoneNumber: '600123456',
     email: 'jane@example.com',
   }
 
-  it('maps personal data for empadronamiento', () => {
+  it('maps personal data for empadronamiento using NIE as the primary identifier', () => {
     expect(
       mapPersonalToEmpadronamientoBookingAssistantProfile(personal),
     ).toEqual({
       personalInfo: {
-        identifierType: 'PASSAPORT',
-        identifier: 'A12345678',
+        identifierType: 'NIE',
+        identifier: 'X1234567L',
         name: 'Jane',
         surname: 'Doe',
         secondSurname: 'Smith',
@@ -37,8 +37,8 @@ describe('bookingAssistantProfile mappers', () => {
       firstName: personal.firstName,
       lastName: personal.lastName,
       secondLastName: personal.secondLastName,
-      documentType: personal.documentType,
-      documentNumber: personal.documentNumber,
+      nieNumber: personal.nieNumber,
+      passportNumber: personal.passportNumber,
       phoneNumber: personal.phoneNumber,
     }
 
@@ -50,12 +50,12 @@ describe('bookingAssistantProfile mappers', () => {
     ).toBe('fallback@example.com')
   })
 
-  it('maps personal data for cita previa', () => {
+  it('maps personal data for cita previa using NIE', () => {
     expect(mapPersonalToCitaPreviaBookingAssistantProfile(personal)).toMatchObject({
       details: {
-        nie: '',
+        nie: 'X1234567L',
         Name: 'Jane Doe',
-        documentType: 'passport',
+        documentType: 'nie',
       },
     })
   })
