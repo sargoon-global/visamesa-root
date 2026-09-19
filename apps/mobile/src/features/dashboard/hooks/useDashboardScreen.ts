@@ -17,12 +17,8 @@ import {usePricingLink} from '@/hooks/usePricingLink';
 import {RequirementWithProgress} from '@/features/dashboard/components/RequirementsChecklist';
 import {formatAppointmentDetailsMessage} from '@/features/dashboard/data/dashboardContent';
 import {syncEmpadronamientoStepFromProfile} from '@/features/dashboard/services/empadronamientoProgressService';
-import {
-  openGeneratedPdf,
-  saveEx17Pdf,
-  shareGeneratedPdf,
-} from '@/features/pdfGeneration/forms/ex17/ex17PdfService';
-import {mapProfileToEx17Data} from '@/features/pdfGeneration/forms/ex17/mapProfileToEx17Data';
+import {EX17_FORM_ID} from '@/features/pdfGeneration/forms/ex17/ex17Constants';
+import {useEx17FormFlow} from '@/features/dashboard/hooks/useEx17FormFlow';
 import {reconcileStepStatuses} from '@/features/dashboard/services/progressReconciliationService';
 import {
   buildInitialProgressFromSteps,
@@ -91,7 +87,9 @@ export type UseDashboardScreenResult = {
   onBookingAssistantPress: (bookingAssistantId: BookingAssistantId, label: string) => void;
   onViewAppointmentPress: (label: string) => void;
   onClearBookingAssistantPress: (label: string) => void;
-  onFormPress: (formId: string, label: string) => void;
+  onFormPress: (formId: string, requirementKey: string) => void;
+  onApproveAndDownloadForm: (formId: string, requirementKey: string) => void;
+  onFormView: (formId: string, requirementKey: string) => void;
   onClosePrerequisitesDialog: () => void;
   onGoToProfilePress: () => void;
   onSupportPress: () => void;
@@ -294,23 +292,54 @@ export function useDashboardScreen(
       getStepStatus(displayProgress, currentStepId) === 'completed',
   );
 
+  const canInteractWithRequirements = Boolean(
+    isAuthenticated &&
+      displayProgress &&
+      currentStep &&
+      !isCurrentStepCompleted &&
+      (currentStepId === 1 ||
+        arePreviousStepsCompleted(displayProgress, currentStepId, steps)) &&
+      canStartProcess,
+  );
+
+  const {
+    enrichRequirements,
+    onFormPress: onEx17FormPress,
+    onFormView,
+    onApproveAndDownloadForm,
+  } = useEx17FormFlow({
+    currentStep,
+    currentStepId,
+    progress,
+    canInteractWithRequirements,
+    progressContext,
+    steps,
+    isAuthenticated,
+    tDashboard,
+    tCommon,
+    completeFormRequirement,
+  });
+
   const currentStepRequirements = useMemo(() => {
     if (!displayProgress || !currentStep) {
       return [];
     }
 
-    return buildRequirementsWithProgress(
-      displayProgress,
-      currentStep,
-      progressContext,
-      steps,
-      tDashboard,
-      canStartProcess,
+    return enrichRequirements(
+      buildRequirementsWithProgress(
+        displayProgress,
+        currentStep,
+        progressContext,
+        steps,
+        tDashboard,
+        canStartProcess,
+      ),
     );
   }, [
     canStartProcess,
     currentStep,
     displayProgress,
+    enrichRequirements,
     progressContext,
     steps,
     tDashboard,
@@ -323,16 +352,6 @@ export function useDashboardScreen(
       !isCurrentStepCompleted &&
       arePreviousStepsCompleted(displayProgress, currentStepId, steps) &&
       areAllRequirementsComplete(displayProgress, currentStep, progressContext) &&
-      canStartProcess,
-  );
-
-  const canInteractWithRequirements = Boolean(
-    isAuthenticated &&
-      displayProgress &&
-      currentStep &&
-      !isCurrentStepCompleted &&
-      (currentStepId === 1 ||
-        arePreviousStepsCompleted(displayProgress, currentStepId, steps)) &&
       canStartProcess,
   );
 
@@ -636,30 +655,12 @@ export function useDashboardScreen(
       return;
     }
 
-    if (formId !== 'ex-17') {
-      confirmFormRequirement(formId, requirementKey);
+    if (formId === EX17_FORM_ID) {
+      await onEx17FormPress(formId, requirementKey);
       return;
     }
 
-    try {
-      const profileData = await getProfile();
-      const generatedFile = await saveEx17Pdf(
-        mapProfileToEx17Data(profileData),
-      );
-      try {
-        await openGeneratedPdf(generatedFile);
-      } catch {
-        await shareGeneratedPdf(generatedFile);
-      }
-      confirmFormRequirement(formId, requirementKey);
-    } catch (formError) {
-      showAlert(
-        tCommon('errors.title'),
-        formError instanceof Error
-          ? formError.message
-          : tCommon('errors.generic'),
-      );
-    }
+    confirmFormRequirement(formId, requirementKey);
   };
 
   const isLoading = isStepsLoading || (isAuthenticated && isProgressLoading);
@@ -693,6 +694,8 @@ export function useDashboardScreen(
     onViewAppointmentPress,
     onClearBookingAssistantPress,
     onFormPress,
+    onApproveAndDownloadForm,
+    onFormView,
     onClosePrerequisitesDialog,
     onGoToProfilePress,
     onSupportPress,

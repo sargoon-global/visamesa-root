@@ -5,6 +5,11 @@ import React
 @objc(PdfViewer)
 class PdfViewer: NSObject, UIDocumentInteractionControllerDelegate {
   private var documentInteractionController: UIDocumentInteractionController?
+  private weak var previewHostViewController: UIViewController?
+  private var openPdfResolve: RCTPromiseResolveBlock?
+  private var openPdfReject: RCTPromiseRejectBlock?
+  private var previewOpened = false
+  private var hasResolvedOpenPdf = false
 
   @objc
   static func requiresMainQueueSetup() -> Bool {
@@ -52,18 +57,32 @@ class PdfViewer: NSObject, UIDocumentInteractionControllerDelegate {
     rejecter reject: @escaping RCTPromiseRejectBlock
   ) {
     DispatchQueue.main.async {
+      self.resetOpenPdfState()
+      self.openPdfResolve = resolve
+      self.openPdfReject = reject
+
       let path = pathOrUri.replacingOccurrences(of: "file://", with: "")
       let fileUrl = URL(fileURLWithPath: path)
 
       guard FileManager.default.fileExists(atPath: fileUrl.path) else {
-        reject("PDF_NOT_FOUND", "PDF file does not exist: \(fileUrl.path)", nil)
+        self.rejectOpenPdf(
+          code: "PDF_NOT_FOUND",
+          message: "PDF file does not exist: \(fileUrl.path)",
+          error: nil
+        )
         return
       }
 
-      guard let rootViewController = Self.topViewController() else {
-        reject("PDF_OPEN_FAILED", "Could not find a view controller to present the PDF opener", nil)
+      guard let hostViewController = Self.topViewController() else {
+        self.rejectOpenPdf(
+          code: "PDF_OPEN_FAILED",
+          message: "Could not find a view controller to present the PDF opener",
+          error: nil
+        )
         return
       }
+
+      self.previewHostViewController = hostViewController
 
       let controller = UIDocumentInteractionController(url: fileUrl)
       controller.delegate = self
@@ -71,7 +90,14 @@ class PdfViewer: NSObject, UIDocumentInteractionControllerDelegate {
       controller.uti = "com.adobe.pdf"
       self.documentInteractionController = controller
 
-      let sourceView = rootViewController.view ?? UIView()
+      // Open Quick Look directly for in-app review. The options menu's
+      // "Preview" / external-app paths can fail and send the user to the home screen.
+      if controller.presentPreview(animated: true) {
+        self.previewOpened = true
+        return
+      }
+
+      let sourceView = hostViewController.view ?? UIView()
       let sourceRect = CGRect(
         x: sourceView.bounds.midX,
         y: sourceView.bounds.midY,
@@ -85,10 +111,12 @@ class PdfViewer: NSObject, UIDocumentInteractionControllerDelegate {
         animated: true
       )
 
-      if didPresent {
-        resolve(nil)
-      } else {
-        reject("NO_PDF_VIEWER", "No app is available to open PDF files", nil)
+      if !didPresent {
+        self.rejectOpenPdf(
+          code: "NO_PDF_VIEWER",
+          message: "No app is available to open PDF files",
+          error: nil
+        )
       }
     }
   }
@@ -96,7 +124,59 @@ class PdfViewer: NSObject, UIDocumentInteractionControllerDelegate {
   func documentInteractionControllerViewControllerForPreview(
     _ controller: UIDocumentInteractionController
   ) -> UIViewController {
-    Self.topViewController() ?? UIViewController()
+    previewOpened = true
+    return previewHostViewController ?? Self.topViewController() ?? UIViewController()
+  }
+
+  func documentInteractionControllerDidEndPreview(
+    _ controller: UIDocumentInteractionController
+  ) {
+    resolveOpenPdfIfNeeded()
+  }
+
+  func documentInteractionControllerDidDismissOptionsMenu(
+    _ controller: UIDocumentInteractionController
+  ) {
+    if !previewOpened {
+      resolveOpenPdfIfNeeded()
+    }
+  }
+
+  private func resolveOpenPdfIfNeeded() {
+    guard !hasResolvedOpenPdf, let resolve = openPdfResolve else {
+      return
+    }
+
+    hasResolvedOpenPdf = true
+    openPdfResolve = nil
+    openPdfReject = nil
+    previewOpened = false
+    previewHostViewController = nil
+    documentInteractionController = nil
+    resolve(nil)
+  }
+
+  private func rejectOpenPdf(code: String, message: String, error: Error?) {
+    guard !hasResolvedOpenPdf, let reject = openPdfReject else {
+      return
+    }
+
+    hasResolvedOpenPdf = true
+    openPdfResolve = nil
+    openPdfReject = nil
+    previewOpened = false
+    previewHostViewController = nil
+    documentInteractionController = nil
+    reject(code, message, error)
+  }
+
+  private func resetOpenPdfState() {
+    hasResolvedOpenPdf = false
+    previewOpened = false
+    previewHostViewController = nil
+    openPdfResolve = nil
+    openPdfReject = nil
+    documentInteractionController = nil
   }
 
   private static func topViewController() -> UIViewController? {

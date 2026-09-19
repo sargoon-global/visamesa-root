@@ -10,6 +10,7 @@ import {
 } from 'pdf-lib';
 
 import {EX17_TIE_BLANK_SEMANTIC_PDF_BASE64} from '@/features/pdfGeneration/forms/ex17/assets/ex17TieBlankSemanticPdfBase64';
+import {ensureEx17TextFieldWidgetWidth} from '@/features/pdfGeneration/forms/ex17/ensureEx17TextFieldWidgetWidth';
 
 import curatedSchema from './schemas/ex17-tie.curated.schema.json';
 
@@ -30,6 +31,13 @@ export type GeneratedPdfFile = {
   path: string;
   uri: string;
 };
+
+export class PdfDownloadDismissedError extends Error {
+  constructor() {
+    super('PDF download dismissed');
+    this.name = 'PdfDownloadDismissedError';
+  }
+}
 
 function getPathValue(data: Ex17PdfData, source?: string | null): unknown {
   if (!source) {
@@ -128,6 +136,7 @@ function fillField(
   const value = resolveValue(data, schemaField.source);
 
   if (field instanceof PDFTextField) {
+    ensureEx17TextFieldWidgetWidth(field, schemaField.semanticId);
     field.setText(valueAsText(value));
     return;
   }
@@ -207,10 +216,27 @@ export async function openGeneratedPdf(file: GeneratedPdfFile) {
   await pdfViewer.openPdf(file.path);
 }
 
-export async function shareGeneratedPdf(file: GeneratedPdfFile) {
-  await Share.share({
+async function sharePdfFile(
+  file: GeneratedPdfFile,
+  options?: {rejectOnDismiss?: boolean},
+) {
+  const result = await Share.share({
     title: file.fileName,
-    message: file.fileName,
     url: file.uri,
   });
+
+  if (
+    options?.rejectOnDismiss &&
+    result.action === Share.dismissedAction
+  ) {
+    throw new PdfDownloadDismissedError();
+  }
+}
+
+export async function shareGeneratedPdf(file: GeneratedPdfFile) {
+  await sharePdfFile(file);
+}
+
+export async function downloadEx17PdfToDevice(file: GeneratedPdfFile) {
+  await sharePdfFile(file, {rejectOnDismiss: true});
 }

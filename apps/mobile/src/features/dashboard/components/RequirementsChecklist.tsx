@@ -20,6 +20,10 @@ export type RequirementWithProgress = Requirement & {
   canUncheck?: boolean;
   showDocumentActions?: boolean;
   canUseActions?: boolean;
+  showApproveDownload?: boolean;
+  canApproveDownload?: boolean;
+  formReviewLoading?: boolean;
+  formDownloadLoading?: boolean;
 };
 
 type RequirementsChecklistProps = {
@@ -30,6 +34,8 @@ type RequirementsChecklistProps = {
   onViewAppointmentPress: (requirementKey: string) => void;
   onClearBookingAssistantPress: (requirementKey: string) => void;
   onFormPress: (formId: string, requirementKey: string) => void;
+  onApproveAndDownloadForm: (formId: string, requirementKey: string) => void;
+  onFormView: (formId: string, requirementKey: string) => void;
   onSupportPress: () => void;
 };
 
@@ -41,6 +47,8 @@ export function RequirementsChecklist({
   onViewAppointmentPress,
   onClearBookingAssistantPress,
   onFormPress,
+  onApproveAndDownloadForm,
+  onFormView,
   onSupportPress,
 }: RequirementsChecklistProps) {
   const {styles, theme} = useStyles(stylesheet);
@@ -114,6 +122,23 @@ export function RequirementsChecklist({
                 onFormPress={() =>
                   requirement.formId
                     ? onFormPress(requirement.formId, requirement.key)
+                    : undefined
+                }
+                showApproveDownload={requirement.showApproveDownload}
+                canApproveDownload={requirement.canApproveDownload}
+                formReviewLoading={requirement.formReviewLoading}
+                formDownloadLoading={requirement.formDownloadLoading}
+                onApproveAndDownload={() =>
+                  requirement.formId
+                    ? onApproveAndDownloadForm(
+                        requirement.formId,
+                        requirement.key,
+                      )
+                    : undefined
+                }
+                onFormView={() =>
+                  requirement.formId
+                    ? onFormView(requirement.formId, requirement.key)
                     : undefined
                 }
               />

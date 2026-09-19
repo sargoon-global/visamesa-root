@@ -10,6 +10,8 @@ import {
   PDFTextField,
 } from 'pdf-lib';
 
+import { ensureEx17TextFieldWidgetWidth } from './ex17-pdf-text-field-utils.mjs';
+
 const [
   ,
   ,
@@ -73,6 +75,7 @@ function fillField(field, schemaField, data) {
   const value = resolveValue(data, schemaField.source);
 
   if (field instanceof PDFTextField) {
+    ensureEx17TextFieldWidgetWidth(field, schemaField.semanticId);
     field.setText(valueAsText(value));
     return;
   }

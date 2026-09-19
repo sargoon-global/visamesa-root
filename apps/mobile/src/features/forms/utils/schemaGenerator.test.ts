@@ -10,14 +10,23 @@ const basePersonalData = {
   firstName: 'Jane',
   lastName: 'Doe',
   secondLastName: '',
+  gender: 'female',
   dateOfBirth: '1990-01-01',
+  cityOfBirth: 'Madrid',
+  countryOfBirth: 'Spain',
   nationality: 'Spain',
-  documentType: 'passport',
-  documentNumber: 'AB123456',
+  maritalStatus: 'single',
+  fatherName: 'John Doe',
+  motherName: 'Mary Doe',
+  nieNumber: 'X1234567A',
+  passportNumber: 'AB123456',
   phoneNumber: {countryCode: '34', number: '600000000'},
-  address: 'Carrer Example 1',
+  address: 'Carrer Example',
+  addressNumber: '1',
   city: 'Barcelona',
+  province: 'Barcelona',
   postalCode: '08001',
+  email: 'jane@example.com',
 };
 
 describe('generateZodSchema', () => {
@@ -77,6 +86,60 @@ describe('generateZodSchema', () => {
     });
 
     expect(result.success).toBe(true);
+  });
+
+  it('rejects invalid email format', () => {
+    const validationSchema = generateZodSchema(personalSchema, translate);
+
+    const result = validationSchema.safeParse({
+      ...basePersonalData,
+      email: 'not-an-email',
+      hasEmpadronamiento: 'no',
+      empadronamientoIssuedAt: '',
+    });
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues.some(issue => issue.path[0] === 'email')).toBe(
+        true,
+      );
+    }
+  });
+
+  it('rejects invalid passport format', () => {
+    const validationSchema = generateZodSchema(personalSchema, translate);
+
+    const result = validationSchema.safeParse({
+      ...basePersonalData,
+      passportNumber: 'AB',
+      hasEmpadronamiento: 'no',
+      empadronamientoIssuedAt: '',
+    });
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(
+        result.error.issues.some(issue => issue.path[0] === 'passportNumber'),
+      ).toBe(true);
+    }
+  });
+
+  it('rejects invalid NIE format', () => {
+    const validationSchema = generateZodSchema(personalSchema, translate);
+
+    const result = validationSchema.safeParse({
+      ...basePersonalData,
+      nieNumber: 'INVALID',
+      hasEmpadronamiento: 'no',
+      empadronamientoIssuedAt: '',
+    });
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(
+        result.error.issues.some(issue => issue.path[0] === 'nieNumber'),
+      ).toBe(true);
+    }
   });
 
   it('requires both phone code and number', () => {

@@ -10,7 +10,7 @@ const ProfileDataContext = createContext<UseProfileResult | null>(null);
 
 export function ProfileDataProvider({children}: {children: React.ReactNode}) {
   const {user} = useAuth();
-  const profile = useProfile(!!user);
+  const profile = useProfile(!!user, user?.email ?? null);
 
   return (
     <ProfileDataContext.Provider value={profile}>

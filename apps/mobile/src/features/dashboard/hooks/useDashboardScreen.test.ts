@@ -68,8 +68,8 @@ jest.mock('@/features/profile/services/profileService', () => ({
       personal: {
         firstName: 'Jane',
         lastName: 'Doe',
-        documentType: 'passport',
-        documentNumber: 'A12345678',
+        nieNumber: 'X1234567L',
+        passportNumber: 'A12345678',
         phoneNumber: '600123456',
         email: 'jane@example.com',
       },
@@ -116,13 +116,34 @@ jest.mock('@/hooks/usePricingLink', () => ({
   }),
 }));
 
+const mockShowAlert = jest.fn();
+
 jest.mock('@/contexts/AppDialogContext', () => ({
   useAppDialog: () => ({
-    showAlert: jest.fn(),
+    showAlert: mockShowAlert,
     showDialog: jest.fn(),
     closeDialog: jest.fn(),
   }),
   AppDialogProvider: ({children}: {children: React.ReactNode}) => children,
+}));
+
+const mockSaveEx17Pdf = jest.fn();
+const mockOpenGeneratedPdf = jest.fn();
+const mockShareGeneratedPdf = jest.fn();
+const mockDownloadEx17PdfToDevice = jest.fn();
+
+jest.mock('@/features/pdfGeneration/forms/ex17/ex17PdfService', () => ({
+  saveEx17Pdf: (...args: unknown[]) => mockSaveEx17Pdf(...args),
+  openGeneratedPdf: (...args: unknown[]) => mockOpenGeneratedPdf(...args),
+  shareGeneratedPdf: (...args: unknown[]) => mockShareGeneratedPdf(...args),
+  downloadEx17PdfToDevice: (...args: unknown[]) =>
+    mockDownloadEx17PdfToDevice(...args),
+  PdfDownloadDismissedError: class PdfDownloadDismissedError extends Error {
+    constructor() {
+      super('PDF download dismissed');
+      this.name = 'PdfDownloadDismissedError';
+    }
+  },
 }));
 
 const {useTieSteps} = jest.requireMock('@/features/home/hooks/useTieSteps') as {
@@ -142,6 +163,19 @@ describe('useDashboardScreen', () => {
 
   beforeEach(() => {
     mockShowToast.mockReset();
+    mockShowAlert.mockReset();
+    mockSaveEx17Pdf.mockReset();
+    mockOpenGeneratedPdf.mockReset();
+    mockShareGeneratedPdf.mockReset();
+    mockDownloadEx17PdfToDevice.mockReset();
+    mockSaveEx17Pdf.mockResolvedValue({
+      fileName: 'ex17-tie-test.pdf',
+      path: '/tmp/ex17-tie-test.pdf',
+      uri: 'file:///tmp/ex17-tie-test.pdf',
+    });
+    mockOpenGeneratedPdf.mockResolvedValue(undefined);
+    mockShareGeneratedPdf.mockResolvedValue(undefined);
+    mockDownloadEx17PdfToDevice.mockResolvedValue(undefined);
     mockRefreshReadiness.mockReset();
     mockRefreshReadiness.mockResolvedValue(undefined);
     completeStep.mockReset();
@@ -499,6 +533,61 @@ describe('useDashboardScreen', () => {
     expect(navigation.navigate).toHaveBeenCalledWith('WebsiteWebView', {
       bookingAssistant: 'empadronamiento',
     });
+  });
+
+  it('shows approve and download disabled until the EX-17 form is reviewed', async () => {
+    const translateTieSteps = createTieStepsTranslator(i18n);
+    const realSteps = buildTieSteps(translateTieSteps);
+
+    useTieSteps.mockReturnValue({
+      steps: realSteps,
+      isLoading: false,
+      error: null,
+    });
+
+    useUserProgress.mockReturnValue({
+      progress: createUserProgress({
+        currentStepId: 2,
+        steps: [
+          {
+            stepId: 1,
+            status: 'completed',
+            requirements: {},
+          },
+          {
+            stepId: 2,
+            status: 'in_progress',
+            requirements: {
+              'ex-17-form': {completed: false},
+            },
+          },
+        ],
+      }),
+      isLoading: false,
+      error: null,
+      completeStep,
+      toggleSelfDeclaredRequirement,
+      completeBookingAssistantRequirement,
+      clearBookingAssistantRequirement,
+      completeFormRequirement,
+      refreshProgress: jest.fn(),
+    });
+
+    const navigation = createMockNavigation() as Parameters<
+      typeof useDashboardScreen
+    >[0];
+    const getHookState = await renderDashboardScreen(navigation);
+
+    act(() => {
+      getHookState().onStepPress(2);
+    });
+
+    const ex17Requirement = getHookState().currentStepRequirements.find(
+      requirement => requirement.key === 'ex-17-form',
+    );
+
+    expect(ex17Requirement?.showApproveDownload).toBe(true);
+    expect(ex17Requirement?.canApproveDownload).toBe(false);
   });
 
   it('shows a dependency hint when booking assistant prerequisites are incomplete', async () => {

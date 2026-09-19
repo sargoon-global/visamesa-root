@@ -25,11 +25,45 @@
       "placeholder": "schemas.profilePersonal.fields.secondLastName.placeholder"
     },
     {
+      "id": "gender",
+      "label": "schemas.profilePersonal.fields.gender.label",
+      "type": "select",
+      "required": true,
+      "options": [
+        {
+          "label": "schemas.profilePersonal.options.gender.male",
+          "value": "male"
+        },
+        {
+          "label": "schemas.profilePersonal.options.gender.female",
+          "value": "female"
+        },
+        {
+          "label": "schemas.profilePersonal.options.gender.other",
+          "value": "other"
+        }
+      ]
+    },
+    {
       "id": "dateOfBirth",
       "label": "schemas.profilePersonal.fields.dateOfBirth.label",
       "type": "date",
       "required": true,
       "placeholder": "schemas.profilePersonal.fields.dateOfBirth.placeholder"
+    },
+    {
+      "id": "cityOfBirth",
+      "label": "schemas.profilePersonal.fields.cityOfBirth.label",
+      "type": "text",
+      "required": true,
+      "placeholder": "schemas.profilePersonal.fields.cityOfBirth.placeholder"
+    },
+    {
+      "id": "countryOfBirth",
+      "label": "schemas.profilePersonal.fields.countryOfBirth.label",
+      "type": "text",
+      "required": true,
+      "placeholder": "schemas.profilePersonal.fields.countryOfBirth.placeholder"
     },
     {
       "id": "nationality",
@@ -39,27 +73,62 @@
       "placeholder": "schemas.profilePersonal.fields.nationality.placeholder"
     },
     {
-      "id": "documentType",
-      "label": "schemas.profilePersonal.fields.documentType.label",
+      "id": "maritalStatus",
+      "label": "schemas.profilePersonal.fields.maritalStatus.label",
       "type": "select",
       "required": true,
       "options": [
         {
-          "label": "schemas.profilePersonal.options.documentType.nie",
-          "value": "nie"
+          "label": "schemas.profilePersonal.options.maritalStatus.single",
+          "value": "single"
         },
         {
-          "label": "schemas.profilePersonal.options.documentType.passport",
-          "value": "passport"
+          "label": "schemas.profilePersonal.options.maritalStatus.married",
+          "value": "married"
+        },
+        {
+          "label": "schemas.profilePersonal.options.maritalStatus.widowed",
+          "value": "widowed"
+        },
+        {
+          "label": "schemas.profilePersonal.options.maritalStatus.divorced",
+          "value": "divorced"
+        },
+        {
+          "label": "schemas.profilePersonal.options.maritalStatus.separated",
+          "value": "separated"
         }
       ]
     },
     {
-      "id": "documentNumber",
-      "label": "schemas.profilePersonal.fields.documentNumber.label",
+      "id": "fatherName",
+      "label": "schemas.profilePersonal.fields.fatherName.label",
       "type": "text",
       "required": true,
-      "placeholder": "schemas.profilePersonal.fields.documentNumber.placeholder"
+      "placeholder": "schemas.profilePersonal.fields.fatherName.placeholder"
+    },
+    {
+      "id": "motherName",
+      "label": "schemas.profilePersonal.fields.motherName.label",
+      "type": "text",
+      "required": true,
+      "placeholder": "schemas.profilePersonal.fields.motherName.placeholder"
+    },
+    {
+      "id": "nieNumber",
+      "label": "schemas.profilePersonal.fields.nieNumber.label",
+      "type": "text",
+      "required": true,
+      "placeholder": "schemas.profilePersonal.fields.nieNumber.placeholder",
+      "pattern": "^[XYZxyz]\\d{7}[A-Za-z]$"
+    },
+    {
+      "id": "passportNumber",
+      "label": "schemas.profilePersonal.fields.passportNumber.label",
+      "type": "text",
+      "required": true,
+      "placeholder": "schemas.profilePersonal.fields.passportNumber.placeholder",
+      "pattern": "^[A-Za-z0-9]{5,20}$"
     },
     {
       "id": "phoneNumber",
@@ -76,6 +145,20 @@
       "helperText": "schemas.profilePersonal.fields.address.helperText"
     },
     {
+      "id": "addressNumber",
+      "label": "schemas.profilePersonal.fields.addressNumber.label",
+      "type": "text",
+      "required": true,
+      "placeholder": "schemas.profilePersonal.fields.addressNumber.placeholder"
+    },
+    {
+      "id": "addressFloor",
+      "label": "schemas.profilePersonal.fields.addressFloor.label",
+      "type": "text",
+      "required": false,
+      "placeholder": "schemas.profilePersonal.fields.addressFloor.placeholder"
+    },
+    {
       "id": "city",
       "label": "schemas.profilePersonal.fields.city.label",
       "type": "text",
@@ -83,11 +166,27 @@
       "placeholder": "schemas.profilePersonal.fields.city.placeholder"
     },
     {
+      "id": "province",
+      "label": "schemas.profilePersonal.fields.province.label",
+      "type": "text",
+      "required": true,
+      "placeholder": "schemas.profilePersonal.fields.province.placeholder"
+    },
+    {
       "id": "postalCode",
       "label": "schemas.profilePersonal.fields.postalCode.label",
       "type": "text",
       "required": true,
       "placeholder": "schemas.profilePersonal.fields.postalCode.placeholder"
+    },
+    {
+      "id": "email",
+      "label": "schemas.profilePersonal.fields.email.label",
+      "type": "text",
+      "required": true,
+      "placeholder": "schemas.profilePersonal.fields.email.placeholder",
+      "helperText": "schemas.profilePersonal.fields.email.helperText",
+      "pattern": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
     },
     {
       "id": "hasEmpadronamiento",

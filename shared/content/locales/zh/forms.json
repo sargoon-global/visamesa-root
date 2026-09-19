@@ -38,36 +38,76 @@
           "label": "第二姓氏",
           "placeholder": "请输入第二姓氏（可选）"
         },
+        "gender": {
+          "label": "性别"
+        },
         "dateOfBirth": {
           "label": "出生日期",
           "placeholder": "您的出生日期"
+        },
+        "cityOfBirth": {
+          "label": "出生城市",
+          "placeholder": "您的出生城市"
+        },
+        "countryOfBirth": {
+          "label": "出生国家",
+          "placeholder": "您的出生国家"
         },
         "nationality": {
           "label": "国籍",
           "placeholder": "您的国籍"
         },
-        "documentType": {
-          "label": "证件类型"
+        "maritalStatus": {
+          "label": "婚姻状况"
         },
-        "documentNumber": {
-          "label": "证件号码",
-          "placeholder": "例如 X1234567A 或 AB123456"
+        "fatherName": {
+          "label": "父亲姓名",
+          "placeholder": "请输入父亲全名"
+        },
+        "motherName": {
+          "label": "母亲姓名",
+          "placeholder": "请输入母亲全名"
+        },
+        "nieNumber": {
+          "label": "NIE",
+          "placeholder": "例如 X1234567A"
+        },
+        "passportNumber": {
+          "label": "护照号码",
+          "placeholder": "例如 AB123456"
         },
         "phoneNumber": {
           "label": "电话号码"
         },
         "address": {
           "label": "登记地址",
-          "placeholder": "街道、楼号、楼层、门牌",
+          "placeholder": "街道名称",
           "helperText": "这是您正式登记（empadronado）的地址。我们将其用于预约和税务表格，即使您住在别处。"
         },
+        "addressNumber": {
+          "label": "门牌号",
+          "placeholder": "例如 10"
+        },
+        "addressFloor": {
+          "label": "楼层 / 公寓",
+          "placeholder": "例如 3B（可选）"
+        },
         "city": {
-          "label": "城市",
+          "label": "城市 / 城镇",
+          "placeholder": "例如 Barcelona"
+        },
+        "province": {
+          "label": "省 / 州",
           "placeholder": "例如 Barcelona"
         },
         "postalCode": {
           "label": "邮政编码",
           "placeholder": "例如 08001"
+        },
+        "email": {
+          "label": "电子邮箱",
+          "placeholder": "your.email@example.com",
+          "helperText": "已从您的账户预填。如有需要可修改。"
         },
         "hasEmpadronamiento": {
           "label": "您是否已有 empadronamiento？"
@@ -79,13 +119,21 @@
         }
       },
       "options": {
-        "documentType": {
-          "nie": "NIE",
-          "passport": "护照"
-        },
         "hasEmpadronamiento": {
           "no": "否",
           "yes": "是"
+        },
+        "gender": {
+          "male": "男",
+          "female": "女",
+          "other": "其他"
+        },
+        "maritalStatus": {
+          "single": "单身",
+          "married": "已婚",
+          "widowed": "丧偶",
+          "divorced": "离异",
+          "separated": "分居"
         }
       }
     }

@@ -1,6 +1,8 @@
 import type { Requirement, TieStepDetail } from '@/features/home/types/TieStepDetail'
 import type { RequirementLocation } from '@visamesa/content/tieSteps/detail'
 
+import { EX17_FORM_ID } from '@/features/pdfGeneration/forms/ex17/ex17Constants'
+
 export type RequirementGroup<T extends Requirement = Requirement> = {
   location?: RequirementLocation
   requirements: T[]
@@ -36,8 +38,12 @@ export function findRequirementInSteps(
 }
 
 export const FORM_SHARE_URLS: Record<string, string> = {
-  'ex-17': 'https://sede.administracionespublicas.gob.es/pagina/index/directorio/ex17',
+  [EX17_FORM_ID]: 'https://sede.administracionespublicas.gob.es/pagina/index/directorio/ex17',
   'modelo-790-012': 'https://sede.policia.gob.es/Tasa790_012/',
+}
+
+export function isGeneratedFormView(requirement: Requirement): boolean {
+  return requirement.formId === EX17_FORM_ID && Boolean(requirement.shareableForm)
 }
 
 export function getRequirementShareMessage(

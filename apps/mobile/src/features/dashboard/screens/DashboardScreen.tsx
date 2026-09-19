@@ -55,6 +55,8 @@ const DashboardScreen = ({navigation}: DashboardScreenProps) => {
     onViewAppointmentPress,
     onClearBookingAssistantPress,
     onFormPress,
+    onApproveAndDownloadForm,
+    onFormView,
     onClosePrerequisitesDialog,
     onGoToProfilePress,
     onSupportPress,
@@ -121,6 +123,8 @@ const DashboardScreen = ({navigation}: DashboardScreenProps) => {
             onViewAppointmentPress={onViewAppointmentPress}
             onClearBookingAssistantPress={onClearBookingAssistantPress}
             onFormPress={onFormPress}
+            onApproveAndDownloadForm={onApproveAndDownloadForm}
+            onFormView={onFormView}
             onSupportPress={onSupportPress}
           />
         </ScrollView>

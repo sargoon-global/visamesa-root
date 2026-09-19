@@ -25,8 +25,8 @@ function phoneToText(value: unknown) {
   return '';
 }
 
-function parseNie(documentNumber: string) {
-  const normalized = documentNumber.replace(/\s+/g, '').toUpperCase();
+function parseNie(nieNumber: string) {
+  const normalized = nieNumber.replace(/\s+/g, '').toUpperCase();
   const match = normalized.match(/^([XYZ])(\d+)([A-Z])$/);
 
   if (!match) {
@@ -40,11 +40,33 @@ function parseNie(documentNumber: string) {
   };
 }
 
+function mapGenderToSex(gender: unknown) {
+  switch (text(gender).toLowerCase()) {
+    case 'male':
+      return 'H';
+    case 'female':
+      return 'M';
+    case 'other':
+      return 'X';
+    default:
+      return '';
+  }
+}
+
+function todayIsoDate() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
 export function mapProfileToEx17Data(profileData: ProfileData) {
   const personal = profileData.personal ?? {};
-  const documentType = text(personal.documentType);
-  const documentNumber = text(personal.documentNumber);
-  const nie = documentType === 'nie' ? parseNie(documentNumber) : null;
+  const nieNumber = text(personal.nieNumber);
+  const passportNumber = text(personal.passportNumber);
+  const nie = parseNie(nieNumber);
   const fullName = [
     upper(personal.firstName),
     upper(personal.lastName),
@@ -53,37 +75,39 @@ export function mapProfileToEx17Data(profileData: ProfileData) {
     .filter(Boolean)
     .join(' ');
   const phoneNumber = phoneToText(personal.phoneNumber);
-  const today = new Date().toISOString().slice(0, 10);
+  const email = text(personal.email);
+  const today = todayIsoDate();
+  const address = {
+    street: upper(personal.address),
+    number: text(personal.addressNumber),
+    floor: text(personal.addressFloor),
+    city: upper(personal.city),
+    postalCode: text(personal.postalCode),
+    province: upper(personal.province),
+  };
 
   return {
     applicant: {
-      passportNumber: documentType === 'passport' ? documentNumber : '',
+      passportNumber,
       nie: {
-        prefix: nie?.prefix ?? '',
-        number: nie?.number ?? '',
-        checkDigit: nie?.checkDigit ?? '',
+        prefix: nie.prefix,
+        number: nie.number,
+        checkDigit: nie.checkDigit,
       },
       firstSurname: upper(personal.lastName),
       secondSurname: upper(personal.secondLastName),
       firstName: upper(personal.firstName),
-      sex: '',
+      sex: mapGenderToSex(personal.gender),
       birthDate: text(personal.dateOfBirth),
-      birthPlace: '',
-      birthCountry: '',
+      birthPlace: upper(personal.cityOfBirth),
+      birthCountry: upper(personal.countryOfBirth),
       nationality: upper(personal.nationality),
-      maritalStatus: '',
-      fatherName: '',
-      motherName: '',
-      address: {
-        street: upper(personal.address),
-        number: '',
-        floor: '',
-        city: upper(personal.city),
-        postalCode: text(personal.postalCode),
-        province: upper(personal.city),
-      },
+      maritalStatus: text(personal.maritalStatus),
+      fatherName: upper(personal.fatherName),
+      motherName: upper(personal.motherName),
+      address,
       mobilePhone: phoneNumber,
-      email: '',
+      email,
       legalRepresentative: {
         fullName: '',
         documentNumber: '',
@@ -111,17 +135,10 @@ export function mapProfileToEx17Data(profileData: ProfileData) {
     },
     notifications: {
       fullNameOrBusinessName: fullName,
-      documentNumber,
-      address: {
-        street: upper(personal.address),
-        number: '',
-        floor: '',
-        city: upper(personal.city),
-        postalCode: text(personal.postalCode),
-        province: upper(personal.city),
-      },
+      documentNumber: nieNumber,
+      address,
       mobilePhone: phoneNumber,
-      email: '',
+      email,
       dehuConsent: false,
     },
     request: {
@@ -136,7 +153,7 @@ export function mapProfileToEx17Data(profileData: ProfileData) {
     destination: {
       office: '',
       dir3Code: '',
-      province: upper(personal.city),
+      province: upper(personal.province),
     },
   };
 }

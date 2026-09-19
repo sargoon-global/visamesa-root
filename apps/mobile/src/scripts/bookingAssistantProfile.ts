@@ -1,5 +1,7 @@
 import type { BookingAssistantId } from '@visamesa/content/tieSteps/detail'
 
+import { phoneToString } from '@/features/forms/utils/phoneUtils'
+
 import {
   CITA_PREVIA_BOOKING_DEFAULTS,
   emptyCitaPreviaBookingAssistantProfile,
@@ -15,10 +17,20 @@ function readString(value: unknown): string {
   return typeof value === 'string' ? value.trim() : ''
 }
 
-function mapDocumentTypeToEmpadronamientoIdentifier(
-  documentType: unknown,
-): string {
-  return documentType === 'passport' ? 'PASSAPORT' : 'NIE'
+function readPhone(value: unknown): string {
+  if (typeof value === 'string') {
+    return value.trim()
+  }
+
+  if (value && typeof value === 'object') {
+    const phone = value as { countryCode?: string; number?: string }
+    if (phone.number) {
+      const countryCode = phone.countryCode?.replace(/^\+/, '') ?? ''
+      return phoneToString({ countryCode, number: phone.number })
+    }
+  }
+
+  return ''
 }
 
 export function mapPersonalToEmpadronamientoBookingAssistantProfile(
@@ -27,8 +39,11 @@ export function mapPersonalToEmpadronamientoBookingAssistantProfile(
 ): EmpadronamientoBookingAssistantProfile | null {
   const name = readString(personal.firstName)
   const surname = readString(personal.lastName)
-  const identifier = readString(personal.documentNumber)
-  const phone = readString(personal.phoneNumber)
+  const nieNumber = readString(personal.nieNumber)
+  const passportNumber = readString(personal.passportNumber)
+  const identifier = nieNumber || passportNumber
+  const identifierType = nieNumber ? 'NIE' : 'PASSAPORT'
+  const phone = readPhone(personal.phoneNumber)
   const email = readString(personal.email) || readString(fallbackEmail)
 
   if (!name || !surname || !identifier || !phone || !email) {
@@ -37,9 +52,7 @@ export function mapPersonalToEmpadronamientoBookingAssistantProfile(
 
   return {
     personalInfo: {
-      identifierType: mapDocumentTypeToEmpadronamientoIdentifier(
-        personal.documentType,
-      ),
+      identifierType,
       identifier,
       name,
       surname,
@@ -56,21 +69,18 @@ export function mapPersonalToCitaPreviaBookingAssistantProfile(
 ): CitaPreviaBookingAssistantProfile | null {
   const firstName = readString(personal.firstName)
   const lastName = readString(personal.lastName)
-  const documentNumber = readString(personal.documentNumber)
+  const nieNumber = readString(personal.nieNumber)
 
-  if (!firstName || !documentNumber) {
+  if (!firstName || !nieNumber) {
     return null
   }
 
-  const documentType =
-    personal.documentType === 'passport' ? 'passport' : 'nie'
-
   return {
     details: {
-      nie: documentType === 'nie' ? documentNumber : '',
+      nie: nieNumber,
       Name: [firstName, lastName].filter(Boolean).join(' '),
       nationality: CITA_PREVIA_BOOKING_DEFAULTS.defaultNationality,
-      documentType,
+      documentType: 'nie',
     },
     provinceOptionIndex: CITA_PREVIA_BOOKING_DEFAULTS.provinceOptionIndex,
     tramitesOptionIndex: CITA_PREVIA_BOOKING_DEFAULTS.tramitesOptionIndex,

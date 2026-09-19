@@ -12,6 +12,8 @@ import {
   PDFTextField,
 } from 'pdf-lib';
 
+import { ensureEx17TextFieldWidgetWidth } from './ex17-pdf-text-field-utils.mjs';
+
 const [
   ,
   ,
@@ -88,6 +90,9 @@ for (const schemaField of schema.fields) {
 
   const field = form.getField(schemaField.pdfFieldName);
   clearField(field);
+  if (field instanceof PDFTextField) {
+    ensureEx17TextFieldWidgetWidth(field, schemaField.semanticId);
+  }
   field.acroField.setPartialName(schemaField.semanticId);
 
   // /TU is the human-readable alternate field name shown by many PDF tools.
