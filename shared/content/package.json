@@ -22,9 +22,6 @@
     "./waitlistEmail": "./waitlistEmailContent.ts",
     "./email": "./email/emailLayout.ts"
   },
-  "dependencies": {
-    "@visamesa/design-tokens": "file:../design-tokens"
-  },
   "peerDependencies": {
     "i18next": "^26.3.0",
     "react-i18next": "^17.0.0"
