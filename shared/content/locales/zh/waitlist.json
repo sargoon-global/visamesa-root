@@ -45,11 +45,16 @@
     "feedbackFailed": "无法保存您的反馈，请稍后再试。"
   },
   "email": {
-    "subject": "确认您的 VisaMesa 等候名单注册",
-    "preview": "确认邮箱以加入 VisaMesa 等候名单",
-    "greeting": "感谢加入 VisaMesa 等候名单！",
-    "body": "点击下方按钮确认邮箱，锁定优先访问名额。",
+    "subject": "确认一下邮箱，即可加入等候名单",
+    "preview": "确认邮箱后，剩下的交给我们。",
+    "greeting": "欢迎 — 很高兴您找到我们。",
+    "body": "在巴塞罗那办理 TIE 不该像走迷宫一样。请在下方确认邮箱，VisaMesa 上线后我们会一步步带您完成流程。",
+    "reassurance": "不会频繁打扰 — 只在上线时通知您，随时可退出等候名单。",
     "cta": "确认我的邮箱",
-    "footer": "如果您未注册，请忽略此邮件。"
+    "signoff": "再聊，",
+    "signoffName": "Pejman",
+    "signoffRole": "VisaMesa 联合创始人",
+    "footer": "如果您并未注册，请忽略此邮件，不会有任何影响。",
+    "footerReply": "有疑问？请发邮件至"
   }
 }

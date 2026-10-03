@@ -45,11 +45,16 @@
     "feedbackFailed": "Could not save your feedback. You can try again later."
   },
   "email": {
-    "subject": "Confirm your VisaMesa waitlist signup",
-    "preview": "Confirm your email to join the VisaMesa waitlist",
-    "greeting": "Thanks for joining the VisaMesa waitlist!",
-    "body": "Tap the button below to confirm your email and secure your spot for early access.",
+    "subject": "One quick confirmation and you're on the list",
+    "preview": "Confirm your email and we'll take it from here.",
+    "greeting": "Welcome — I'm glad you found us.",
+    "body": "Getting your TIE in Barcelona shouldn't feel like a maze. Confirm your email below and we'll let you know the moment VisaMesa is ready to walk you through it, one step at a time.",
+    "reassurance": "No spam and no pressure — just a note when we launch, and you can leave the list whenever you like.",
     "cta": "Confirm my email",
-    "footer": "If you did not sign up, you can ignore this email."
+    "signoff": "Talk soon,",
+    "signoffName": "Pejman",
+    "signoffRole": "Co-founder, VisaMesa",
+    "footer": "If this wasn't you, no action needed. Just ignore this email and nothing happens.",
+    "footerReply": "Questions? Email us at"
   }
 }

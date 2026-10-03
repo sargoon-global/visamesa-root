@@ -1,6 +1,7 @@
 import waitlistEn from './locales/en/waitlist.json' with { type: 'json' }
 import waitlistEs from './locales/es/waitlist.json' with { type: 'json' }
 import waitlistZh from './locales/zh/waitlist.json' with { type: 'json' }
+import { renderEmailLayout, renderEmailText } from './email/emailLayout.js'
 import { DEFAULT_LANGUAGE, localizedPath, normalizeLanguageTag, type SupportedLanguage } from './i18n/types.js'
 
 export type WaitlistEmailContent = {
@@ -8,8 +9,13 @@ export type WaitlistEmailContent = {
   preview: string
   greeting: string
   body: string
+  reassurance: string
   cta: string
+  signoff: string
+  signoffName: string
+  signoffRole: string
   footer: string
+  footerReply: string
 }
 
 export type WaitlistConfirmationEmail = {
@@ -24,13 +30,22 @@ const WAITLIST_EMAIL_BY_LOCALE: Record<SupportedLanguage, WaitlistEmailContent> 
   zh: waitlistZh.email,
 }
 
-function escapeHtml(value: string): string {
-  return value
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;')
+const WAITLIST_EMAIL_CONTENT_KEYS: (keyof WaitlistEmailContent)[] = [
+  'subject',
+  'preview',
+  'greeting',
+  'body',
+  'reassurance',
+  'cta',
+  'signoff',
+  'signoffName',
+  'signoffRole',
+  'footer',
+  'footerReply',
+]
+
+export function getWaitlistEmailContentKeys(): (keyof WaitlistEmailContent)[] {
+  return [...WAITLIST_EMAIL_CONTENT_KEYS]
 }
 
 export function getWaitlistEmailContent(locale: string | undefined | null): WaitlistEmailContent {
@@ -51,38 +66,25 @@ export function buildWaitlistConfirmationEmail(input: {
   const confirmPath = localizedPath(`/waitlist/confirm/${input.confirmationToken}`, locale)
   const confirmUrl = `${input.appUrl.replace(/\/$/, '')}${confirmPath}`
 
-  const html = `
-    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #1f2937;">
-      <p style="display:none;max-height:0;overflow:hidden;opacity:0;">${escapeHtml(content.preview)}</p>
-      <h1 style="font-size: 20px; margin-bottom: 16px;">${escapeHtml(content.greeting)}</h1>
-      <p style="margin: 0 0 16px;">${escapeHtml(content.body)}</p>
-      <p style="margin: 0 0 24px;">
-        <a href="${confirmUrl}" style="display:inline-block;background:#1b5e20;color:#ffffff;padding:12px 20px;border-radius:999px;text-decoration:none;font-weight:600;">
-          ${escapeHtml(content.cta)}
-        </a>
-      </p>
-      <p style="margin: 0 0 16px; font-size: 14px; color: #4b5563;">
-        ${escapeHtml(content.footer)}
-      </p>
-      <p style="margin: 0; font-size: 12px; color: #6b7280; word-break: break-all;">
-        ${confirmUrl}
-      </p>
-    </div>
-  `.trim()
-
-  const text = [
-    content.greeting,
-    '',
-    content.body,
-    '',
-    `${content.cta}: ${confirmUrl}`,
-    '',
-    content.footer,
-  ].join('\n')
+  const layoutInput = {
+    locale,
+    previewText: content.preview,
+    heading: content.greeting,
+    paragraphs: [content.body, content.reassurance],
+    cta: { label: content.cta, url: confirmUrl },
+    fallbackUrl: confirmUrl,
+    signature: {
+      farewell: content.signoff,
+      name: content.signoffName,
+      role: content.signoffRole,
+    },
+    footerNote: content.footer,
+    replyHint: content.footerReply,
+  }
 
   return {
     subject: content.subject,
-    html,
-    text,
+    html: renderEmailLayout(layoutInput),
+    text: renderEmailText(layoutInput),
   }
 }
