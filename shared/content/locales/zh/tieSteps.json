@@ -1,36 +1,36 @@
 {
-  "howToName": "巴塞罗那学生 TIE 办理流程",
-  "howToDescription": "完成巴塞罗那学生 TIE 居留卡的六个分步指引。",
+  "howToName": "如何在巴塞罗那办理学生 TIE（西班牙）",
+  "howToDescription": "tarjeta de identidad de extranjero 官方流程：empadronamiento、EX-17、cita previa toma de huellas、Modelo 790 缴费、警局预约与领卡。",
   "marketingSteps": [
     {
       "id": 1,
-      "title": "登记住址",
-      "description": "在巴塞罗那当地 Ayuntamiento 办理 empadronamiento。"
+      "title": "巴塞罗那 empadronamiento",
+      "description": "在 Ayuntamiento 登记住址（padrón），办理 TIE 前必备。"
     },
     {
       "id": 2,
-      "title": "填写 EX-17 表格",
-      "description": "VisaMesa 根据您的个人资料预填 TIE 申请表。"
+      "title": "EX-17 TIE 申请表",
+      "description": "填写 tarjeta de identidad de extranjero 的 EX-17 申请。"
     },
     {
       "id": 3,
-      "title": "预约指纹采集",
-      "description": "在警方官方网站预约 cita previa 名额。"
+      "title": "Cita previa toma de huellas",
+      "description": "在 Policía Nacional 官网预约指纹采集（toma de huellas）。"
     },
     {
       "id": 4,
-      "title": "缴纳 TIE 费用",
-      "description": "填写 Modelo 790（VisaMesa 代您完成），打印后在西班牙银行缴费。"
+      "title": "Modelo 790 TIE 费用（código 012）",
+      "description": "预约前用 Modelo 790 código 012 缴纳政府 TIE 费用。"
     },
     {
       "id": 5,
-      "title": "前往指纹采集预约",
-      "description": "打印文件，前往警局并提交申请。"
+      "title": "指纹预约当天",
+      "description": "携带 EX-17、empadronamiento、Modelo 790 收据与护照前往 cita previa。"
     },
     {
       "id": 6,
-      "title": "领取 TIE",
-      "description": "携带 resguardo 和护照返回领取卡片。"
+      "title": "领取 TIE 卡",
+      "description": "凭 resguardo 在警局领取 tarjeta de identidad de extranjero。"
     }
   ],
   "faqs": [
@@ -75,7 +75,7 @@
     "empadronamiento": {
       "title": "登记住址",
       "short": "在 Ayuntamiento 办理 empadronamiento。",
-      "description": "准备材料，如有需要请预约 Ayuntamiento 访问，并本人到场登记住址、领取 empadronamiento 证明。",
+      "description": "巴塞罗那 empadronamiento：如何在 Ayuntamiento 预约、所需材料，以及办理学生 TIE 所需的 certificado de empadronamiento。",
       "whyItExists": "Empadronamiento 在巴塞罗那市政登记册中登记您的居住地址。移民及许多其他手续均要求证明您居住在特定地址。",
       "completionPrompt": "您是否已在 Ayuntamiento 领取 empadronamiento 证明？",
       "cta": {
@@ -142,7 +142,7 @@
     "toma-de-huellas": {
       "title": "预约指纹采集",
       "short": "预约 cita previa 进行指纹采集和材料提交。",
-      "description": "在警方官方网站预约「Toma de huellas」（指纹采集）的 cita previa。VisaMesa 使用您的个人资料填写预约表单，并可搜索可用名额。预约后，您将收到 Cita Previa（Ministerio de Política Territorial y Memoria Democrática）发送的官方确认邮件，注明警局、日期和时间——请保存或打印，第 5 步需要用到。",
+      "description": "巴塞罗那 cita previa toma de huellas：在 Policía Nacional 官网预约 TIE 指纹，若无名额怎么办，以及如何保存确认信以备预约当天使用。",
       "whyItExists": "西班牙警方要求 TIE 申请必须预约。巴塞罗那名额有限且很快约满，尤其在九月。",
       "completionPrompt": "您是否已保存或打印 Cita Previa 预约确认函？",
       "cta": {
@@ -188,7 +188,7 @@
     "required-documents": {
       "title": "填写 EX-17 表格",
       "short": "VisaMesa 预填您的 TIE 申请表。",
-      "description": "查看 VisaMesa 根据您的个人资料填写的 EX-17 申请表。确认信息无误——您将在第 5 步指纹采集预约前打印并签名。",
+      "description": "巴塞罗那学生 TIE 的 EX-17 填写要点：与护照、empadronamiento 一致，打印签名后携带至 toma de huellas 预约。",
       "whyItExists": "EX-17 是官方的 TIE 申请表。警方要求预约时携带填写完整并签名的副本。",
       "completionPrompt": "您是否已核对 EX-17 表格并准备好打印？",
       "cta": {
@@ -227,7 +227,7 @@
     "pay-fee": {
       "title": "缴纳 TIE 签发费用",
       "short": "填写 Modelo 790（VisaMesa 代您完成），打印后在银行缴费。",
-      "description": "指纹预约前须使用 Modelo 790 code 012 缴纳政府费用。",
+      "description": "Modelo 790 código 012：在指纹预约前缴纳 TIE 政府费用，并保留银行盖章收据以备警局查验。",
       "whyItExists": "缴纳官方费用是 TIE 办理的必要条件。银行盖章的表格是缴费证明。",
       "completionPrompt": "您是否已缴费并收到盖章回执？",
       "cta": {
@@ -285,7 +285,7 @@
     "fingerprint-appointment": {
       "title": "前往指纹采集预约",
       "short": "打印全部材料，前往警局提交申请。",
-      "description": "准备下方所列全部文件，打印需要打印的材料，并按 Cita Previa 预约时间前往。您将提交材料、采集指纹和照片，并领取 resguardo（受理回执）及领取说明。",
+      "description": "巴塞罗那 toma de huellas 材料清单：EX-17、empadronamiento、Modelo 790 缴费证明、证件照与 cita previa 确认信。",
       "whyItExists": "警方需本人到场核验身份、采集生物信息并受理申请。缺少材料通常需要重新预约。",
       "completionPrompt": "您是否已到场完成预约并领取 resguardo？",
       "cta": {
@@ -376,7 +376,7 @@
     "collect-tie": {
       "title": "领取 TIE",
       "short": "卡片就绪后返回领取实体卡。",
-      "description": "TIE 就绪后（通常在预约后约 30–45 天），携带 resguardo 和护照返回警局领取卡片。部分办事处要求预约领取时间。",
+      "description": "巴塞罗那领取 TIE：tarjeta de identidad de extranjero 制好后，凭 resguardo 与护照到警局领卡——指纹预约后通常需 30–45 天。",
       "whyItExists": "TIE 卡集中制作后送至警局。Resguardo 证明您的申请已被受理，并授权领取卡片。",
       "completionPrompt": "您是否已领取实体 TIE 卡？",
       "cta": {

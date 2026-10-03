@@ -3,12 +3,12 @@
     "titlePrefix": "Paperwork,",
     "titleAccent": "all in one",
     "subtitle": "Manage your TIE, forms, and appointments",
-    "lead": "The complete guide to getting your TIE residency card in Barcelona.",
+    "lead": "Step-by-step help for the Barcelona student TIE: empadronamiento, EX-17, cita previa, and fingerprint appointment.",
     "scrollHint": "Scroll to explore"
   },
   "process": {
     "sectionTitle": "Your TIE process, step by step",
-    "sectionLead": "The government process is free, but confusing. VisaMesa keeps you on track and can help with the hardest parts.",
+    "sectionLead": "The official student TIE process in Barcelona is free but easy to get wrong. Follow the six steps below — empadronamiento, forms, Modelo 790, cita previa toma de huellas, and pickup.",
     "stepLabel": "Step {{stepNumber}}"
   },
   "features": {
@@ -66,8 +66,8 @@
   },
   "signInHint": "Use the same Google account you will use in the mobile app.",
   "seo": {
-    "homeTitle": "VisaMesa — TIE assistance in Barcelona",
-    "homeDescription": "Join the VisaMesa waitlist for early access. We help students in Barcelona navigate the TIE process with guided steps, document prep, and optional appointment assistance. Not legal advice.",
+    "homeTitle": "Student TIE Barcelona — empadronamiento, cita previa & EX-17 | VisaMesa",
+    "homeDescription": "Guide to the Barcelona student TIE (tarjeta de identidad de extranjero): empadronamiento, EX-17, Modelo 790 fee, cita previa toma de huellas, and card pickup. Join the waitlist for the VisaMesa app. Not legal advice.",
     "pricingTitle": "Pay your service fee — VisaMesa",
     "pricingDescription": "Pay your VisaMesa service fee (€{{price}}) for the Barcelona student TIE process. One-time payment, then use the mobile app with the same Google account.",
     "privacyTitle": "Privacy Policy — VisaMesa",
@@ -80,6 +80,6 @@
     "checkoutSuccessDescription": "Your VisaMesa payment was successful.",
     "checkoutCancelTitle": "Checkout cancelled — VisaMesa",
     "checkoutCancelDescription": "Your VisaMesa checkout was cancelled.",
-    "stepTitle": "{{stepTitle}} — VisaMesa"
+    "stepTitle": "{{stepTitle}} | Barcelona student TIE — VisaMesa"
   }
 }
