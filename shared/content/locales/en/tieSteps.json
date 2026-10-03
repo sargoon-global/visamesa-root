@@ -1,36 +1,36 @@
 {
-  "howToName": "Student TIE process in Barcelona",
-  "howToDescription": "Six guided steps to complete your student TIE residency card process in Barcelona.",
+  "howToName": "How to get your student TIE in Barcelona, Spain",
+  "howToDescription": "Official path for the tarjeta de identidad de extranjero: empadronamiento, EX-17, cita previa fingerprint appointment, Modelo 790 payment, police appointment, and TIE pickup.",
   "marketingSteps": [
     {
       "id": 1,
-      "title": "Register your address",
-      "description": "Get empadronamiento at your local Ayuntamiento in Barcelona."
+      "title": "Empadronamiento in Barcelona",
+      "description": "Register your address (padrón) at the Ajuntament before your TIE appointment."
     },
     {
       "id": 2,
-      "title": "Fill your EX-17 form",
-      "description": "VisaMesa pre-fills your TIE application form from your profile."
+      "title": "EX-17 TIE application form",
+      "description": "Complete the EX-17 solicitud de tarjeta de extranjero for your Barcelona TIE."
     },
     {
       "id": 3,
-      "title": "Book fingerprint appointment",
-      "description": "Secure a cita previa slot on the official police website."
+      "title": "Cita previa toma de huellas",
+      "description": "Book a fingerprint appointment (toma de huellas) on the official Policía Nacional site."
     },
     {
       "id": 4,
-      "title": "Pay the TIE fee",
-      "description": "Complete Modelo 790 (VisaMesa does this for you), print it, and pay at a Spanish bank."
+      "title": "Modelo 790 TIE fee (código 012)",
+      "description": "Pay the government TIE issuance fee with Modelo 790 código 012 before your appointment."
     },
     {
       "id": 5,
-      "title": "Attend fingerprint appointment",
-      "description": "Print your documents, go to the police station, and submit your application."
+      "title": "Toma de huellas appointment day",
+      "description": "Bring EX-17, empadronamiento, Modelo 790 receipt, and passport to your cita previa."
     },
     {
       "id": 6,
-      "title": "Collect your TIE",
-      "description": "Return with your resguardo and passport to pick up your card."
+      "title": "Pick up your TIE card",
+      "description": "Collect your tarjeta de identidad de extranjero at the police office with your resguardo."
     }
   ],
   "faqs": [
@@ -75,7 +75,7 @@
     "empadronamiento": {
       "title": "Register Your Address",
       "short": "Get empadronamiento at the Ayuntamiento.",
-      "description": "Gather your documents, book an Ayuntamiento appointment if needed, and attend in person to register your address and receive your empadronamiento certificate.",
+      "description": "Empadronamiento in Barcelona: how to book at the Ajuntament, what documents you need, and how to get a certificado de empadronamiento for your student TIE.",
       "whyItExists": "Empadronamiento registers your address in Barcelona's municipal census. Immigration and many other procedures require proof that you live at a specific address.",
       "completionPrompt": "Did you receive your empadronamiento certificate at the Ayuntamiento?",
       "cta": {
@@ -142,7 +142,7 @@
     "toma-de-huellas": {
       "title": "Book Your Fingerprint Appointment",
       "short": "Reserve your cita previa for fingerprints and document submission.",
-      "description": "Book a cita previa on the official police website for \"Toma de huellas\" (fingerprints). VisaMesa uses your profile to fill the booking form and can search for available slots. After booking, you receive a confirmation email from Cita Previa (Ministerio de Política Territorial y Memoria Democrática) with the police office, date, and time — save or print it for Step 5.",
+      "description": "Cita previa for toma de huellas in Barcelona: book your TIE fingerprint slot on the official Policía Nacional site, what to do when no appointments appear, and how to save your confirmation for appointment day.",
       "whyItExists": "Spanish police require a scheduled appointment for TIE applications. Slots in Barcelona are limited and fill quickly, especially in September.",
       "completionPrompt": "Do you have your Cita Previa confirmation saved or printed?",
       "cta": {
@@ -188,7 +188,7 @@
     "required-documents": {
       "title": "Fill Your EX-17 Form",
       "short": "VisaMesa pre-fills your TIE application form.",
-      "description": "Review the EX-17 application form that VisaMesa fills from your profile. Confirm it is correct — you will print and sign it before your fingerprint appointment in Step 5.",
+      "description": "How to fill the EX-17 form for your Barcelona student TIE: match your passport and empadronamiento, sign the PDF, and bring it to your toma de huellas appointment.",
       "whyItExists": "The EX-17 is the official TIE application form. Police require a completed, signed copy at your appointment.",
       "completionPrompt": "Is your EX-17 form reviewed and ready to print?",
       "cta": {
@@ -227,7 +227,7 @@
     "pay-fee": {
       "title": "Pay the TIE Issuance Fee",
       "short": "Fill Modelo 790 (VisaMesa does this for you), print it, and pay at a bank.",
-      "description": "Before your fingerprint appointment, you must pay the government fee using Modelo 790, Code 012.",
+      "description": "Modelo 790 código 012: pay the TIE issuance fee in Spain before your fingerprint appointment and keep the bank-stamped receipt for the police office.",
       "whyItExists": "Paying the official fee is mandatory before your TIE can be processed. The bank-stamped form is proof of payment.",
       "completionPrompt": "Did you pay the fee and get your stamped receipt?",
       "cta": {
@@ -285,7 +285,7 @@
     "fingerprint-appointment": {
       "title": "Attend Your Fingerprint Appointment",
       "short": "Print everything, go to the police station, submit your application.",
-      "description": "Prepare every document below, print what needs printing, and go to your Cita Previa appointment. You will submit paperwork, provide fingerprints and a photo, and receive a resguardo (receipt) with pickup instructions.",
+      "description": "Toma de huellas checklist for Barcelona: EX-17, empadronamiento, Modelo 790 payment, passport photos, and cita previa confirmation for your student TIE appointment.",
       "whyItExists": "Police verify your identity in person, capture biometrics, and accept your application. Missing documents usually means rescheduling.",
       "completionPrompt": "Did you attend your appointment and receive your resguardo?",
       "cta": {
@@ -376,7 +376,7 @@
     "collect-tie": {
       "title": "Pick Up Your TIE",
       "short": "Return to collect your physical card when ready.",
-      "description": "When your TIE is ready (often 30–45 days after your appointment), go back to the police station with your resguardo and passport to collect your card. Some offices require booking a pickup appointment.",
+      "description": "Recoger TIE in Barcelona: when your tarjeta de identidad de extranjero is ready, return to the police office with resguardo and passport — often 30–45 days after toma de huellas.",
       "whyItExists": "TIE cards are manufactured centrally and delivered to the station. The resguardo proves your application was accepted and authorizes collection.",
       "completionPrompt": "Did you collect your physical TIE card?",
       "cta": {

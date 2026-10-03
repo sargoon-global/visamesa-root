@@ -1,38 +1,38 @@
-export const HOW_TO_NAME = 'Student TIE process in Barcelona'
+export const HOW_TO_NAME = 'How to get your student TIE in Barcelona, Spain'
 
 export const HOW_TO_DESCRIPTION =
-  'Six guided steps to complete your student TIE residency card process in Barcelona.'
+  'Official path for the tarjeta de identidad de extranjero: empadronamiento, EX-17, cita previa fingerprint appointment, Modelo 790 payment, police appointment, and TIE pickup.'
 
 export const tieSteps = [
   {
     id: 1,
-    title: 'Register your address',
-    description: 'Get empadronamiento at your local Ayuntamiento in Barcelona.',
+    title: 'Empadronamiento in Barcelona',
+    description: 'Register your address (padrón) at the Ajuntament before your TIE appointment.',
   },
   {
     id: 2,
-    title: 'Fill your EX-17 form',
-    description: 'VisaMesa pre-fills your TIE application form from your profile.',
+    title: 'EX-17 TIE application form',
+    description: 'Complete the EX-17 solicitud de tarjeta de extranjero for your Barcelona TIE.',
   },
   {
     id: 3,
-    title: 'Book fingerprint appointment',
-    description: 'Secure a cita previa slot on the official police website.',
+    title: 'Cita previa toma de huellas',
+    description: 'Book a fingerprint appointment (toma de huellas) on the official Policía Nacional site.',
   },
   {
     id: 4,
-    title: 'Pay the TIE fee',
-    description: 'Complete Modelo 790 (VisaMesa does this for you), print it, and pay at a Spanish bank.',
+    title: 'Modelo 790 TIE fee (código 012)',
+    description: 'Pay the government TIE issuance fee with Modelo 790 código 012 before your appointment.',
   },
   {
     id: 5,
-    title: 'Attend fingerprint appointment',
-    description: 'Print your documents, go to the police station, and submit your application.',
+    title: 'Toma de huellas appointment day',
+    description: 'Bring EX-17, empadronamiento, Modelo 790 receipt, and passport to your cita previa.',
   },
   {
     id: 6,
-    title: 'Collect your TIE',
-    description: 'Return with your resguardo and passport to pick up your card.',
+    title: 'Pick up your TIE card',
+    description: 'Collect your tarjeta de identidad de extranjero at the police office with your resguardo.',
   },
 ] as const;
 

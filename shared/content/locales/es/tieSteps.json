@@ -1,36 +1,36 @@
 {
-  "howToName": "Proceso del TIE de estudiante en Barcelona",
-  "howToDescription": "Seis pasos guiados para completar tu proceso de tarjeta de residencia TIE de estudiante en Barcelona.",
+  "howToName": "Cómo obtener tu TIE de estudiante en Barcelona, España",
+  "howToDescription": "Trámite oficial de la tarjeta de identidad de extranjero: empadronamiento, EX-17, cita previa toma de huellas, pago Modelo 790, cita en comisaría y recogida del TIE.",
   "marketingSteps": [
     {
       "id": 1,
-      "title": "Empadrona tu domicilio",
-      "description": "Obtén el empadronamiento en tu Ayuntamiento local de Barcelona."
+      "title": "Empadronamiento en Barcelona",
+      "description": "Empadrona tu domicilio en el Ayuntamiento antes de la cita del TIE."
     },
     {
       "id": 2,
-      "title": "Rellena tu formulario EX-17",
-      "description": "VisaMesa rellena tu solicitud de TIE con los datos de tu perfil."
+      "title": "Formulario EX-17 del TIE",
+      "description": "Completa la solicitud EX-17 de tarjeta de identidad de extranjero."
     },
     {
       "id": 3,
-      "title": "Reserva cita para huellas",
-      "description": "Consigue una cita previa en la web oficial de la policía."
+      "title": "Cita previa toma de huellas",
+      "description": "Reserva cita de huellas (toma de huellas) en la web oficial de la Policía Nacional."
     },
     {
       "id": 4,
-      "title": "Paga la tasa del TIE",
-      "description": "Completa el Modelo 790 (VisaMesa lo hace por ti), imprímelo y paga en un banco español."
+      "title": "Tasa TIE Modelo 790 (código 012)",
+      "description": "Paga la tasa oficial con el Modelo 790 código 012 antes de tu cita."
     },
     {
       "id": 5,
-      "title": "Acude a la cita de huellas",
-      "description": "Imprime tus documentos, acude a la comisaría y presenta tu solicitud."
+      "title": "Día de la cita de huellas",
+      "description": "Lleva EX-17, empadronamiento, justificante Modelo 790 y pasaporte a tu cita previa."
     },
     {
       "id": 6,
-      "title": "Recoge tu TIE",
-      "description": "Vuelve con tu resguardo y pasaporte para recoger tu tarjeta."
+      "title": "Recoger tu tarjeta TIE",
+      "description": "Recoge tu tarjeta de identidad de extranjero en comisaría con el resguardo."
     }
   ],
   "faqs": [
@@ -75,7 +75,7 @@
     "empadronamiento": {
       "title": "Empadrona tu domicilio",
       "short": "Obtén el empadronamiento en el Ayuntamiento.",
-      "description": "Reúne tus documentos, reserva cita en el Ayuntamiento si es necesario y acude en persona para empadronarte y recibir tu certificado de empadronamiento.",
+      "description": "Empadronamiento en Barcelona: cómo pedir cita en el Ayuntamiento, documentos necesarios y certificado de empadronamiento para el TIE de estudiante.",
       "whyItExists": "El empadronamiento registra tu domicilio en el padrón municipal de Barcelona. Inmigración y muchos otros trámites exigen acreditar que vives en una dirección concreta.",
       "completionPrompt": "¿Recibiste tu certificado de empadronamiento en el Ayuntamiento?",
       "cta": {
@@ -142,7 +142,7 @@
     "toma-de-huellas": {
       "title": "Reserva tu cita para toma de huellas",
       "short": "Reserva tu cita previa para huellas y presentación de documentación.",
-      "description": "Reserva una cita previa en la web oficial de la policía para \"Toma de huellas\". VisaMesa utiliza tu perfil para rellenar el formulario de reserva y puede buscar huecos disponibles. Tras reservar, recibirás un correo de confirmación de Cita Previa (Ministerio de Política Territorial y Memoria Democrática) con la comisaría, la fecha y la hora — guárdalo o imprímelo para el Paso 5.",
+      "description": "Cita previa para toma de huellas en Barcelona: reserva en la web de la Policía Nacional, qué hacer si no hay citas y cómo guardar la confirmación para el día de la cita.",
       "whyItExists": "La policía española exige cita previa para las solicitudes de TIE. Las plazas en Barcelona son limitadas y se agotan rápido, especialmente en septiembre.",
       "completionPrompt": "¿Tienes guardada o impresa la confirmación de tu Cita Previa?",
       "cta": {
@@ -188,7 +188,7 @@
     "required-documents": {
       "title": "Rellena tu formulario EX-17",
       "short": "VisaMesa rellena tu solicitud de TIE.",
-      "description": "Revisa el formulario de solicitud EX-17 que VisaMesa rellena con los datos de tu perfil. Confirma que es correcto — lo imprimirás y firmarás antes de tu cita de huellas en el Paso 5.",
+      "description": "Cómo rellenar el formulario EX-17 para el TIE de estudiante en Barcelona: datos coherentes con pasaporte y empadronamiento, firma e impresión para la toma de huellas.",
       "whyItExists": "El EX-17 es el formulario oficial de solicitud del TIE. La policía exige una copia cumplimentada y firmada en tu cita.",
       "completionPrompt": "¿Has revisado tu formulario EX-17 y está listo para imprimir?",
       "cta": {
@@ -227,7 +227,7 @@
     "pay-fee": {
       "title": "Paga la tasa de expedición del TIE",
       "short": "Rellena el Modelo 790 (VisaMesa lo hace por ti), imprímelo y paga en un banco.",
-      "description": "Antes de tu cita de toma de huellas, debes pagar la tasa oficial con el Modelo 790, código 012.",
+      "description": "Modelo 790 código 012: paga la tasa de expedición del TIE antes de la cita de huellas y conserva el justificante sellado por el banco.",
       "whyItExists": "Pagar la tasa oficial es obligatorio antes de tramitar tu TIE. El formulario sellado por el banco acredita el pago.",
       "completionPrompt": "¿Pagaste la tasa y recibiste tu justificante sellado?",
       "cta": {
@@ -285,7 +285,7 @@
     "fingerprint-appointment": {
       "title": "Acude a tu cita de toma de huellas",
       "short": "Imprime todo, acude a la comisaría y presenta tu solicitud.",
-      "description": "Prepara todos los documentos indicados abajo, imprime lo que haga falta y acude a tu cita de Cita Previa. Presentarás la documentación, facilitarás huellas y una foto, y recibirás un resguardo con instrucciones de recogida.",
+      "description": "Lista para la toma de huellas en Barcelona: EX-17, empadronamiento, pago Modelo 790, fotos y confirmación de cita previa para el TIE de estudiante.",
       "whyItExists": "La policía verifica tu identidad en persona, captura datos biométricos y acepta tu solicitud. Si falta documentación, normalmente tendrás que volver a reservar.",
       "completionPrompt": "¿Acudiste a tu cita y recibiste tu resguardo?",
       "cta": {
@@ -376,7 +376,7 @@
     "collect-tie": {
       "title": "Recoge tu TIE",
       "short": "Vuelve a recoger tu tarjeta física cuando esté lista.",
-      "description": "Cuando tu TIE esté listo (a menudo 30–45 días después de tu cita), vuelve a la comisaría con tu resguardo y pasaporte para recoger tu tarjeta. Algunas oficinas exigen reservar cita para la recogida.",
+      "description": "Recoger el TIE en Barcelona: cuando esté lista tu tarjeta de identidad de extranjero, vuelve a comisaría con resguardo y pasaporte — suele tardar 30–45 días tras la toma de huellas.",
       "whyItExists": "Las tarjetas TIE se fabrican de forma centralizada y se entregan en la comisaría. El resguardo acredita que tu solicitud fue aceptada y autoriza la recogida.",
       "completionPrompt": "¿Recogiste tu tarjeta TIE física?",
       "cta": {

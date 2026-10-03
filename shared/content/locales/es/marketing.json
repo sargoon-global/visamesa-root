@@ -3,12 +3,12 @@
     "titlePrefix": "Trámites,",
     "titleAccent": "todo en uno",
     "subtitle": "Gestiona tu TIE, formularios y citas",
-    "lead": "La guía completa para obtener tu tarjeta de residencia TIE en Barcelona.",
+    "lead": "Guía paso a paso del TIE de estudiante en Barcelona: empadronamiento, EX-17, cita previa y toma de huellas.",
     "scrollHint": "Desplázate para explorar"
   },
   "process": {
     "sectionTitle": "Tu proceso de TIE, paso a paso",
-    "sectionLead": "El trámite oficial es gratuito, pero confuso. VisaMesa te mantiene al día y puede ayudarte con las partes más difíciles.",
+    "sectionLead": "El trámite oficial del TIE de estudiante en Barcelona es gratuito pero fácil de equivocar. Sigue los seis pasos: empadronamiento, formularios, Modelo 790, cita previa toma de huellas y recogida.",
     "stepLabel": "Paso {{stepNumber}}"
   },
   "features": {
@@ -66,8 +66,8 @@
   },
   "signInHint": "Usa la misma cuenta de Google que usarás en la app móvil.",
   "seo": {
-    "homeTitle": "VisaMesa — Asistencia con el TIE en Barcelona",
-    "homeDescription": "Únete a la lista de espera de VisaMesa para acceso anticipado. Ayudamos a estudiantes en Barcelona con el proceso del TIE: pasos guiados, preparación de documentos y asistencia opcional de citas. No es asesoramiento legal.",
+    "homeTitle": "TIE estudiante Barcelona — empadronamiento, cita previa y EX-17 | VisaMesa",
+    "homeDescription": "Guía del TIE de estudiante en Barcelona (tarjeta de identidad de extranjero): empadronamiento, EX-17, tasa Modelo 790, cita previa toma de huellas y recogida. Lista de espera de la app VisaMesa. No es asesoramiento legal.",
     "pricingTitle": "Paga tu tarifa de servicio — VisaMesa",
     "pricingDescription": "Paga tu tarifa de servicio VisaMesa (€{{price}}) para el proceso del TIE de estudiante en Barcelona. Pago único y luego usa la app móvil con la misma cuenta de Google.",
     "privacyTitle": "Política de privacidad — VisaMesa",
@@ -80,6 +80,6 @@
     "checkoutSuccessDescription": "Tu pago en VisaMesa se ha completado correctamente.",
     "checkoutCancelTitle": "Pago cancelado — VisaMesa",
     "checkoutCancelDescription": "Tu proceso de pago en VisaMesa se ha cancelado.",
-    "stepTitle": "{{stepTitle}} — VisaMesa"
+    "stepTitle": "{{stepTitle}} | TIE estudiante Barcelona — VisaMesa"
   }
 }

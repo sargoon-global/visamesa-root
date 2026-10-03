@@ -3,12 +3,12 @@
     "titlePrefix": "各类文书，",
     "titleAccent": "一站搞定",
     "subtitle": "管理您的 TIE、表格与预约",
-    "lead": "巴塞罗那 TIE 居留卡完整办理指南。",
+    "lead": "巴塞罗那学生 TIE 分步指南：empadronamiento、EX-17、cita previa 与指纹预约（toma de huellas）。",
     "scrollHint": "向下滚动了解更多"
   },
   "process": {
     "sectionTitle": "TIE 办理流程，步步清晰",
-    "sectionLead": "政府流程本身免费，但步骤繁琐。VisaMesa 帮您保持进度，并可在最棘手的环节提供预约协助。",
+    "sectionLead": "巴塞罗那学生 TIE 官方流程免费但容易出错。请按六步办理：empadronamiento、表格、Modelo 790、cita previa toma de huellas 与领卡。",
     "stepLabel": "第 {{stepNumber}} 步"
   },
   "features": {
@@ -66,8 +66,8 @@
   },
   "signInHint": "请使用您将在移动应用中使用的同一 Google 账户。",
   "seo": {
-    "homeTitle": "VisaMesa — 巴塞罗那 TIE 办理协助",
-    "homeDescription": "加入 VisaMesa 等候名单，抢先体验。我们帮助巴塞罗那学生完成 TIE 办理：分步指引、文件准备及可选的预约协助。非法律建议。",
+    "homeTitle": "巴塞罗那学生 TIE — empadronamiento、cita previa、EX-17 | VisaMesa",
+    "homeDescription": "巴塞罗那学生 TIE（tarjeta de identidad de extranjero）指南：empadronamiento、EX-17、Modelo 790 费用、cita previa toma de huellas 与领卡。加入 VisaMesa 应用等候名单。非法律建议。",
     "pricingTitle": "支付服务费 — VisaMesa",
     "pricingDescription": "支付 VisaMesa 巴塞罗那学生 TIE 办理服务费（€{{price}}）。一次性付款后，使用同一 Google 账户登录移动应用。",
     "privacyTitle": "隐私政策 — VisaMesa",
@@ -80,6 +80,6 @@
     "checkoutSuccessDescription": "您的 VisaMesa 付款已成功。",
     "checkoutCancelTitle": "结账已取消 — VisaMesa",
     "checkoutCancelDescription": "您的 VisaMesa 结账已取消。",
-    "stepTitle": "{{stepTitle}} — VisaMesa"
+    "stepTitle": "{{stepTitle}} | 巴塞罗那学生 TIE — VisaMesa"
   }
 }
