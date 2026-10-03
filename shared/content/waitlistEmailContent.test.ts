@@ -36,7 +36,7 @@ describe('waitlistEmailContent', () => {
     expect(message.html).toContain('lang="es"')
     expect(message.html).toContain('max-width: 600px')
     expect(message.html).toContain('Confirma tu correo y nos encargamos del resto.')
-    expect(message.html).toContain('/brand/logo-email.png')
+    expect(message.html).toContain('class="email-logo-bar"')
     expect(message.html).toContain('/es/waitlist/confirm/token-123')
     expect(message.html).toContain('#00215E')
     expect(message.html).toContain('#00C49F')

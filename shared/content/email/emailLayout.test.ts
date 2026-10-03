@@ -41,7 +41,8 @@ describe('emailLayout', () => {
 
     expect(html).toContain('class="email-logo-bar"')
     expect(html).toContain('bgcolor="#00C49F"')
-    expect(html).toContain('/brand/logo-email.png')
+    expect(html).toContain('href="https://visamesa.com"')
+    expect(html).not.toContain('/brand/logo-email.png')
   })
 
   it('omits signature when not provided', () => {

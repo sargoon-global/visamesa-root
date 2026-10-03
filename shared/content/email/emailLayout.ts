@@ -1,4 +1,4 @@
-import { EMAIL_LOGO_URL, EMAIL_TAGLINE, SITE_NAME, SUPPORT_EMAIL } from '../siteConstants.js'
+import { EMAIL_TAGLINE, SITE_NAME, SITE_URL, SUPPORT_EMAIL } from '../siteConstants.js'
 import type { SupportedLanguage } from '../i18n/types.js'
 
 export type EmailLayoutInput = {
@@ -61,11 +61,9 @@ function renderCtaHtml(cta: { label: string; url: string }): string {
             <center style="color:${primary};font-family:Arial,sans-serif;font-size:16px;font-weight:600;">${escapeHtml(cta.label)}</center>
           </v:roundrect>
           <![endif]-->
-          <!--[if !mso]><!-->
           <a href="${escapeHtml(cta.url)}" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: ${secondary}; color: ${primary}; font-family: Arial, sans-serif; font-size: 16px; font-weight: 600; line-height: 44px; text-decoration: none; padding: 0 24px; border-radius: 999px; mso-line-height-rule: exactly;">
             ${escapeHtml(cta.label)}
           </a>
-          <!--<![endif]-->
         </td>
       </tr>
     </table>
@@ -80,21 +78,31 @@ function renderSignatureHtml(signature: NonNullable<EmailLayoutInput['signature'
   `.trim()
 }
 
-function renderLogoHeaderHtml(): string {
-  const { secondary } = emailColors
+/**
+ * HTML wordmark in the header (no remote image). Gmail and other clients often break
+ * table layout when images are blocked; copy and CTA must not depend on image load.
+ */
+function renderLogoHeaderCellHtml(): string {
+  const { primary, secondary } = emailColors
+  const wordmarkStyle = [
+    'font-family: Arial, Helvetica, sans-serif',
+    'font-size: 22px',
+    'font-weight: 700',
+    `color: ${primary}`,
+    'line-height: 1.2',
+    'letter-spacing: -0.02em',
+    'text-decoration: none',
+  ].join('; ')
+
   return `
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
-      <tr>
-        <td
-          class="email-logo-bar"
-          align="left"
-          bgcolor="${secondary}"
-          style="background-color: ${secondary}; padding: 18px 40px; border-radius: 11px 11px 0 0; mso-line-height-rule: exactly;"
-        >
-          <img src="${EMAIL_LOGO_URL}" width="160" height="17" alt="${escapeHtml(SITE_NAME)}" style="display: block; border: 0; outline: none; text-decoration: none;">
-        </td>
-      </tr>
-    </table>
+    <td
+      class="email-logo-bar"
+      align="left"
+      bgcolor="${secondary}"
+      style="background-color: ${secondary}; padding: 18px 40px; mso-line-height-rule: exactly;"
+    >
+      <a href="${escapeHtml(SITE_URL)}" target="_blank" rel="noopener noreferrer" style="${wordmarkStyle}">${escapeHtml(SITE_NAME)}</a>
+    </td>
   `.trim()
 }
 
@@ -141,11 +149,13 @@ export function renderEmailLayout(input: EmailLayoutInput): string {
       <td align="center" style="padding: 32px 16px;">
         <table role="presentation" class="email-container" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width: 600px; width: 100%;">
           <tr>
-            <td class="email-card" style="background-color: ${surface}; border: 1px solid ${outlineVariant}; border-radius: 12px; padding: 0; overflow: hidden;">
-              ${renderLogoHeaderHtml()}
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+            <td class="email-card" style="background-color: ${surface}; border: 1px solid ${outlineVariant}; border-radius: 12px; padding: 0;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width: 100%;">
                 <tr>
-                  <td class="email-padding" style="padding: 32px 40px 32px;">
+                  ${renderLogoHeaderCellHtml()}
+                </tr>
+                <tr>
+                  <td class="email-padding" style="background-color: ${surface}; padding: 32px 40px 32px;">
                     <h1 class="email-text" style="margin: 0 0 20px; font-family: Arial, sans-serif; font-size: 22px; line-height: 1.35; font-weight: 600; color: ${onSurface};">${escapeHtml(input.heading)}</h1>
                     ${renderParagraphsHtml(input.paragraphs)}
                     ${ctaBlock}
