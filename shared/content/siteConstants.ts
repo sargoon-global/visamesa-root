@@ -29,5 +29,9 @@ export const SERVICE_ORIGINAL_PRICE_EUR = 160
 export const SERVICE_STARTING_PRICE_EUR = SERVICE_PRICE_EUR
 export const SITE_NAME = 'VisaMesa'
 export const SITE_TAGLINE = 'TIE assistance in Barcelona'
+/** Shown in transactional email footers (city-agnostic). */
+export const EMAIL_TAGLINE = 'TIE assistance'
+/** PNG wordmark for email clients (deploy with visamesa_fe `public/brand/logo-email.png`). */
+export const EMAIL_LOGO_URL = `${SITE_URL}/brand/logo-email.png`
 export const SUPPORT_EMAIL = 'support@visamesa.com'
 export const PRIVACY_EMAIL = 'privacy@visamesa.com'
