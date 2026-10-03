@@ -35,6 +35,7 @@ function exportMobileAndTouchIcons() {
   mkdirSync(mobileBrandDir, { recursive: true })
   exportPng(logoSource, path.join(mobileBrandDir, 'logo.png'), 1024)
   exportPng(logotypeSource, path.join(mobileBrandDir, 'logotype.png'), 522)
+  exportPng(logotypeSource, path.join(feBrandDir, 'logo-email.png'), 320)
   exportPng(logoSource, path.join(fePublicDir, 'apple-touch-icon.png'), 180)
 }
 

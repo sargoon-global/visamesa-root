@@ -19,7 +19,11 @@
     "./processOverview": "./processOverview/index.ts",
     "./products": "./products.ts",
     "./support": "./support/index.ts",
-    "./waitlistEmail": "./waitlistEmailContent.ts"
+    "./waitlistEmail": "./waitlistEmailContent.ts",
+    "./email": "./email/emailLayout.ts"
+  },
+  "dependencies": {
+    "@visamesa/design-tokens": "file:../design-tokens"
   },
   "peerDependencies": {
     "i18next": "^26.3.0",
