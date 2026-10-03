@@ -9,7 +9,6 @@ export type WaitlistEmailContent = {
   preview: string
   greeting: string
   body: string
-  reassurance: string
   cta: string
   signoff: string
   signoffName: string
@@ -35,7 +34,6 @@ const WAITLIST_EMAIL_CONTENT_KEYS: (keyof WaitlistEmailContent)[] = [
   'preview',
   'greeting',
   'body',
-  'reassurance',
   'cta',
   'signoff',
   'signoffName',
@@ -70,9 +68,8 @@ export function buildWaitlistConfirmationEmail(input: {
     locale,
     previewText: content.preview,
     heading: content.greeting,
-    paragraphs: [content.body, content.reassurance],
+    paragraphs: [content.body],
     cta: { label: content.cta, url: confirmUrl },
-    fallbackUrl: confirmUrl,
     signature: {
       farewell: content.signoff,
       name: content.signoffName,

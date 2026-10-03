@@ -1,4 +1,4 @@
-import { SITE_NAME, SITE_TAGLINE, SITE_URL, SUPPORT_EMAIL } from '../siteConstants.js'
+import { EMAIL_LOGO_URL, EMAIL_TAGLINE, SITE_NAME, SUPPORT_EMAIL } from '../siteConstants.js'
 import type { SupportedLanguage } from '../i18n/types.js'
 
 export type EmailLayoutInput = {
@@ -17,13 +17,13 @@ export type EmailLayoutInput = {
   replyHint?: string
 }
 
-const EMAIL_LOGO_URL = `${SITE_URL}/brand/logo-email.png`
 const PREHEADER_PAD = '&zwnj;&nbsp;'.repeat(48)
 
 /** Inline brand colors for email HTML (matches shared/design-tokens light theme). */
 const emailColors = {
   primary: '#00215E',
   onPrimary: '#FFFFFF',
+  secondary: '#00C49F',
   onSurface: '#1B1B1F',
   onSurfaceVariant: '#44464F',
   surface: '#FFFFFF',
@@ -50,19 +50,19 @@ function renderParagraphsHtml(paragraphs: string[]): string {
 }
 
 function renderCtaHtml(cta: { label: string; url: string }): string {
-  const { primary, onPrimary } = emailColors
+  const { primary, secondary } = emailColors
   return `
     <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 8px 0 28px;">
       <tr>
-        <td align="center" bgcolor="${primary}" style="border-radius: 999px; mso-line-height-rule: exactly;">
+        <td align="center" bgcolor="${secondary}" style="border-radius: 999px; mso-line-height-rule: exactly;">
           <!--[if mso]>
-          <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${escapeHtml(cta.url)}" style="height:44px;v-text-anchor:middle;width:220px;" arcsize="50%" stroke="f" fillcolor="${primary}">
+          <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${escapeHtml(cta.url)}" style="height:44px;v-text-anchor:middle;width:220px;" arcsize="50%" stroke="f" fillcolor="${secondary}">
             <w:anchorlock/>
-            <center style="color:${onPrimary};font-family:Arial,sans-serif;font-size:16px;font-weight:600;">${escapeHtml(cta.label)}</center>
+            <center style="color:${primary};font-family:Arial,sans-serif;font-size:16px;font-weight:600;">${escapeHtml(cta.label)}</center>
           </v:roundrect>
           <![endif]-->
           <!--[if !mso]><!-->
-          <a href="${escapeHtml(cta.url)}" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: ${primary}; color: ${onPrimary}; font-family: Arial, sans-serif; font-size: 16px; font-weight: 600; line-height: 44px; text-decoration: none; padding: 0 24px; border-radius: 999px; mso-line-height-rule: exactly;">
+          <a href="${escapeHtml(cta.url)}" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: ${secondary}; color: ${primary}; font-family: Arial, sans-serif; font-size: 16px; font-weight: 600; line-height: 44px; text-decoration: none; padding: 0 24px; border-radius: 999px; mso-line-height-rule: exactly;">
             ${escapeHtml(cta.label)}
           </a>
           <!--<![endif]-->
@@ -138,7 +138,7 @@ export function renderEmailLayout(input: EmailLayoutInput): string {
                     <p class="email-muted" style="margin: 0; font-size: 14px; line-height: 1.6; color: ${onSurfaceVariant};">${escapeHtml(input.footerNote)}</p>
                     ${fallbackBlock}
                     <hr style="border: none; border-top: 1px solid ${outlineVariant}; margin: 28px 0 16px;">
-                    <p class="email-muted" style="margin: 0; font-size: 12px; line-height: 1.5; color: ${onSurfaceVariant};">${escapeHtml(SITE_NAME)} · ${escapeHtml(SITE_TAGLINE)}</p>
+                    <p class="email-muted" style="margin: 0; font-size: 12px; line-height: 1.5; color: ${onSurfaceVariant};">${escapeHtml(SITE_NAME)} · ${escapeHtml(EMAIL_TAGLINE)}</p>
                     ${replyBlock}
                   </td>
                 </tr>
@@ -174,7 +174,7 @@ export function renderEmailText(input: EmailLayoutInput): string {
     lines.push(input.fallbackUrl, '')
   }
 
-  lines.push(`${SITE_NAME} · ${SITE_TAGLINE}`)
+  lines.push(`${SITE_NAME} · ${EMAIL_TAGLINE}`)
 
   if (input.replyHint) {
     lines.push(`${input.replyHint} ${SUPPORT_EMAIL}`)
