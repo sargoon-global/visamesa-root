@@ -1,5 +1,3 @@
-import { lightColors } from '@visamesa/design-tokens/colors'
-
 import { SITE_NAME, SITE_TAGLINE, SITE_URL, SUPPORT_EMAIL } from '../siteConstants.js'
 import type { SupportedLanguage } from '../i18n/types.js'
 
@@ -22,6 +20,17 @@ export type EmailLayoutInput = {
 const EMAIL_LOGO_URL = `${SITE_URL}/brand/logo-email.png`
 const PREHEADER_PAD = '&zwnj;&nbsp;'.repeat(48)
 
+/** Inline brand colors for email HTML (matches shared/design-tokens light theme). */
+const emailColors = {
+  primary: '#00215E',
+  onPrimary: '#FFFFFF',
+  onSurface: '#1B1B1F',
+  onSurfaceVariant: '#44464F',
+  surface: '#FFFFFF',
+  background: '#FCFCFC',
+  outlineVariant: '#C5C6D0',
+} as const
+
 export function escapeHtml(value: string): string {
   return value
     .replaceAll('&', '&amp;')
@@ -35,13 +44,13 @@ function renderParagraphsHtml(paragraphs: string[]): string {
   return paragraphs
     .map(
       (paragraph) =>
-        `<p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6; color: ${lightColors.onSurface};">${escapeHtml(paragraph)}</p>`,
+        `<p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6; color: ${emailColors.onSurface};">${escapeHtml(paragraph)}</p>`,
     )
     .join('\n')
 }
 
 function renderCtaHtml(cta: { label: string; url: string }): string {
-  const { primary, onPrimary } = lightColors
+  const { primary, onPrimary } = emailColors
   return `
     <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 8px 0 28px;">
       <tr>
@@ -65,14 +74,14 @@ function renderCtaHtml(cta: { label: string; url: string }): string {
 
 function renderSignatureHtml(signature: NonNullable<EmailLayoutInput['signature']>): string {
   return `
-    <p style="margin: 24px 0 4px; font-size: 16px; line-height: 1.5; color: ${lightColors.onSurface};">${escapeHtml(signature.farewell)}</p>
-    <p style="margin: 0 0 2px; font-size: 16px; line-height: 1.5; font-weight: 600; color: ${lightColors.onSurface};">${escapeHtml(signature.name)}</p>
-    <p style="margin: 0 0 24px; font-size: 14px; line-height: 1.5; color: ${lightColors.onSurfaceVariant};">${escapeHtml(signature.role)}</p>
+    <p style="margin: 24px 0 4px; font-size: 16px; line-height: 1.5; color: ${emailColors.onSurface};">${escapeHtml(signature.farewell)}</p>
+    <p style="margin: 0 0 2px; font-size: 16px; line-height: 1.5; font-weight: 600; color: ${emailColors.onSurface};">${escapeHtml(signature.name)}</p>
+    <p style="margin: 0 0 24px; font-size: 14px; line-height: 1.5; color: ${emailColors.onSurfaceVariant};">${escapeHtml(signature.role)}</p>
   `.trim()
 }
 
 export function renderEmailLayout(input: EmailLayoutInput): string {
-  const { primary, onSurface, onSurfaceVariant, surface, background, outlineVariant } = lightColors
+  const { primary, onSurface, onSurfaceVariant, surface, background, outlineVariant } = emailColors
 
   const ctaBlock = input.cta ? renderCtaHtml(input.cta) : ''
   const signatureBlock = input.signature ? renderSignatureHtml(input.signature) : ''
