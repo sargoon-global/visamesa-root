@@ -42,6 +42,10 @@ describe('emailLayout', () => {
     expect(html).toContain('class="email-logo-bar"')
     expect(html).toContain('bgcolor="#00C49F"')
     expect(html).toContain('href="https://visamesa.com"')
+    expect(html).toContain('VISAMESA')
+    expect(html).toContain('Expletus Sans')
+    expect(html).toContain('Plus Jakarta Sans')
+    expect(html).toContain('border-collapse: separate')
     expect(html).not.toContain('/brand/logo-email.png')
   })
 
