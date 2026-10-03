@@ -27,7 +27,21 @@ describe('emailLayout', () => {
       footerNote: 'Footer',
     })
 
-    expect(html).not.toContain('mso-line-height-rule: exactly')
+    expect(html).not.toContain('v:roundrect')
+  })
+
+  it('renders the logo on a full-width secondary header bar', () => {
+    const html = renderEmailLayout({
+      locale: 'en',
+      previewText: 'preview',
+      heading: 'Hello',
+      paragraphs: ['Body'],
+      footerNote: 'Footer',
+    })
+
+    expect(html).toContain('class="email-logo-bar"')
+    expect(html).toContain('bgcolor="#00C49F"')
+    expect(html).toContain('/brand/logo-email.png')
   })
 
   it('omits signature when not provided', () => {
