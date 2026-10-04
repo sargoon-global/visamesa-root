@@ -40,7 +40,7 @@
   },
   "errors": {
     "invalid": "Please enter a valid email address",
-    "exists": "This email is already on our waitlist",
+    "exists": "This email is already on our waitlist. Check your inbox and spam folder for the VisaMesa confirmation email.",
     "failed": "Something went wrong. Please try again.",
     "feedbackFailed": "Could not save your feedback. You can try again later."
   },

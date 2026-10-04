@@ -40,7 +40,7 @@
   },
   "errors": {
     "invalid": "Introduce una dirección de correo válida",
-    "exists": "Este correo ya está en nuestra lista de espera",
+    "exists": "Este correo ya está en nuestra lista de espera. Revisa tu bandeja de entrada y la carpeta de spam por el correo de confirmación de VisaMesa.",
     "failed": "Algo salió mal. Inténtalo de nuevo.",
     "feedbackFailed": "No pudimos guardar tu respuesta. Puedes intentarlo más tarde."
   },
