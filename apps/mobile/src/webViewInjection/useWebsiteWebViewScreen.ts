@@ -65,6 +65,7 @@ export type UseWebsiteWebViewScreenResult = {
   startUrl: string;
   webViewSource: ReturnType<typeof buildCitaPreviaWebViewSource>;
   onLoadEnd: () => void;
+  onLoadStart: () => void;
   onNavigationStateChange: ReturnType<
     typeof useWebViewInjection
   >['onNavigationStateChange'];
@@ -203,6 +204,7 @@ export function useWebsiteWebViewScreen(
   const {
     handleMessage: handleInjectionMessage,
     onLoadEnd,
+    onLoadStart: onInjectionLoadStart,
     onNavigationStateChange,
   } = useWebViewInjection(webViewRef, {
     initialUrl: startUrl,
@@ -216,6 +218,13 @@ export function useWebsiteWebViewScreen(
       onLoadEnd();
     }
   }, [isModelo790, modelo790Profile, onLoadEnd]);
+
+  const onLoadStart = useCallback(() => {
+    if (isModelo790) {
+      setModelo790ShowWebView(false);
+    }
+    onInjectionLoadStart();
+  }, [isModelo790, onInjectionLoadStart]);
 
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
@@ -330,6 +339,7 @@ export function useWebsiteWebViewScreen(
     startUrl,
     webViewSource,
     onLoadEnd,
+    onLoadStart,
     onNavigationStateChange,
     onMessage,
     onError,

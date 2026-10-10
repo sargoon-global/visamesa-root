@@ -33,6 +33,7 @@ export interface WebViewInjectionRule {
     timeoutMs?: number;
     injectOnTimeout?: boolean;
   };
+  reinjectOnLoadEnd?: boolean;
 }
 
 export const webViewInjectionRules: WebViewInjectionRule[] = [
