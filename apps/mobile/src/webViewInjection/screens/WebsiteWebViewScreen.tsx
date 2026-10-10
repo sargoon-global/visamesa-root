@@ -21,6 +21,7 @@ const WebsiteWebViewScreen = () => {
     webViewError,
     modelo790ShowWebView,
     onLoadEnd,
+    onLoadStart,
     onNavigationStateChange,
     onMessage,
     onError,
@@ -71,6 +72,7 @@ const WebsiteWebViewScreen = () => {
         startInLoadingState
         setSupportMultipleWindows={false}
         onNavigationStateChange={onNavigationStateChange}
+        onLoadStart={onLoadStart}
         onLoadEnd={onLoadEnd}
         onMessage={onMessage}
         onError={onError}

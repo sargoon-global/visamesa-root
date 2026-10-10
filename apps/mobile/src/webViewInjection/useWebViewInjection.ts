@@ -43,6 +43,7 @@ export interface UseWebViewInjectionResult {
   currentUrl: string | null;
   handleMessage: (messageData: string) => boolean;
   onLoadEnd: () => void;
+  onLoadStart: () => void;
   onNavigationStateChange: (state: WebViewNavigationState) => void;
 }
 
@@ -322,9 +323,26 @@ export const useWebViewInjection = (
 
   const onLoadEnd = React.useCallback(() => {
     const url = currentUrlRef.current;
+    const activeRuleForUrl = resolveWebViewInjectionRule(url, rules);
+
+    if (activeRuleForUrl?.reinjectOnLoadEnd) {
+      lastInjectedRuleKeyRef.current = null;
+      resetReadinessState();
+    }
+
     console.debug('[WebViewInjection] Load end', {currentUrl: url});
     runInjectionForUrl(currentUrlRef.current);
-  }, [runInjectionForUrl]);
+  }, [resetReadinessState, runInjectionForUrl, rules]);
+
+  const onLoadStart = React.useCallback(() => {
+    const url = currentUrlRef.current;
+    const activeRuleForUrl = resolveWebViewInjectionRule(url, rules);
+
+    if (activeRuleForUrl?.reinjectOnLoadEnd) {
+      lastInjectedRuleKeyRef.current = null;
+      resetReadinessState();
+    }
+  }, [resetReadinessState, rules]);
 
   const handleMessage = React.useCallback(
     (messageData: string) => {
@@ -384,6 +402,7 @@ export const useWebViewInjection = (
     currentUrl,
     handleMessage,
     onLoadEnd,
+    onLoadStart,
     onNavigationStateChange,
   };
 };

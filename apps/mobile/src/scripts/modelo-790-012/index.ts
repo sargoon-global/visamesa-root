@@ -21,6 +21,7 @@ interface Modelo790ScriptEntry {
   match: WebViewInjectionRule['match'];
   script: string;
   ready?: WebViewInjectionRule['ready'];
+  reinjectOnLoadEnd?: WebViewInjectionRule['reinjectOnLoadEnd'];
 }
 
 const buildModelo790ScriptEntries = (
@@ -49,6 +50,7 @@ const buildModelo790ScriptEntries = (
       allSelectors: ['#nombre', '#f_conc'],
       timeoutMs: 10000,
     },
+    reinjectOnLoadEnd: true,
   },
 ];
 
