@@ -264,6 +264,70 @@ describe('useWebViewInjection', () => {
     expect(injectJavaScript).toHaveBeenLastCalledWith('matching-script');
   });
 
+  it('re-runs readiness and injection after same-url load for reinjectable rules', () => {
+    jest.useFakeTimers();
+    const injectJavaScript = jest.fn();
+    const reinjectableRule: WebViewInjectionRule = {
+      ...readyRule,
+      reinjectOnLoadEnd: true,
+    };
+    const getHookState = renderHook(
+      {
+        current: {
+          injectJavaScript,
+        },
+      } as React.RefObject<WebViewInjectionHandle>,
+      'https://example.com/match',
+      [reinjectableRule],
+    );
+
+    triggerLoadEnd(getHookState);
+
+    act(() => {
+      getHookState().handleMessage(
+        JSON.stringify({
+          __webViewInjection: true,
+          type: 'ready-state',
+          payload: {
+            ready: true,
+            ruleId: 'matching-rule',
+            url: 'https://example.com/match',
+            selector: '#ready',
+          },
+        }),
+      );
+    });
+
+    expect(injectJavaScript).toHaveBeenCalledTimes(2);
+    expect(injectJavaScript).toHaveBeenLastCalledWith('matching-script');
+
+    act(() => {
+      getHookState().onLoadStart();
+      getHookState().onLoadEnd();
+    });
+
+    expect(injectJavaScript).toHaveBeenCalledTimes(3);
+    expect(injectJavaScript.mock.calls[2][0]).toContain('"#ready"');
+
+    act(() => {
+      getHookState().handleMessage(
+        JSON.stringify({
+          __webViewInjection: true,
+          type: 'ready-state',
+          payload: {
+            ready: true,
+            ruleId: 'matching-rule',
+            url: 'https://example.com/match',
+            selector: '#ready',
+          },
+        }),
+      );
+    });
+
+    expect(injectJavaScript).toHaveBeenCalledTimes(4);
+    expect(injectJavaScript).toHaveBeenLastCalledWith('matching-script');
+  });
+
   it('injects the page script when readiness observation times out', () => {
     jest.useFakeTimers();
     const injectJavaScript = jest.fn();
