@@ -119,7 +119,14 @@ Touched:
 
 ### 1. Post-merge Modelo 790 repeated wrong-captcha validation
 
-Status: Pending
+Status: Pending manual captcha/device confirmation
+
+Latest attempt 2026-10-10:
+
+- Latest `main` is built and checked.
+- ADB install of fresh debug APK was blocked by device policy: `INSTALL_FAILED_USER_RESTRICTED`.
+- Existing debug app launched and JS log showed `Running "VisaMesa"`, but screenshot was black; manual device interaction is needed to continue.
+- This task cannot be honestly completed by the agent alone because the user must enter/submit captcha values.
 
 Goal:
 
@@ -151,7 +158,12 @@ Expected:
 
 ### 2. Final Modelo 790 happy-path verification
 
-Status: Pending
+Status: Pending manual captcha/device confirmation
+
+Latest attempt 2026-10-10:
+
+- Latest `main` passes automated checks and Android debug build.
+- Correct-captcha PDF path requires user captcha entry and cannot be completed by the agent alone.
 
 Goal:
 
@@ -268,7 +280,13 @@ adb reverse --list
 
 ### 8. Worktree / branch cleanup
 
-Status: Pending after all validation
+Status: Completed for old Modelo 790 worktree and merged local/remote branches
+
+Completed 2026-10-10:
+
+- Removed old clean worktree `/home/gs-44/projects/visamesa-modelo-790-pr84`.
+- Deleted local merged hotfix/feature/stack branches where present.
+- Deleted remote stacked branches after their content landed on `main`.
 
 Known worktrees:
 
@@ -333,6 +351,14 @@ Added notes:
 - Added coverage proving `reinjectOnLoadEnd` rules re-run readiness and page script injection after same-URL loads.
 - Ran `useWebViewInjection.test.tsx`: 9 tests passed.
 - Ran mobile type-check: passed.
+
+### 2026-10-10 — Landed stacked follow-ups and cleanup
+
+- Merged status/docs/test follow-ups into `main`.
+- Because stacked PRs #114/#115 were originally based on stack branches, created and merged PR #116 to ensure docs/test changes landed on `main`.
+- Removed old Modelo 790 worktree and merged branches.
+- Final checks on `main` passed: type-check, lint, full mobile Jest (92 suites / 381 tests), Android debug build.
+- Attempted device install/launch; install blocked by device policy (`INSTALL_FAILED_USER_RESTRICTED`), existing app JS started but device screenshot stayed black.
 
 ## Do Not Forget
 
