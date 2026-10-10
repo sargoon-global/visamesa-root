@@ -203,6 +203,21 @@ npm run android
 # Check device: adb devices
 ```
 
+For a physical Android debug device, keep the local services reachable through ADB reverse:
+
+```bash
+adb reverse tcp:3000 tcp:3000   # local backend API
+adb reverse tcp:8081 tcp:8081   # Metro
+adb reverse tcp:5173 tcp:5173   # local website, if checkout/web return is used
+adb reverse --list
+```
+
+The local backend health check is the root route:
+
+```bash
+curl -i http://localhost:3000/
+```
+
 ---
 
 ## Project Structure
@@ -513,6 +528,23 @@ cd android
 # APK location:
 # android/app/build/outputs/apk/release/app-release.apk
 ```
+
+---
+
+## Modelo 790 and PDF Flows
+
+Modelo 790 Code 012 uses the official Policía Nacional site in a WebView. VisaMesa fills the form from the encrypted profile, then shows only a focused captcha/download UI. The user must enter the official captcha manually; do not bypass or automate captcha solving.
+
+Expected behavior:
+
+- The raw official page stays hidden behind the native status screen while automation runs.
+- The captcha-only UI is shown when user input is needed.
+- Wrong captchas remain retryable when the official site returns a new captcha.
+- Terminal failures show a VisaMesa error screen with **Back to dashboard**.
+- PDFs open with the native/system viewer; the user should save the opened PDF locally.
+- Requirements are marked complete only after the PDF handoff succeeds.
+
+The same native/system PDF viewer is used by EX-17 and Modelo 790 flows.
 
 ---
 

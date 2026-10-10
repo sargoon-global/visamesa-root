@@ -161,13 +161,23 @@ Goal:
 
 ### 3. Restore or keep local test progress override
 
-Status: Pending user decision
+Status: Backup inspected; pending user decision
 
 Known backup:
 
 ```text
 /tmp/visamesa-step3-backup-jOD4yZ/snapshot.json
 ```
+
+Backup summary, inspected 2026-10-10 without printing user identifiers:
+
+- `currentStepId`: 3
+- Step 1 completed
+- Step 2 completed
+- Step 3 not started, `appointment-confirmation` pending
+- Step 4 not started, all fee requirements pending
+- Step 5 not started
+- Step 6 not started
 
 Do not restore unless user asks.
 
@@ -221,7 +231,13 @@ Questions:
 
 ### 6. EX-17 PDF regression smoke
 
-Status: Pending
+Status: Focused automated checks passed; device smoke still pending if desired
+
+Verified 2026-10-10:
+
+- `ex17PdfService.test.ts` passed.
+- `mapProfileToEx17Data.test.ts` passed.
+- `ex17ProfileToPdf.integration.test.ts` passed.
 
 Goal:
 
@@ -269,16 +285,18 @@ Needs macOS/CocoaPods.
 
 ### 10. Documentation / release notes
 
-Status: Pending
+Status: In progress on stacked branch `docs/mobile-dev-setup-notes`
 
-Potential file:
+Touched:
 
 - `apps/mobile/README.md`
 
-Possible notes:
+Added notes:
 
-- Android debug device requires ADB reverse.
-- Modelo 790 uses official captcha entered by user.
+- Physical Android debug device requires ADB reverse for backend/Metro/website.
+- Backend health check is `http://localhost:3000/`.
+- Modelo 790 uses the official captcha entered by user.
+- Raw official page should stay hidden except focused captcha UI.
 - PDFs open in native/system viewer; user should save locally.
 
 ## Recent Task Log
@@ -300,6 +318,14 @@ Possible notes:
 - Ran Android debug build: `./gradlew assembleDebug` passed.
 - Audited Step 4 checklist dependencies/content; no code change needed from static review.
 - Checked local backend/dev auth prerequisites: backend root `/` returned 200, Postgres container running, ADB reverse active for 3000/8081/5173.
+
+### 2026-10-10 — Mobile dev setup docs
+
+- Started stacked branch `docs/mobile-dev-setup-notes` on top of `chore/project-status-tracker`.
+- Added README notes for Android physical-device ADB reverse, backend root health check, and Modelo 790/PDF invariants.
+- Ran shared content tests: 18 files / 64 tests passed.
+- Ran focused EX-17 PDF tests: 3 suites / 12 tests passed.
+- Inspected local progress backup shape without modifying data; restore remains pending user decision.
 
 ## Do Not Forget
 
