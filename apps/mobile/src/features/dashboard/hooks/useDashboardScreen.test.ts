@@ -535,6 +535,42 @@ describe('useDashboardScreen', () => {
     });
   });
 
+  it('opens the official Modelo 790 automation instead of confirming a form without a PDF', async () => {
+    const steps = buildTieSteps(createTieStepsTranslator(i18n));
+    useTieSteps.mockReturnValue({steps, isLoading: false, error: null});
+    useUserProgress.mockReturnValue({
+      progress: createUserProgress({
+        currentStepId: 4,
+        steps: [
+          {stepId: 1, status: 'completed', requirements: {}},
+          {stepId: 2, status: 'completed', requirements: {}},
+          {stepId: 3, status: 'completed', requirements: {}},
+          {stepId: 4, status: 'in_progress', requirements: {'modelo-790-form': {completed: false}}},
+        ],
+      }),
+      isLoading: false,
+      error: null,
+      completeStep,
+      toggleSelfDeclaredRequirement,
+      completeBookingAssistantRequirement,
+      clearBookingAssistantRequirement,
+      completeFormRequirement,
+      refreshProgress: jest.fn(),
+    });
+    const navigation = createMockNavigation() as Parameters<typeof useDashboardScreen>[0];
+    const getHookState = await renderDashboardScreen(navigation);
+
+    await act(async () => {
+      await getHookState().onFormPress('modelo-790-012', 'modelo-790-form');
+    });
+
+    expect(navigation.navigate).toHaveBeenCalledWith('WebsiteWebView', {
+      automation: 'modelo-790-012',
+      formCompletion: {stepId: 4, requirementKey: 'modelo-790-form', formId: 'modelo-790-012'},
+    });
+    expect(completeFormRequirement).not.toHaveBeenCalled();
+  });
+
   it('shows approve and download disabled until the EX-17 form is reviewed', async () => {
     const translateTieSteps = createTieStepsTranslator(i18n);
     const realSteps = buildTieSteps(translateTieSteps);

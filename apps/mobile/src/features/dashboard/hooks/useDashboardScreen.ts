@@ -198,6 +198,10 @@ export function useDashboardScreen(
     }
   }, [isAuthenticated]);
 
+  useEffect(() => navigation.addListener('focus', () => {
+    refreshProgress().catch(() => {});
+  }), [navigation, refreshProgress]);
+
   const progressContext = useMemo<ProgressContext>(
     () => ({
       isProfileComplete,
@@ -657,6 +661,14 @@ export function useDashboardScreen(
 
     if (formId === EX17_FORM_ID) {
       await onEx17FormPress(formId, requirementKey);
+      return;
+    }
+
+    if (formId === 'modelo-790-012') {
+      navigation.navigate('WebsiteWebView', {
+        automation: 'modelo-790-012',
+        formCompletion: {stepId: currentStep.id, requirementKey, formId},
+      });
       return;
     }
 

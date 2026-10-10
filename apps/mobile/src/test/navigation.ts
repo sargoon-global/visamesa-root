@@ -8,6 +8,7 @@ export function createMockNavigation<
     navigate: jest.fn(),
     goBack: jest.fn(),
     dispatch: jest.fn(),
+    addListener: jest.fn(() => jest.fn()),
     getParent: jest.fn(() => ({
       navigate: jest.fn(),
     })),

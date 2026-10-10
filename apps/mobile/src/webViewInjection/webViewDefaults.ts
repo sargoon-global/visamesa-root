@@ -28,3 +28,7 @@ export const buildEmpadronamientoWebViewSource = (url: string) => ({
     'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8',
   },
 });
+
+export const buildModelo790WebViewSource = (url: string) => ({
+  uri: url,
+});

@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {ActivityIndicator, Alert, StyleSheet, View} from 'react-native';
+import {ActivityIndicator, Alert, Pressable, StyleSheet, Text, View} from 'react-native';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -18,6 +18,7 @@ const WebsiteWebViewScreen = () => {
   const {
     webViewRef,
     webViewSource,
+    webViewError,
     onLoadEnd,
     onNavigationStateChange,
     onMessage,
@@ -27,7 +28,8 @@ const WebsiteWebViewScreen = () => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', event => {
-      if (event.data.action.type !== 'GO_BACK' && event.data.action.type !== 'POP') {
+      if (route.params?.automation === 'modelo-790-012' ||
+          (event.data.action.type !== 'GO_BACK' && event.data.action.type !== 'POP')) {
         return;
       }
 
@@ -48,7 +50,7 @@ const WebsiteWebViewScreen = () => {
     });
 
     return unsubscribe;
-  }, [navigation, t]);
+  }, [navigation, route.params?.automation, t]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -76,11 +78,29 @@ const WebsiteWebViewScreen = () => {
         )}
         style={styles.webView}
       />
+      {route.params?.automation === 'modelo-790-012' && webViewError ? (
+        <View style={styles.errorOverlay}>
+          <View style={styles.errorCard}>
+            <Text style={styles.errorTitle}>{webViewError.title}</Text>
+            <Text style={styles.errorMessage}>{webViewError.message}</Text>
+            {webViewError.detail ? <Text style={styles.errorMessage}>{webViewError.detail}</Text> : null}
+            <Pressable accessibilityRole="button" onPress={() => navigation.goBack()} style={styles.backButton}>
+              <Text style={styles.backLabel}>Back to dashboard</Text>
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  errorOverlay: {position: 'absolute', inset: 0, backgroundColor: '#FFFFFF', justifyContent: 'center', padding: 24},
+  errorCard: {gap: 16},
+  errorTitle: {fontSize: 22, fontWeight: '700', color: '#1F2937'},
+  errorMessage: {fontSize: 16, color: '#374151'},
+  backButton: {backgroundColor: '#1A73E8', padding: 16, alignItems: 'center', borderRadius: 8},
+  backLabel: {color: '#FFFFFF', fontWeight: '700'},
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
