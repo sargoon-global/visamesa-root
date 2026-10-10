@@ -119,14 +119,18 @@ Touched:
 
 ### 1. Post-merge Modelo 790 repeated wrong-captcha validation
 
-Status: Pending manual captcha/device confirmation
+Status: Completed on device
 
-Latest attempt 2026-10-10:
+Verified by user 2026-10-10:
+
+- User entered wrong captcha more than 4 times.
+- Retry flow continued to work.
+- Fresh build was not required for this validation.
+
+Earlier agent context:
 
 - Latest `main` is built and checked.
 - ADB install of fresh debug APK was blocked by device policy: `INSTALL_FAILED_USER_RESTRICTED`.
-- Existing debug app launched and JS log showed `Running "VisaMesa"`, but screenshot was black; manual device interaction is needed to continue.
-- This task cannot be honestly completed by the agent alone because the user must enter/submit captcha values.
 
 Goal:
 
@@ -359,6 +363,7 @@ Added notes:
 - Removed old Modelo 790 worktree and merged branches.
 - Final checks on `main` passed: type-check, lint, full mobile Jest (92 suites / 381 tests), Android debug build.
 - Attempted device install/launch; install blocked by device policy (`INSTALL_FAILED_USER_RESTRICTED`), existing app JS started but device screenshot stayed black.
+- User later verified the repeated wrong-captcha flow on device: more than 4 wrong captcha attempts stayed retryable.
 
 ## Do Not Forget
 
