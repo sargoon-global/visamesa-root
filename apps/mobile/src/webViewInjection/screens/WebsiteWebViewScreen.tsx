@@ -19,6 +19,7 @@ const WebsiteWebViewScreen = () => {
     webViewRef,
     webViewSource,
     webViewError,
+    modelo790ShowWebView,
     onLoadEnd,
     onNavigationStateChange,
     onMessage,
@@ -52,6 +53,9 @@ const WebsiteWebViewScreen = () => {
     return unsubscribe;
   }, [navigation, route.params?.automation, t]);
 
+  const isModelo790 = route.params?.automation === 'modelo-790-012';
+  const shouldHideModelo790WebView = isModelo790 && !modelo790ShowWebView;
+
   return (
     <SafeAreaView style={styles.container}>
       <WebView
@@ -76,9 +80,20 @@ const WebsiteWebViewScreen = () => {
             <ActivityIndicator size="large" color="#1A73E8" />
           </View>
         )}
-        style={styles.webView}
+        style={[styles.webView, shouldHideModelo790WebView ? styles.hiddenWebView : null]}
       />
-      {route.params?.automation === 'modelo-790-012' && webViewError ? (
+      {isModelo790 && shouldHideModelo790WebView && !webViewError ? (
+        <View style={styles.statusOverlay} pointerEvents="auto">
+          <View style={styles.statusCard}>
+            <ActivityIndicator size="large" color="#1A73E8" />
+            <Text style={styles.statusTitle}>Preparing your Modelo 790</Text>
+            <Text style={styles.statusMessage}>
+              You’ll enter the official captcha next. When the PDF opens, save it locally.
+            </Text>
+          </View>
+        </View>
+      ) : null}
+      {isModelo790 && webViewError ? (
         <View style={styles.errorOverlay}>
           <View style={styles.errorCard}>
             <Text style={styles.errorTitle}>{webViewError.title}</Text>
@@ -108,11 +123,39 @@ const styles = StyleSheet.create({
   webView: {
     flex: 1,
   },
+  hiddenWebView: {
+    opacity: 0,
+  },
   loading: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#FFFFFF',
+  },
+  statusOverlay: {
+    position: 'absolute',
+    inset: 0,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  statusCard: {
+    alignItems: 'center',
+    gap: 16,
+    maxWidth: 360,
+  },
+  statusTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#1F2937',
+    textAlign: 'center',
+  },
+  statusMessage: {
+    fontSize: 16,
+    color: '#4B5563',
+    textAlign: 'center',
+    lineHeight: 24,
   },
 });
 

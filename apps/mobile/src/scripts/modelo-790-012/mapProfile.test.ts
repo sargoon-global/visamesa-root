@@ -32,6 +32,12 @@ describe('mapProfileToModelo790', () => {
     });
   });
 
+  it('maps compact legacy Spanish phone strings', () => {
+    expect(mapProfileToModelo790({...personal, phoneNumber: '34600123456'})).toEqual(
+      expect.objectContaining({phoneNumber: '600123456'}),
+    );
+  });
+
   it('rejects missing fields and non-Spanish phone numbers instead of using placeholders', () => {
     expect(mapProfileToModelo790(null)).toBeNull();
     expect(mapProfileToModelo790({...personal, nieNumber: ''})).toBeNull();

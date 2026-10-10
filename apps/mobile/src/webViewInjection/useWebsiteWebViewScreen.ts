@@ -25,7 +25,10 @@ import {
   buildEmpadronamientoInjectionRules,
   EMPADRONAMIENTO_HOME_URL,
 } from '@/scripts/empadronamiento';
-import {buildModelo790InjectionRules, MODELO_790_012_START_URL} from '@/scripts/modelo-790-012';
+import {
+  buildModelo790InjectionRules,
+  MODELO_790_012_START_URL,
+} from '@/scripts/modelo-790-012';
 import {mapProfileToModelo790} from '@/scripts/modelo-790-012/mapProfile';
 import {isModelo790Error, isModelo790Pdf, type AutomationWebViewError} from '@/scripts/modelo-790-012/messages';
 import type {Modelo790AutomationProfile} from '@/scripts/modelo-790-012/config';
@@ -41,10 +44,24 @@ type WebsiteWebViewRoute = RouteProp<RootStackParamList, 'WebsiteWebView'>;
 type WebViewHandle = React.ElementRef<typeof WebView>;
 type WebViewProps = ComponentProps<typeof WebView>;
 
+function isTrustedModelo790MessageUrl(url: string | undefined): boolean {
+  if (!url) {
+    return false;
+  }
+
+  try {
+    const parsedUrl = new URL(url);
+    return parsedUrl.protocol === 'https:' && parsedUrl.hostname === 'sede.policia.gob.es';
+  } catch {
+    return false;
+  }
+}
+
 export type UseWebsiteWebViewScreenResult = {
   webViewRef: RefObject<WebViewHandle | null>;
   bookingAssistant: BookingAssistantId;
   webViewError: AutomationWebViewError | null;
+  modelo790ShowWebView: boolean;
   startUrl: string;
   webViewSource: ReturnType<typeof buildCitaPreviaWebViewSource>;
   onLoadEnd: () => void;
@@ -64,6 +81,7 @@ export function useWebsiteWebViewScreen(
   const {user} = useAuth();
   const navigation = useNavigation();
   const [webViewError, setWebViewError] = useState<AutomationWebViewError | null>(null);
+  const [modelo790ShowWebView, setModelo790ShowWebView] = useState(false);
   const [modelo790Profile, setModelo790Profile] = useState<Modelo790AutomationProfile | null>(null);
   const pdfInFlight = useRef(false);
   const webViewRef = useRef<WebViewHandle>(null);
@@ -77,6 +95,7 @@ export function useWebsiteWebViewScreen(
 
   useEffect(() => {
     if (!isModelo790) {return;}
+    setModelo790ShowWebView(false);
     let cancelled = false;
     getProfile().then(profile => {
       if (cancelled) {return;}
@@ -211,8 +230,12 @@ export function useWebsiteWebViewScreen(
           setWebViewError(message.payload);
           return;
         }
+        if (isModelo790 && message.type === 'modelo-790-captcha-ready') {
+          setModelo790ShowWebView(true);
+          return;
+        }
         if (isModelo790 && isModelo790Pdf(message)) {
-          if (!event.nativeEvent.url?.startsWith('https://sede.policia.gob.es/Tasa790_012/')) {
+          if (!isTrustedModelo790MessageUrl(event.nativeEvent.url)) {
             return;
           }
           if (pdfInFlight.current) {return;}
@@ -303,6 +326,7 @@ export function useWebsiteWebViewScreen(
     webViewRef,
     bookingAssistant,
     webViewError,
+    modelo790ShowWebView,
     startUrl,
     webViewSource,
     onLoadEnd,

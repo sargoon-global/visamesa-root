@@ -1,3 +1,5 @@
+import {normalizePhone, stringToPhone} from '@/features/forms/utils/phoneUtils';
+
 import type {Modelo790AutomationProfile} from './config';
 
 function text(value: unknown): string {
@@ -21,10 +23,12 @@ export function mapProfileToModelo790(
   );
   const phone = personal.phoneNumber;
   const phoneParts = phone && typeof phone === 'object'
-    ? phone as {countryCode?: unknown; number?: unknown}
-    : null;
+    ? normalizePhone(phone as {countryCode?: string; number?: string})
+    : typeof phone === 'string'
+      ? stringToPhone(phone)
+      : null;
   const countryCode = text(phoneParts?.countryCode).replace(/\D/g, '');
-  const phoneNumber = (phoneParts ? text(phoneParts.number) : text(phone)).replace(/\D/g, '');
+  const phoneNumber = text(phoneParts?.number).replace(/\D/g, '');
   const number = text(personal.addressNumber);
   const city = text(personal.city);
   const province = text(personal.province);

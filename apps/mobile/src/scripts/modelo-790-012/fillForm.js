@@ -110,7 +110,7 @@ export const buildModelo790FillFormScript = (profile = {}) => {
         }
       }
 
-      const showCaptchaOnly = () => {
+      const showCaptchaOnly = (retryMessage) => {
         const originalCaptchaField = window.document.querySelector('#codSeguridadForm');
         const captchaImage = window.document.querySelector('#divVisualCaptcha img');
 
@@ -170,7 +170,24 @@ export const buildModelo790FillFormScript = (profile = {}) => {
         const image = captchaImage.cloneNode(true);
         image.removeAttribute('width');
         image.removeAttribute('height');
+        try {
+          const src = new URL(captchaImage.getAttribute('src') || captchaImage.src, window.location.href);
+          src.searchParams.set('_visaMesaRefresh', String(Date.now()));
+          image.src = src.toString();
+        } catch (error) {}
         image.style.cssText = 'max-width: 100%; height: auto; align-self: center;';
+
+        const retryHint = window.document.createElement('div');
+        retryHint.setAttribute('role', 'alert');
+        retryHint.textContent = retryMessage || '';
+        retryHint.style.cssText = [
+          'display: ' + (retryMessage ? 'block' : 'none'),
+          'color: #B42318',
+          'font-size: 14px',
+          'line-height: 20px',
+          'text-align: center',
+          'font-weight: 600',
+        ].join(';');
 
         const input = window.document.createElement('input');
         input.type = 'text';
@@ -219,10 +236,12 @@ export const buildModelo790FillFormScript = (profile = {}) => {
         };
 
         const submitPdf = () => {
+          if (button.disabled) {
+            return;
+          }
           syncCaptcha();
           button.disabled = true;
           button.textContent = 'Downloading…';
-
           window.document.querySelectorAll('#fondo0 input, #formapago input, #total').forEach(field => {
             field.removeAttribute('disabled');
           });
@@ -237,90 +256,155 @@ export const buildModelo790FillFormScript = (profile = {}) => {
             return;
           }
 
-          const body = new URLSearchParams(new FormData(form));
+          const fetchSubmittedForm = () => {
+            const body = new URLSearchParams(new FormData(form));
 
-          fetch(form.action, {
-            method: 'POST',
-            body,
-            credentials: 'include',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-            },
-          })
-            .then(response => response.blob().then(blob => ({response, blob})))
-            .then(({response, blob}) => {
-              const contentType = response.headers.get('content-type') || blob.type || '';
+            return fetch(form.action, {
+              method: 'POST',
+              body,
+              credentials: 'include',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+              },
+            })
+              .then(response => response.blob().then(blob => ({response, blob})))
+              .then(({response, blob}) => {
+                const contentType = response.headers.get('content-type') || blob.type || '';
 
-              if (!response.ok) {
-                postAutomationError(
-                  'Modelo 790 could not be downloaded',
-                  'The official site returned an error. Please go back to the dashboard and try again later.',
-                  'HTTP ' + response.status,
-                );
-                button.disabled = false;
-                button.textContent = 'Download Modelo 790';
-                return;
-              }
-
-              if (contentType.indexOf('pdf') !== -1) {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                  const result = String(reader.result || '');
-                  postPdf(result.slice(result.indexOf(',') + 1));
-                  button.disabled = false;
-                  button.textContent = 'Download Modelo 790';
-                };
-                reader.onerror = () => postAutomationError(
-                  'Modelo 790 could not be downloaded',
-                  'The PDF could not be read. Please go back to the dashboard and try again.',
-                  'FileReader failed',
-                );
-                reader.readAsDataURL(blob);
-                return;
-              }
-
-              return blob.text().then(html => {
-                window.document.open();
-                window.document.write(html);
-                window.document.close();
-
-                if (
-                  window.document.querySelector('#codSeguridadForm') &&
-                  window.document.querySelector('#divVisualCaptcha img')
-                ) {
-                  showCaptchaOnly();
+                if (!response.ok) {
+                  postAutomationError(
+                    'Modelo 790 could not be downloaded',
+                    'The official site returned an error. Please go back to the dashboard and try again later.',
+                    'HTTP ' + response.status,
+                  );
                   button.disabled = false;
                   button.textContent = 'Download Modelo 790';
                   return;
                 }
 
+                if (contentType.indexOf('pdf') !== -1) {
+                  const reader = new FileReader();
+                  reader.onloadend = () => {
+                    const result = String(reader.result || '');
+                    const base64 = result.slice(result.indexOf(',') + 1);
+                    button.textContent = 'Opening PDF…';
+                    postPdf(base64);
+                  };
+                  reader.onerror = () => postAutomationError(
+                    'Modelo 790 could not be downloaded',
+                    'The PDF could not be read. Please go back to the dashboard and try again.',
+                    'FileReader failed',
+                  );
+                  reader.readAsDataURL(blob);
+                  return;
+                }
+
+                return blob.text().then(html => {
+                  window.document.open();
+                  window.document.write(html);
+                  window.document.close();
+
+                  const hasCaptchaField = Boolean(window.document.querySelector('#codSeguridadForm'));
+                  const hasCaptchaImage = Boolean(window.document.querySelector('#divVisualCaptcha img'));
+                  const officialMessage = String(window.document.querySelector('#alertaCabecera, #alertaPie')?.textContent || '');
+
+                  if (
+                    hasCaptchaField &&
+                    hasCaptchaImage
+                  ) {
+                    const retryMessage = /captcha/i.test(officialMessage)
+                      ? 'Captcha was not accepted. Please try the new code.'
+                      : undefined;
+                    showCaptchaOnly(retryMessage);
+                    return;
+                  }
+
+                  postAutomationError(
+                    'Modelo 790 could not be downloaded',
+                    'The official site did not return a PDF or a new captcha. Please go back to the dashboard and try again later.',
+                    contentType || 'Unexpected response',
+                  );
+                });
+              })
+              .catch(error => {
                 postAutomationError(
                   'Modelo 790 could not be downloaded',
-                  'The official site did not return a PDF or a new captcha. Please go back to the dashboard and try again later.',
-                  contentType || 'Unexpected response',
+                  'The official site request failed. Please go back to the dashboard and try again later.',
+                  String(error && error.message ? error.message : error),
                 );
+                button.disabled = false;
+                button.textContent = 'Download Modelo 790';
               });
-            })
-            .catch(error => {
-              postAutomationError(
-                'Modelo 790 could not be downloaded',
-                'The official site request failed. Please go back to the dashboard and try again later.',
-                String(error && error.message ? error.message : error),
-              );
+          };
+
+          if (typeof window.validar790_012 === 'function') {
+            const originalSubmit = form.submit;
+            const originalPrototypeSubmit = window.HTMLFormElement && window.HTMLFormElement.prototype.submit;
+            const originalAlert = window.alert;
+            let submittedByOfficialValidator = false;
+
+            const restoreOfficialHooks = () => {
+              form.submit = originalSubmit;
+              if (originalPrototypeSubmit) {
+                window.HTMLFormElement.prototype.submit = originalPrototypeSubmit;
+              }
+              window.alert = originalAlert;
+            };
+            const interceptSubmit = () => {
+              submittedByOfficialValidator = true;
+              restoreOfficialHooks();
+              fetchSubmittedForm();
+            };
+
+            form.submit = interceptSubmit;
+            if (originalPrototypeSubmit) {
+              window.HTMLFormElement.prototype.submit = function() {
+                if (this === form) {
+                  interceptSubmit();
+                  return;
+                }
+                return originalPrototypeSubmit.apply(this, arguments);
+              };
+            }
+            window.alert = message => {
+              restoreOfficialHooks();
               button.disabled = false;
               button.textContent = 'Download Modelo 790';
+              postAutomationError(
+                'Modelo 790 form could not be submitted',
+                'The official form validation failed. Please go back to the dashboard and check your profile.',
+                String(message || ''),
+              );
+            };
+            window.validar790_012();
+            if (!submittedByOfficialValidator) {
+              restoreOfficialHooks();
+              button.disabled = false;
+              button.textContent = 'Download Modelo 790';
+            }
+          } else {
+            window.document.querySelectorAll('#fondo0 input, #formapago input, #total').forEach(field => {
+              field.removeAttribute('disabled');
             });
+            fetchSubmittedForm();
+          }
         };
 
         button.addEventListener('click', submitPdf);
 
         card.appendChild(image);
+        card.appendChild(retryHint);
         card.appendChild(input);
         card.appendChild(button);
         overlay.appendChild(style);
         overlay.appendChild(card);
         window.document.body.appendChild(overlay);
         input.focus();
+        try {
+          window.ReactNativeWebView && window.ReactNativeWebView.postMessage(JSON.stringify({
+            type: 'modelo-790-captcha-ready',
+          }));
+        } catch (error) {}
       };
 
       const requiredSelectors = [
