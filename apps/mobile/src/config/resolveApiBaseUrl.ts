@@ -3,7 +3,8 @@ import { Platform } from 'react-native'
 
 const DEV_API_BASE_URL = Platform.select({
   ios: 'http://localhost:3000',
-  android: 'http://10.0.2.2:3000',
+  // Physical devices and emulators use `adb reverse tcp:3000 tcp:3000`.
+  android: 'http://localhost:3000',
   default: 'http://localhost:3000',
 })!
 
@@ -21,7 +22,7 @@ export function assertHttpsProductionUrl(url: string): string {
 
 /**
  * Resolves the API origin for the current build.
- * - Dev/simulator: localhost (platform-specific).
+ * - Dev: localhost; Android requires the adb reverse mapping from `npm run adb:reverse`.
  * - Release: {@link PRODUCTION_API_BASE_URL} from `@visamesa/content/site` (single source of truth).
  */
 export function resolveApiBaseUrl(isDev = __DEV__): string {
