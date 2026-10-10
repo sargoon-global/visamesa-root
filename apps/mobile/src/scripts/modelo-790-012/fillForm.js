@@ -110,9 +110,13 @@ export const buildModelo790FillFormScript = (profile = {}) => {
         }
       }
 
+      const findCaptchaField = () => window.document.querySelector('#codSeguridadForm, input[name="codSeguridad"], input[name="codSeguridadForm"]');
+      const findCaptchaImage = () => window.document.querySelector('#divVisualCaptcha img, img[src*="jcaptcha"], img[src*="captcha"]');
+      const looksLikeCaptchaResponse = (html, message) => /captcha|codSeguridad|jcaptcha|c[oó]digo de seguridad/i.test(String(html || '') + ' ' + String(message || ''));
+
       const showCaptchaOnly = (retryMessage) => {
-        const originalCaptchaField = window.document.querySelector('#codSeguridadForm');
-        const captchaImage = window.document.querySelector('#divVisualCaptcha img');
+        const originalCaptchaField = findCaptchaField();
+        const captchaImage = findCaptchaImage();
 
         if (!originalCaptchaField || !captchaImage) {
           postAutomationError(
@@ -304,18 +308,17 @@ export const buildModelo790FillFormScript = (profile = {}) => {
                   window.document.write(html);
                   window.document.close();
 
-                  const hasCaptchaField = Boolean(window.document.querySelector('#codSeguridadForm'));
-                  const hasCaptchaImage = Boolean(window.document.querySelector('#divVisualCaptcha img'));
-                  const officialMessage = String(window.document.querySelector('#alertaCabecera, #alertaPie')?.textContent || '');
+                  const hasCaptchaField = Boolean(findCaptchaField());
+                  const hasCaptchaImage = Boolean(findCaptchaImage());
+                  const officialMessage = String(window.document.querySelector('#alertaCabecera, #alertaPie, .alert, .error, .mensajeError')?.textContent || '');
 
-                  if (
-                    hasCaptchaField &&
-                    hasCaptchaImage
-                  ) {
-                    const retryMessage = /captcha/i.test(officialMessage)
-                      ? 'Captcha was not accepted. Please try the new code.'
-                      : undefined;
-                    showCaptchaOnly(retryMessage);
+                  if ((hasCaptchaField && hasCaptchaImage) || looksLikeCaptchaResponse(html, officialMessage)) {
+                    if (hasCaptchaField && hasCaptchaImage) {
+                      showCaptchaOnly('Captcha was not accepted. Please try the new code.');
+                      return;
+                    }
+
+                    window.location.reload();
                     return;
                   }
 
