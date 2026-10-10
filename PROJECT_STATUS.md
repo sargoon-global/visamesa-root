@@ -327,6 +327,13 @@ Added notes:
 - Ran focused EX-17 PDF tests: 3 suites / 12 tests passed.
 - Inspected local progress backup shape without modifying data; restore remains pending user decision.
 
+### 2026-10-10 — WebView reinjection test coverage
+
+- Started stacked branch `test/webview-same-url-reinject` on top of `docs/mobile-dev-setup-notes`.
+- Added coverage proving `reinjectOnLoadEnd` rules re-run readiness and page script injection after same-URL loads.
+- Ran `useWebViewInjection.test.tsx`: 9 tests passed.
+- Ran mobile type-check: passed.
+
 ## Do Not Forget
 
 - Never bypass captcha.
