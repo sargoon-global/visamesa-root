@@ -11,7 +11,7 @@ import {
   tryHydrateProgressFromServer,
 } from '@/features/dashboard/services/progressService';
 import {fetchTieSteps} from '@/features/home/services/tieStepsService';
-import {phoneToString, stringToPhone} from '@/features/forms/utils/phoneUtils';
+import {normalizePhone, stringToPhone} from '@/features/forms/utils/phoneUtils';
 import {
   EMPTY_PROFILE,
   getProfile,
@@ -158,7 +158,7 @@ export function useProfile(
         payload.phoneNumber &&
         typeof payload.phoneNumber === 'object'
       ) {
-        payload.phoneNumber = phoneToString(
+        payload.phoneNumber = normalizePhone(
           payload.phoneNumber as {
             countryCode?: string;
             number?: string;

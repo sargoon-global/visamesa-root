@@ -178,4 +178,30 @@ describe('useProfile', () => {
     expect(mockSaveUserProgress).toHaveBeenCalled();
     expect(mockShowToast).toHaveBeenCalled();
   });
+
+  it('stores phone values as normalized separate country code and local number', async () => {
+    (updateProfile as jest.Mock).mockResolvedValue({
+      personal: {
+        phoneNumber: {countryCode: '34', number: '600123456'},
+      },
+    });
+
+    const getHookState = await renderHookAsync(
+      () => useProfile(true),
+      state => !state.isLoading,
+    );
+
+    await act(async () => {
+      await getHookState().submitPersonal({
+        phoneNumber: {countryCode: '+34', number: '34600123456'},
+      });
+    });
+
+    expect(updateProfile).toHaveBeenCalledWith(
+      'personal',
+      expect.objectContaining({
+        phoneNumber: {countryCode: '34', number: '600123456'},
+      }),
+    );
+  });
 });

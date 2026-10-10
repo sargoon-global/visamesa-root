@@ -522,7 +522,7 @@ The production API origin is defined once in `@visamesa/content/site` as `API_BA
 
 | Build | API origin |
 |-------|------------|
-| Debug / Metro (`__DEV__`) | `http://localhost:3000` (iOS sim) or `http://10.0.2.2:3000` (Android emulator) |
+| Debug / Metro (`__DEV__`) | `http://localhost:3000` (iOS simulator; Android emulator/device via `adb reverse tcp:3000 tcp:3000`) |
 | Release | `API_BASE_URL` from `@visamesa/content/site` (validated HTTPS) |
 
 Optional `.env` entries for local tooling only (not read by the app at runtime):

@@ -1,4 +1,5 @@
-import {NativeModules, Share} from 'react-native';
+import {Share} from 'react-native';
+import {saveGeneratedPdfBase64, openGeneratedPdf, type GeneratedPdfFile} from '@/features/pdfGeneration/services/pdfFileService';
 import {fromByteArray, toByteArray} from 'react-native-quick-base64';
 import {
   PDFCheckBox,
@@ -26,11 +27,7 @@ type Ex17Schema = {
   fields: Ex17SchemaField[];
 };
 
-export type GeneratedPdfFile = {
-  fileName: string;
-  path: string;
-  uri: string;
-};
+export type {GeneratedPdfFile} from '@/features/pdfGeneration/services/pdfFileService';
 
 export class PdfDownloadDismissedError extends Error {
   constructor() {
@@ -179,42 +176,16 @@ export async function generateEx17PdfBytes(data: Ex17PdfData) {
   return pdfDoc.save();
 }
 
-type PdfViewerNativeModule = {
-  openPdf: (pathOrUri: string) => Promise<void>;
-  savePdfBase64: (
-    base64: string,
-    fileName: string,
-  ) => Promise<GeneratedPdfFile>;
-};
-
 export async function saveEx17Pdf(
   data: Ex17PdfData,
 ): Promise<GeneratedPdfFile> {
   const bytes = await generateEx17PdfBytes(data);
   const base64 = fromByteArray(bytes);
   const fileName = `ex17-tie-${Date.now()}.pdf`;
-  const pdfViewer = getPdfViewerModule();
-
-  if (!pdfViewer?.savePdfBase64) {
-    throw new Error('PDF viewer module is not available');
-  }
-
-  return pdfViewer.savePdfBase64(base64, fileName);
+  return saveGeneratedPdfBase64(base64, fileName);
 }
 
-function getPdfViewerModule(): PdfViewerNativeModule | undefined {
-  return NativeModules.PdfViewer as PdfViewerNativeModule | undefined;
-}
-
-export async function openGeneratedPdf(file: GeneratedPdfFile) {
-  const pdfViewer = getPdfViewerModule();
-
-  if (!pdfViewer) {
-    throw new Error('PDF viewer module is not available');
-  }
-
-  await pdfViewer.openPdf(file.path);
-}
+export {openGeneratedPdf};
 
 async function sharePdfFile(
   file: GeneratedPdfFile,

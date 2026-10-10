@@ -9,7 +9,7 @@ describe('resolveApiBaseUrl', () => {
 
   it('returns a localhost origin in dev mode', () => {
     const url = resolveApiBaseUrl(true)
-    expect(url).toMatch(/^http:\/\/(localhost|10\.0\.2\.2):3000$/)
+    expect(url).toBe('http://localhost:3000')
   })
 
   it('rejects invalid production URLs and normalizes trailing slashes', () => {
