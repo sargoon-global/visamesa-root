@@ -59,4 +59,17 @@ describe('isGeneratedFormView', () => {
       }),
     ).toBe(false);
   });
+
+  it('returns false for referenced self-declared EX-17 checklist items', () => {
+    expect(
+      isGeneratedFormView({
+        key: 'ex-17-form',
+        label: 'Signed EX-17 form',
+        type: 'self_declared',
+        location: 'in_app',
+        formId: EX17_FORM_ID,
+        shareableForm: true,
+      }),
+    ).toBe(false);
+  });
 })

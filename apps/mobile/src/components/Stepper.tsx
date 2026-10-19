@@ -74,7 +74,9 @@ export function Stepper({
               style={[
                 styles.stepButton,
                 !isActive && !isCompleted && styles.stepButtonInactive,
-                isCompleted && styles.stepButtonCompleted,
+                !isActive &&
+                  isCompleted &&
+                  styles.stepButtonInactiveCompleted,
                 !pressable && styles.stepButtonDisabled,
                 elevationStyle,
               ]}>
@@ -140,7 +142,7 @@ const stylesheet = createStyleSheet(theme => ({
     borderWidth: 0,
     backgroundColor: theme.colors.surface,
   },
-  stepButtonCompleted: {
+  stepButtonInactiveCompleted: {
     backgroundColor: theme.colors.secondaryContainer,
   },
   stepButtonDisabled: {

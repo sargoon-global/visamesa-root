@@ -118,7 +118,7 @@ const stylesheet = createStyleSheet(theme => ({
     backgroundColor: theme.colors.secondary,
   },
   tonal: {
-    backgroundColor: theme.colors.secondaryContainer,
+    backgroundColor: theme.colors.secondary,
   },
   outline: {
     backgroundColor: theme.colors.surface,

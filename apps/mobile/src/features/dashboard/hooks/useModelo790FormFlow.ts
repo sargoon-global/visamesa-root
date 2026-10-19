@@ -20,6 +20,7 @@ import {
 import {getRequirementToggleState} from '@/features/dashboard/utils/requirementDependencies';
 import {MODELO790_FORM_ID} from '@/features/pdfGeneration/forms/modelo790/modelo790Constants';
 import {
+  clearModelo790InProgressSession,
   clearModelo790LocalSession,
   loadModelo790CompletedFile,
   loadModelo790PendingReview,
@@ -120,7 +121,7 @@ export function useModelo790FormFlow({
   useEffect(() => {
     if (!isAuthenticated) {
       setPendingModelo790Review(null);
-      clearModelo790LocalSession().catch(() => {});
+      clearModelo790InProgressSession().catch(() => {});
     }
   }, [isAuthenticated]);
 

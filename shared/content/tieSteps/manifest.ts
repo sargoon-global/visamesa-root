@@ -90,8 +90,6 @@ const fingerprintAppointmentRequirements: RequirementManifest[] = [
     key: 'ex-17-form',
     type: 'self_declared',
     location: 'in_app',
-    formId: 'ex-17',
-    shareableForm: true,
     referencesRequirement: {
       stepSlug: 'required-documents',
       requirementKey: 'ex-17-form',

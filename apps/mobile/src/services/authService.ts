@@ -7,7 +7,7 @@ import {getGoogleSignInErrorMessage} from '@/services/authGoogleErrors'
 import {reportClientErrorFromException} from '@/services/clientErrorService'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import {clearModelo790LocalSession} from '@/features/pdfGeneration/forms/modelo790/modelo790Storage';
+import {clearModelo790InProgressSession} from '@/features/pdfGeneration/forms/modelo790/modelo790Storage';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin'
 import { consentService } from '@/features/profile/services/consentService'
 import { i18n } from '@visamesa/content/i18n'
@@ -81,11 +81,13 @@ export const authService = {
       // Ignore sign-out errors when Google session is not active.
     }
 
+    const storedUser = await this.getStoredUser();
+
     await Promise.all([
       AsyncStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN),
       AsyncStorage.removeItem(STORAGE_KEYS.USER_DATA),
       consentService.clearConsent(),
-      clearModelo790LocalSession(),
+      clearModelo790InProgressSession(storedUser?.id),
     ]);
   },
 

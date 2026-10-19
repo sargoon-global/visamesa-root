@@ -27,6 +27,7 @@ jest.mock('@/features/pdfGeneration/forms/modelo790/modelo790Storage', () => ({
   saveModelo790CompletedFile: jest.fn(() => Promise.resolve()),
   saveModelo790ReviewFile: jest.fn(() => Promise.resolve()),
   setModelo790PendingReview: jest.fn(() => Promise.resolve()),
+  clearModelo790InProgressSession: jest.fn(() => Promise.resolve()),
   clearModelo790LocalSession: jest.fn(() => Promise.resolve()),
 }));
 

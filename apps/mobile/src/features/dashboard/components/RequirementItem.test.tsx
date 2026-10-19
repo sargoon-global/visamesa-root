@@ -145,6 +145,40 @@ describe('RequirementItem', () => {
     expect(output).toContain('Review form filled by VisaMesa');
   });
 
+  it('shows a view icon for completed appointment confirmation instead of a button', () => {
+    const tree = renderComponent(
+      <RequirementItem
+        requirement={{
+          key: 'appointment-confirmation',
+          label: 'Appointment confirmation',
+          description: 'Book your visit — VisaMesa can help.',
+          type: 'assisted_booking',
+          location: 'in_app',
+          bookingAssistantId: 'empadronamiento',
+        }}
+        progress={{
+          completed: true,
+          source: {
+            type: 'assisted_booking',
+            bookingAssistantId: 'empadronamiento',
+            completedAt: '2026-01-01',
+            appointment: {
+              office: 'Ayuntamiento',
+              date: '2026-02-01',
+              time: '10:00',
+            },
+          },
+        }}
+        interactive
+        onViewAppointmentPress={jest.fn()}
+      />,
+    );
+
+    const output = JSON.stringify(tree.toJSON());
+    expect(output).toContain('visibility');
+    expect(output).not.toContain('"label":"View appointment"');
+  });
+
   it('shows a loading indicator on the view action while the form opens', () => {
     const tree = renderComponent(
       <RequirementItem
