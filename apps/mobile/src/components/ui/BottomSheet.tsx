@@ -1,12 +1,14 @@
 import React, {useEffect, useRef} from 'react';
 import {
   Animated,
+  Dimensions,
   Modal,
   Pressable,
   View,
   StyleSheet,
   LayoutChangeEvent,
 } from 'react-native';
+import {useTranslation} from 'react-i18next';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
@@ -34,7 +36,9 @@ export function BottomSheet({
   maxHeightFraction = 0.9,
 }: BottomSheetProps) {
   const {styles, theme} = useStyles(stylesheet);
+  const {t} = useTranslation('common');
   const insets = useSafeAreaInsets();
+  const offScreenOffset = Dimensions.get('window').height;
   const scrimOpacity = useRef(new Animated.Value(0)).current;
   const sheetTranslateY = useRef(new Animated.Value(0)).current;
   
@@ -44,7 +48,8 @@ export function BottomSheet({
 
   useEffect(() => {
     if (visible) {
-      // Slide in
+      sheetTranslateY.setValue(offScreenOffset);
+      translateY.setValue(0);
       Animated.parallel([
         Animated.timing(scrimOpacity, {
           toValue: SCRIM_OPACITY,
@@ -67,13 +72,13 @@ export function BottomSheet({
           useNativeDriver: true,
         }),
         Animated.timing(sheetTranslateY, {
-          toValue: 300,
+          toValue: offScreenOffset,
           duration: 200,
           useNativeDriver: true,
         }),
       ]).start();
     }
-  }, [visible, scrimOpacity, sheetTranslateY]);
+  }, [offScreenOffset, visible, scrimOpacity, sheetTranslateY, translateY]);
 
   const handleLayout = (event: LayoutChangeEvent) => {
     const {height} = event.nativeEvent.layout;
@@ -115,8 +120,7 @@ export function BottomSheet({
             maxHeight: `${maxHeightFraction * 100}%`,
           },
         ]}
-        onLayout={handleLayout}
-        {...panResponder.panHandlers}>
+        onLayout={handleLayout}>
         <View
           style={[
             styles.sheet,
@@ -127,7 +131,11 @@ export function BottomSheet({
               paddingBottom: Math.max(insets.bottom, theme.spacing.md),
             },
           ]}>
-          <View style={styles.grabberContainer}>
+          <View
+            style={styles.grabberContainer}
+            accessibilityRole="adjustable"
+            accessibilityLabel={t('bottomSheet.dragToClose')}
+            {...panResponder.panHandlers}>
             <View
               style={[
                 styles.grabber,
