@@ -14,10 +14,13 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   multiRemove: jest.fn(),
 }));
 
-const mockClearModelo790LocalSession = jest.fn(() => Promise.resolve());
+const mockClearModelo790InProgressSession = jest.fn(
+  async (_userId?: string | null) => {},
+);
 
 jest.mock('@/features/pdfGeneration/forms/modelo790/modelo790Storage', () => ({
-  clearModelo790LocalSession: () => mockClearModelo790LocalSession(),
+  clearModelo790InProgressSession: (userId?: string) =>
+    mockClearModelo790InProgressSession(userId),
 }));
 
 jest.mock('@react-native-google-signin/google-signin', () => ({
@@ -118,6 +121,12 @@ describe('authService', () => {
 
   it('clears consent on logout', async () => {
     mockedGoogleSignin.signOut.mockResolvedValue(null);
+    mockedAsyncStorage.getItem.mockImplementation(async key => {
+      if (key === STORAGE_KEYS.USER_DATA) {
+        return JSON.stringify({id: 'user-1', email: 'user@example.com'});
+      }
+      return null;
+    });
 
     await authService.logout();
 
@@ -128,6 +137,6 @@ describe('authService', () => {
     expect(mockedAsyncStorage.removeItem).toHaveBeenCalledWith(
       STORAGE_KEYS.USER_DATA,
     );
-    expect(mockClearModelo790LocalSession).toHaveBeenCalled();
+    expect(mockClearModelo790InProgressSession).toHaveBeenCalledWith('user-1');
   });
 });

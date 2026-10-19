@@ -45,6 +45,7 @@ export const FORM_SHARE_URLS: Record<string, string> = {
 
 export function isGeneratedFormView(requirement: Requirement): boolean {
   return (
+    requirement.type === 'form' &&
     (requirement.formId === EX17_FORM_ID ||
       requirement.formId === MODELO790_FORM_ID) &&
     Boolean(requirement.shareableForm)

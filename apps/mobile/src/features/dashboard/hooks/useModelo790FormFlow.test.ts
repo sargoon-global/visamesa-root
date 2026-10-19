@@ -39,6 +39,8 @@ jest.mock('@/features/pdfGeneration/forms/modelo790/modelo790Storage', () => ({
     mockLoadCompletedFile(...args),
   saveModelo790CompletedFile: (...args: unknown[]) =>
     mockSaveCompletedFile(...args),
+  clearModelo790InProgressSession: (...args: unknown[]) =>
+    mockClearSession(...args),
   clearModelo790LocalSession: (...args: unknown[]) => mockClearSession(...args),
 }));
 

@@ -153,6 +153,26 @@ export function RequirementItem({
         )}
       </Pressable>
     </View>
+  ) : hasAppointmentAction && onViewAppointmentPress ? (
+    <View style={styles.documentActions}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={t('viewAppointmentAccessibilityLabel', {
+          label: requirement.label,
+        })}
+        onPress={onViewAppointmentPress}
+        android_ripple={{
+          color: theme.colors.primaryContainer,
+          borderless: true,
+          radius: theme.sizes.touchTargetMin / 2,
+        }}
+        style={({pressed}) => [
+          styles.iconButton,
+          pressed && styles.iconButtonPressed,
+        ]}>
+        <Icon name="visibility" size="md" color="primary" />
+      </Pressable>
+    </View>
   ) : showDocumentActions ? (
     <View style={styles.documentActions}>
       <Pressable
@@ -302,28 +322,17 @@ export function RequirementItem({
           ) : null}
         </View>
       ) : null}
-      {hasAppointmentAction ? (
+      {canClearBookingAssistant ? (
         <View style={styles.completedActions}>
           <Button
-            label={t('viewAppointment')}
-            variant="tonal"
-            onPress={onViewAppointmentPress}
-            accessibilityLabel={t('viewAppointmentAccessibilityLabel', {
+            label={t('markAsNotBooked')}
+            variant="outline"
+            onPress={onClearBookingAssistantPress}
+            accessibilityLabel={t('markAsNotBookedAccessibilityLabel', {
               label: requirement.label,
             })}
             style={styles.actionButton}
           />
-          {canClearBookingAssistant ? (
-            <Button
-              label={t('markAsNotBooked')}
-              variant="outline"
-              onPress={onClearBookingAssistantPress}
-              accessibilityLabel={t('markAsNotBookedAccessibilityLabel', {
-                label: requirement.label,
-              })}
-              style={styles.actionButton}
-            />
-          ) : null}
         </View>
       ) : null}
     </View>
