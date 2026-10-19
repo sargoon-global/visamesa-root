@@ -1,5 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import {clearModelo790LocalSession} from '@/features/pdfGeneration/forms/modelo790/modelo790Storage';
+
 import {fetchTieSteps} from '@/features/home/services/tieStepsService';
 import {Requirement} from '@/features/home/types/TieStepDetail';
 import type {LocalProgressStore} from '@/features/dashboard/types/ProgressStore';
@@ -362,5 +364,6 @@ export async function resetUserProgress(): Promise<void> {
 
   inMemoryStore = null;
   await AsyncStorage.removeItem(PROGRESS_STORAGE_KEY);
+  await clearModelo790LocalSession();
   progressResetListeners.forEach(listener => listener());
 }

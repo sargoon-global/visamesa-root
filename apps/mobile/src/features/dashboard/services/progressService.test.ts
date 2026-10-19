@@ -16,6 +16,11 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   getItem: jest.fn(() => Promise.resolve(null)),
   setItem: jest.fn(() => Promise.resolve()),
   removeItem: jest.fn(() => Promise.resolve()),
+  multiRemove: jest.fn(() => Promise.resolve()),
+}));
+
+jest.mock('@/features/pdfGeneration/forms/modelo790/modelo790Storage', () => ({
+  clearModelo790LocalSession: jest.fn(() => Promise.resolve()),
 }));
 
 jest.mock('@/features/home/services/tieStepsService', () => ({

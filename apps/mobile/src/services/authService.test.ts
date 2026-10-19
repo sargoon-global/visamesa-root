@@ -11,6 +11,13 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   getItem: jest.fn(),
   setItem: jest.fn(),
   removeItem: jest.fn(),
+  multiRemove: jest.fn(),
+}));
+
+const mockClearModelo790LocalSession = jest.fn(() => Promise.resolve());
+
+jest.mock('@/features/pdfGeneration/forms/modelo790/modelo790Storage', () => ({
+  clearModelo790LocalSession: () => mockClearModelo790LocalSession(),
 }));
 
 jest.mock('@react-native-google-signin/google-signin', () => ({
@@ -121,5 +128,6 @@ describe('authService', () => {
     expect(mockedAsyncStorage.removeItem).toHaveBeenCalledWith(
       STORAGE_KEYS.USER_DATA,
     );
+    expect(mockClearModelo790LocalSession).toHaveBeenCalled();
   });
 });

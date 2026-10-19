@@ -34,7 +34,7 @@ describe('isGeneratedFormView', () => {
     ).toBe(true);
   });
 
-  it('returns false for other form types and incomplete EX-17 metadata', () => {
+  it('returns true for shareable Modelo 790 forms', () => {
     expect(
       isGeneratedFormView({
         key: 'modelo-790-form',
@@ -44,7 +44,10 @@ describe('isGeneratedFormView', () => {
         formId: 'modelo-790-012',
         shareableForm: true,
       }),
-    ).toBe(false);
+    ).toBe(true);
+  });
+
+  it('returns false when shareable metadata is missing', () => {
 
     expect(
       isGeneratedFormView({
