@@ -1,11 +1,15 @@
 import React, {useState} from 'react';
 import {FlatList, Pressable, View, StyleProp, ViewStyle} from 'react-native';
+import {useTranslation} from 'react-i18next';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 import {Text} from '@/components/ui/Text';
 import {Icon} from '@/components/ui/Icon';
 import {BottomSheet} from '@/components/ui/BottomSheet';
+import {getFormControlContainerStyle} from '@/components/ui/formControlStyles';
+import {TextField} from '@/components/ui/TextField';
 import {FormFieldOption} from '@/features/forms/types/formTypes';
+import {useSelectOptionsSearch} from '@/hooks/useSelectOptionsSearch';
 
 export type SelectFieldProps = {
   label: string;
@@ -17,6 +21,7 @@ export type SelectFieldProps = {
   disabled?: boolean;
   containerStyle?: StyleProp<ViewStyle>;
   hideLabel?: boolean;
+  searchable?: boolean;
 };
 
 export function SelectField({
@@ -25,20 +30,32 @@ export function SelectField({
   options,
   onChange,
   error,
-  placeholder = 'Select an option',
+  placeholder,
   disabled = false,
   containerStyle,
   hideLabel = false,
+  searchable = false,
 }: SelectFieldProps) {
   const {styles, theme} = useStyles(stylesheet);
+  const {t} = useTranslation('common');
   const [isOpen, setIsOpen] = useState(false);
+  const {query, setQuery, filteredOptions} = useSelectOptionsSearch(options);
+
+  const resolvedPlaceholder =
+    placeholder ?? t('select.placeholder');
 
   const selectedLabel =
-    options.find(option => option.value === value)?.label ?? placeholder;
+    options.find(option => option.value === value)?.label ?? resolvedPlaceholder;
 
   const handleSelect = (nextValue: string) => {
     onChange(nextValue);
     setIsOpen(false);
+    setQuery('');
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    setQuery('');
   };
 
   return (
@@ -60,9 +77,11 @@ export function SelectField({
         }
         onPress={() => setIsOpen(true)}
         style={({pressed}) => [
+          getFormControlContainerStyle(theme, {
+            error: Boolean(error),
+            disabled,
+          }),
           styles.trigger,
-          !!error && styles.triggerError,
-          disabled && styles.triggerDisabled,
           pressed && !disabled && styles.triggerPressed,
         ]}>
         <Text
@@ -79,13 +98,26 @@ export function SelectField({
         </Text>
       ) : null}
 
-      <BottomSheet visible={isOpen} onClose={() => setIsOpen(false)} title={label}>
+      <BottomSheet visible={isOpen} onClose={handleClose} title={label}>
+        {searchable ? (
+          <View style={styles.search}>
+            <TextField
+              label={t('select.searchLabel')}
+              value={query}
+              onChangeText={setQuery}
+              placeholder={t('select.searchPlaceholder')}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+          </View>
+        ) : null}
         <FlatList
-          data={options}
+          data={filteredOptions}
           keyExtractor={item => item.value}
+          keyboardShouldPersistTaps="handled"
           renderItem={({item}) => (
             <Pressable
-              accessibilityRole="button"
+              accessibilityRole="radio"
               accessibilityState={{selected: item.value === value}}
               android_ripple={{color: theme.colors.primaryContainer}}
               onPress={() => handleSelect(item.value)}
@@ -114,23 +146,14 @@ const stylesheet = createStyleSheet(theme => ({
   label: {
     color: theme.colors.onSurfaceVariant,
   },
+  search: {
+    paddingHorizontal: theme.spacing.lg,
+    paddingBottom: theme.spacing.sm,
+  },
   trigger: {
-    minHeight: 48,
-    borderWidth: 1,
-    borderColor: theme.colors.outlineVariant,
-    borderRadius: theme.radii.sm,
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
-    backgroundColor: theme.colors.surface,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  triggerError: {
-    borderColor: theme.colors.error,
-  },
-  triggerDisabled: {
-    opacity: 0.6,
   },
   triggerPressed: {
     opacity: 0.88,

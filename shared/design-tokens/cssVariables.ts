@@ -104,7 +104,7 @@ function formVariables() {
   return [
     `--form-field-gap: ${spacing.xs}px;`,
     `--form-error-min-height: ${typography.bodySmall.lineHeight}px;`,
-    `--form-control-min-height: 48px;`,
+    `--form-control-min-height: ${sizes.form.controlHeight}px;`,
   ].join('\n  ')
 }
 
