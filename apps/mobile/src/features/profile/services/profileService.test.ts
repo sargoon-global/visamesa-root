@@ -52,7 +52,9 @@ describe('profileService', () => {
     mockedApiClient.get.mockResolvedValue({ data: encryptedPayload });
     mockedCryptoService.decrypt.mockResolvedValue(profile);
 
-    await expect(getProfile()).resolves.toEqual(profile);
+    await expect(getProfile()).resolves.toEqual({
+      personal: {...profile.personal, province: 'Barcelona'},
+    });
     expect(mockedApiClient.get).toHaveBeenCalledWith(
       API_ENDPOINTS.encryptedDetails,
     );
@@ -70,7 +72,7 @@ describe('profileService', () => {
 
   it('updates a profile section with encrypted payload', async () => {
     const updatedProfile = {
-      personal: { firstName: 'Ada' },
+      personal: {firstName: 'Ada', province: 'Barcelona'},
     };
     const encryptedPayload = {
       ciphertext: 'encrypted',
@@ -112,7 +114,10 @@ describe('profileService', () => {
     mockedApiClient.get.mockResolvedValue({ data: encryptedPayload });
     mockedCryptoService.decrypt.mockResolvedValue(profile);
 
-    await expect(getPersonalForBookingAssistant()).resolves.toEqual(profile.personal);
+    await expect(getPersonalForBookingAssistant()).resolves.toEqual({
+      ...profile.personal,
+      province: 'Barcelona',
+    });
   });
 
   it('returns null personal for booking assistant when decrypt fails on another device', async () => {
@@ -157,7 +162,7 @@ describe('profileService', () => {
       version: 1,
     };
     const updatedProfile = {
-      personal: { firstName: 'Ada' },
+      personal: {firstName: 'Ada', province: 'Barcelona'},
     };
 
     mockedApiClient.get.mockResolvedValue({ data: encryptedPayload });

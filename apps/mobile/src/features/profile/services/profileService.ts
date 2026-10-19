@@ -17,6 +17,9 @@ import {
   type BookingAssistantInjectionProfiles,
 } from '@/scripts/bookingAssistantProfile';
 
+import {parsePersonalInfo} from '../utils/parsePersonalInfo';
+import {migratePersonalFields} from '../utils/migratePersonalFields';
+
 import { ProfileData, ProfileSection } from '../types/ProfileData';
 
 export const EMPTY_PROFILE: ProfileData = {
@@ -66,6 +69,10 @@ function migrateLegacyProfile(data: unknown): ProfileData {
       empadronamientoIssuedAt: personal.dateOfDocumentIssuance,
       hasEmpadronamiento: personal.hasEmpadronamiento ?? 'yes',
     };
+  }
+
+  if (personal) {
+    personal = migratePersonalFields(personal);
   }
 
   return {personal};
@@ -152,7 +159,12 @@ export async function updateProfile(
     }
   }
 
-  const updated: ProfileData = { ...current, [section]: data };
+  let sectionData = data;
+  if (section === 'personal') {
+    sectionData = migratePersonalFields(data);
+  }
+
+  const updated: ProfileData = {...current, [section]: sectionData};
   const encrypted = await cryptoService.encrypt(updated);
 
   try {
@@ -176,12 +188,18 @@ export async function loadBookingAssistantInjectionProfiles(
     return null;
   }
 
+  const parsed = parsePersonalInfo(personal);
+
   return {
     personal,
-    empadronamiento: mapPersonalToEmpadronamientoBookingAssistantProfile(
-      personal,
-      fallbackEmail,
-    ),
-    citaPrevia: mapPersonalToCitaPreviaBookingAssistantProfile(personal),
+    empadronamiento: parsed.ok
+      ? mapPersonalToEmpadronamientoBookingAssistantProfile(
+          parsed.data,
+          fallbackEmail,
+        )
+      : null,
+    citaPrevia: parsed.ok
+      ? mapPersonalToCitaPreviaBookingAssistantProfile(parsed.data)
+      : null,
   };
 }
