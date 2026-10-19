@@ -7,10 +7,14 @@
     "required": "{{label}} is required.",
     "invalidFormat": "Invalid format. Check the input requirements.",
     "reviewForm": "Some fields need correction. Please review the form above.",
-    "empadronamientoCertificateExpired": "The empadronamiento certificate must have been issued within the last 90 days."
+    "empadronamientoCertificateExpired": "The empadronamiento certificate must have been issued within the last 90 days.",
+    "nieFormat": "Enter your NIE as one letter (X, Y, or Z), 7 digits, and a final letter, for example X1234567A.",
+    "postalCodeFormat": "Enter a 5-digit postal code.",
+    "phoneDigits": "Enter a phone number between 6 and 15 digits."
   },
   "phone": {
     "countryCode": "Code",
+    "countryCodePlaceholder": "e.g., 34",
     "number": "Number"
   },
   "datePicker": {
@@ -79,9 +83,12 @@
         "phoneNumber": {
           "label": "Phone Number"
         },
+        "streetType": {
+          "label": "Street type"
+        },
         "address": {
-          "label": "Registered Address",
-          "placeholder": "Street name",
+          "label": "Street name",
+          "placeholder": "e.g., Example",
           "helperText": "This is where you are officially registered (empadronado). We use this address for appointments and tax forms, even if you live somewhere else."
         },
         "addressNumber": {
@@ -89,16 +96,17 @@
           "placeholder": "e.g., 10"
         },
         "addressFloor": {
-          "label": "Floor / Apartment",
-          "placeholder": "e.g., 3B (optional)"
+          "label": "Floor (piso)",
+          "placeholder": "e.g., 6 (optional)"
+        },
+        "addressDoor": {
+          "label": "Door / apartment (puerta)",
+          "placeholder": "e.g., 4 (optional)"
         },
         "city": {
           "label": "City / Town",
-          "placeholder": "e.g., Barcelona"
-        },
-        "province": {
-          "label": "Province / State",
-          "placeholder": "e.g., Barcelona"
+          "placeholder": "e.g., Barcelona",
+          "helperText": "Your empadronamiento municipality. VisaMesa currently supports the Barcelona TIE process only."
         },
         "postalCode": {
           "label": "Postal Code",
@@ -134,6 +142,21 @@
           "widowed": "Widowed",
           "divorced": "Divorced",
           "separated": "Separated"
+        },
+        "streetType": {
+          "calle": "Calle",
+          "carrer": "Carrer",
+          "avenida": "Avenida",
+          "avinguda": "Avinguda",
+          "paseo": "Paseo",
+          "passeig": "Passeig",
+          "plaza": "Plaza",
+          "placa": "Plaça",
+          "ronda": "Ronda",
+          "travesia": "Travesía",
+          "camino": "Camino",
+          "carretera": "Carretera",
+          "otro": "Other"
         }
       }
     }
