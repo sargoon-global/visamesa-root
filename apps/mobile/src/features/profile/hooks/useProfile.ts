@@ -21,6 +21,7 @@ import {
   ProfileData,
   ProfileSection,
 } from '@/features/profile/types/ProfileData';
+import {VISA_MESA_SUPPORTED_PROVINCE} from '@/features/profile/data/barcelonaScope';
 import {isProfileComplete} from '@/features/profile/utils/profileCompleteness';
 import {ProfileDecryptionError} from '@/services/profileCryptoErrors';
 
@@ -135,6 +136,10 @@ export function useProfile(
       personal.email = authEmail;
     }
 
+    if (!personal.province) {
+      personal.province = VISA_MESA_SUPPORTED_PROVINCE;
+    }
+
     return {personal};
   }, [authEmail, profileData]);
 
@@ -153,17 +158,17 @@ export function useProfile(
     try {
       const payload = {...data};
 
-      if (
-        section === 'personal' &&
-        payload.phoneNumber &&
-        typeof payload.phoneNumber === 'object'
-      ) {
-        payload.phoneNumber = normalizePhone(
-          payload.phoneNumber as {
-            countryCode?: string;
-            number?: string;
-          },
-        );
+      if (section === 'personal') {
+        payload.province = VISA_MESA_SUPPORTED_PROVINCE;
+
+        if (payload.phoneNumber && typeof payload.phoneNumber === 'object') {
+          payload.phoneNumber = normalizePhone(
+            payload.phoneNumber as {
+              countryCode?: string;
+              number?: string;
+            },
+          );
+        }
       }
 
       const result = await updateProfile(section, payload);

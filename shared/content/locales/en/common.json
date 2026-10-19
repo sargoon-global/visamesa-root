@@ -69,6 +69,55 @@
     "label": "Language",
     "current": "Current language: {{language}}"
   },
+  "select": {
+    "placeholder": "Select an option",
+    "searchLabel": "Search",
+    "searchPlaceholder": "Type to filter"
+  },
+  "bottomSheet": {
+    "dragToClose": "Drag down to close"
+  },
+  "modelo790": {
+    "status": {
+      "title": "Preparing your Modelo 790",
+      "message": "You’ll enter the official captcha next. When the PDF opens, save it locally."
+    },
+    "backToDashboard": "Back to dashboard",
+    "captcha": {
+      "placeholder": "Enter captcha",
+      "imageAlt": "Security captcha code",
+      "downloading": "Downloading…",
+      "openingPdf": "Opening PDF…",
+      "retry": "Captcha was not accepted. Please try the new code."
+    },
+    "errors": {
+      "profileInvalidTitle": "Something went wrong",
+      "profileInvalidMessage": "Something went wrong preparing this form. Please go back to the dashboard and try again.",
+      "profileUnavailableTitle": "Profile unavailable",
+      "profileUnavailableMessage": "Could not load your profile. Please go back to the dashboard and try again.",
+      "timedOutTitle": "Modelo 790 timed out",
+      "timedOutMessage": "The official form did not load. Please go back to the dashboard and try again.",
+      "saveFailedTitle": "Modelo 790 could not be saved",
+      "saveFailedMessage": "The PDF could not be saved or opened. Please go back to the dashboard and try again.",
+      "siteLoadFailedTitle": "Official website could not be loaded",
+      "siteLoadFailedMessage": "Please go back to the dashboard and try again later.",
+      "siteHttpErrorTitle": "Official website error",
+      "siteHttpErrorMessage": "Please go back to the dashboard and try again later.",
+      "captchaUnavailableTitle": "Modelo 790 captcha is unavailable",
+      "captchaUnavailableMessage": "The official site did not show the captcha needed to download the form. Please go back to the dashboard and try again later.",
+      "formUnavailableTitle": "Modelo 790 form unavailable",
+      "formUnavailableMessage": "The official form could not be submitted. Please go back to the dashboard and try again.",
+      "downloadFailedTitle": "Modelo 790 could not be downloaded",
+      "downloadFailedHttpMessage": "The official site returned an error. Please go back to the dashboard and try again later.",
+      "downloadFailedReadMessage": "The PDF could not be read. Please go back to the dashboard and try again.",
+      "downloadFailedUnexpectedMessage": "The official site did not return a PDF or a new captcha. Please go back to the dashboard and try again later.",
+      "downloadFailedRequestMessage": "The official site request failed. Please go back to the dashboard and try again later.",
+      "submitFailedTitle": "Modelo 790 form could not be submitted",
+      "submitFailedMessage": "The official form validation failed. Please go back to the dashboard and check your profile.",
+      "prepareFailedTitle": "Modelo 790 form could not be prepared",
+      "prepareFailedMessage": "Some required fields on the official form could not be filled. Please go back to the dashboard and check your profile."
+    }
+  },
   "bookingAssistant": {
     "missingProfile": "Case profile information is missing",
     "stopTitle": "Stop booking assistant",

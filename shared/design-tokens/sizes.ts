@@ -22,6 +22,10 @@ export const sizes = {
     lg: 900,
     xl: 1200,
   },
+  /** Single-line text inputs (mobile TextField, web FormField). */
+  form: {
+    controlHeight: 48,
+  },
   viewportMin: 320,
   contentMaxWidth: 480,
   marketingMaxWidth: 1120,

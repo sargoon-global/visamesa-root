@@ -1,10 +1,15 @@
 import {ComponentProps, RefObject, useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {createStyleSheet, useStyles} from 'react-native-unistyles';
 import {RouteProp, useNavigation} from '@react-navigation/native';
+import {useTranslation} from 'react-i18next';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
 
 import {useAuth} from '@/contexts/AuthContext';
 import {BookingAssistantId} from '@/features/home/types/TieStepDetail';
-import {fetchUserProgress, updateRequirementProgress} from '@/features/dashboard/services/progressService';
+import {
+  saveModelo790ReviewFile,
+  setModelo790PendingReview,
+} from '@/features/pdfGeneration/forms/modelo790/modelo790Storage';
 import {saveGeneratedPdfBase64, openGeneratedPdf} from '@/features/pdfGeneration/services/pdfFileService';
 import {getProfile, loadBookingAssistantInjectionProfiles} from '@/features/profile/services/profileService';
 import {RootStackParamList} from '@/navigation/types';
@@ -27,9 +32,14 @@ import {
 } from '@/scripts/empadronamiento';
 import {
   buildModelo790InjectionRules,
+  buildModelo790ScriptStrings,
   MODELO_790_012_START_URL,
 } from '@/scripts/modelo-790-012';
-import {mapProfileToModelo790} from '@/scripts/modelo-790-012/mapProfile';
+import {toModelo790} from '@/scripts/modelo-790-012/mapProfile';
+import {
+  parsePersonalInfo,
+  parsePersonalInfoFieldNames,
+} from '@/features/profile/utils/parsePersonalInfo';
 import {isModelo790Error, isModelo790Pdf, type AutomationWebViewError} from '@/scripts/modelo-790-012/messages';
 import type {Modelo790AutomationProfile} from '@/scripts/modelo-790-012/config';
 import {useWebViewInjection, type WebViewReadinessTimeoutPayload} from '@/webViewInjection/useWebViewInjection';
@@ -43,6 +53,8 @@ type WebsiteWebViewRoute = RouteProp<RootStackParamList, 'WebsiteWebView'>;
 
 type WebViewHandle = React.ElementRef<typeof WebView>;
 type WebViewProps = ComponentProps<typeof WebView>;
+
+const webViewScreenStylesheet = createStyleSheet(() => ({}));
 
 function isTrustedModelo790MessageUrl(url: string | undefined): boolean {
   if (!url) {
@@ -62,6 +74,7 @@ export type UseWebsiteWebViewScreenResult = {
   bookingAssistant: BookingAssistantId;
   webViewError: AutomationWebViewError | null;
   modelo790ShowWebView: boolean;
+  modelo790PdfHandoff: boolean;
   startUrl: string;
   webViewSource: ReturnType<typeof buildCitaPreviaWebViewSource>;
   onLoadEnd: () => void;
@@ -79,12 +92,34 @@ export function useWebsiteWebViewScreen(
 ): UseWebsiteWebViewScreenResult {
   const bookingAssistant = route.params?.bookingAssistant ?? 'cita-previa';
   const isModelo790 = route.params?.automation === 'modelo-790-012';
+  const {t} = useTranslation('common');
+  const {theme} = useStyles(webViewScreenStylesheet);
+  const modelo790ScriptStrings = useMemo(
+    () =>
+      buildModelo790ScriptStrings(t, {
+        primary: theme.colors.primary,
+        onPrimary: theme.colors.onPrimary,
+        error: theme.colors.error,
+        outline: theme.colors.outline,
+        surface: theme.colors.surface,
+      }),
+    [
+      t,
+      theme.colors.error,
+      theme.colors.onPrimary,
+      theme.colors.outline,
+      theme.colors.primary,
+      theme.colors.surface,
+    ],
+  );
   const {user} = useAuth();
   const navigation = useNavigation();
   const [webViewError, setWebViewError] = useState<AutomationWebViewError | null>(null);
   const [modelo790ShowWebView, setModelo790ShowWebView] = useState(false);
+  const [modelo790PdfHandoff, setModelo790PdfHandoff] = useState(false);
   const [modelo790Profile, setModelo790Profile] = useState<Modelo790AutomationProfile | null>(null);
   const pdfInFlight = useRef(false);
+  const modelo790CaptchaReadyRef = useRef(false);
   const webViewRef = useRef<WebViewHandle>(null);
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [empadronamientoProfile, setEmpadronamientoProfile] = useState(
@@ -97,25 +132,34 @@ export function useWebsiteWebViewScreen(
   useEffect(() => {
     if (!isModelo790) {return;}
     setModelo790ShowWebView(false);
+    setModelo790PdfHandoff(false);
+    modelo790CaptchaReadyRef.current = false;
+    pdfInFlight.current = false;
     let cancelled = false;
     getProfile().then(profile => {
       if (cancelled) {return;}
-      const mapped = mapProfileToModelo790(profile?.personal ?? null);
-      if (!mapped) {
+      const parsed = parsePersonalInfo(profile?.personal ?? null);
+      if (!parsed.ok) {
+        reportClientError('MODELO_790_PROFILE_INVALID', {
+          fields: parsePersonalInfoFieldNames(profile?.personal ?? null) || 'personal',
+        });
         setWebViewError({
-          title: 'Modelo 790 profile incomplete',
-          message: 'Please check your NIE, name, Spanish phone number and address in your profile before generating this form.',
+          title: t('modelo790.errors.profileInvalidTitle'),
+          message: t('modelo790.errors.profileInvalidMessage'),
         });
       } else {
-        setModelo790Profile(mapped);
+        setModelo790Profile(toModelo790(parsed.data));
       }
     }).catch(() => {
       if (!cancelled) {
-        setWebViewError({title: 'Profile unavailable', message: 'Could not load your profile. Please go back to the dashboard and try again.'});
+        setWebViewError({
+          title: t('modelo790.errors.profileUnavailableTitle'),
+          message: t('modelo790.errors.profileUnavailableMessage'),
+        });
       }
     });
     return () => {cancelled = true;};
-  }, [isModelo790]);
+  }, [isModelo790, t]);
 
   useEffect(() => {
     let cancelled = false;
@@ -165,7 +209,9 @@ export function useWebsiteWebViewScreen(
   const injectionRules = useMemo(
     () => {
       if (isModelo790) {
-        return modelo790Profile ? buildModelo790InjectionRules(modelo790Profile) : [];
+        return modelo790Profile
+          ? buildModelo790InjectionRules(modelo790Profile, modelo790ScriptStrings)
+          : [];
       }
       if (!profileLoaded) {
         return [];
@@ -181,6 +227,7 @@ export function useWebsiteWebViewScreen(
       empadronamientoProfile,
       isModelo790,
       modelo790Profile,
+      modelo790ScriptStrings,
       profileLoaded,
     ],
   );
@@ -188,7 +235,10 @@ export function useWebsiteWebViewScreen(
   const onReadinessTimeout = useCallback(
     (payload: WebViewReadinessTimeoutPayload) => {
       if (isModelo790) {
-        setWebViewError({title: 'Modelo 790 timed out', message: 'The official form did not load. Please go back to the dashboard and try again.'});
+        setWebViewError({
+          title: t('modelo790.errors.timedOutTitle'),
+          message: t('modelo790.errors.timedOutMessage'),
+        });
       }
       reportClientError('WEBVIEW_INJECTION_TIMEOUT', {
         bookingAssistant,
@@ -198,7 +248,7 @@ export function useWebsiteWebViewScreen(
         timeoutMs: payload.timeoutMs,
       });
     },
-    [bookingAssistant, isModelo790],
+    [bookingAssistant, isModelo790, t],
   );
 
   const {
@@ -220,7 +270,11 @@ export function useWebsiteWebViewScreen(
   }, [isModelo790, modelo790Profile, onLoadEnd]);
 
   const onLoadStart = useCallback(() => {
-    if (isModelo790) {
+    if (
+      isModelo790 &&
+      !pdfInFlight.current &&
+      !modelo790CaptchaReadyRef.current
+    ) {
       setModelo790ShowWebView(false);
     }
     onInjectionLoadStart();
@@ -240,7 +294,10 @@ export function useWebsiteWebViewScreen(
           return;
         }
         if (isModelo790 && message.type === 'modelo-790-captcha-ready') {
-          setModelo790ShowWebView(true);
+          if (!pdfInFlight.current) {
+            modelo790CaptchaReadyRef.current = true;
+            setModelo790ShowWebView(true);
+          }
           return;
         }
         if (isModelo790 && isModelo790Pdf(message)) {
@@ -249,25 +306,28 @@ export function useWebsiteWebViewScreen(
           }
           if (pdfInFlight.current) {return;}
           pdfInFlight.current = true;
+          setModelo790PdfHandoff(true);
+          setModelo790ShowWebView(false);
           const {base64, fileName} = message.payload;
           (async () => {
             try {
               const file = await saveGeneratedPdfBase64(base64, fileName);
-              await openGeneratedPdf(file);
-              const completion = route.params?.formCompletion;
-              if (completion) {
-                const progress = await fetchUserProgress();
-                await updateRequirementProgress(progress, completion.stepId, completion.requirementKey, {
-                  completed: true,
-                  source: {type: 'form', formId: completion.formId, confirmedAt: new Date().toISOString()},
+              const review = route.params?.modelo790Review;
+              if (review) {
+                await saveModelo790ReviewFile(file);
+                await setModelo790PendingReview({
+                  ...review,
+                  showNextStepsAlert: true,
                 });
               }
+              await openGeneratedPdf(file);
               navigation.goBack();
             } catch (error) {
               pdfInFlight.current = false;
+              setModelo790PdfHandoff(false);
               setWebViewError({
-                title: 'Modelo 790 could not be saved',
-                message: 'The PDF could not be saved or opened. Please go back to the dashboard and try again.',
+                title: t('modelo790.errors.saveFailedTitle'),
+                message: t('modelo790.errors.saveFailedMessage'),
                 detail: error instanceof Error ? error.message : undefined,
               });
             }
@@ -281,7 +341,7 @@ export function useWebsiteWebViewScreen(
         // Ignore non-JSON messages from the page.
       }
     },
-    [handleInjectionMessage, isModelo790, navigation, route.params?.formCompletion],
+    [handleInjectionMessage, isModelo790, navigation, route.params?.modelo790Review, t],
   );
 
   const onError = useCallback<NonNullable<WebViewProps['onError']>>(
@@ -293,7 +353,10 @@ export function useWebsiteWebViewScreen(
       });
 
       if (isModelo790) {
-        setWebViewError({title: 'Official website could not be loaded', message: 'Please go back to the dashboard and try again later.'});
+        setWebViewError({
+          title: t('modelo790.errors.siteLoadFailedTitle'),
+          message: t('modelo790.errors.siteLoadFailedMessage'),
+        });
       }
       reportClientError('WEBVIEW_LOAD_FAILED', {
         bookingAssistant,
@@ -304,7 +367,7 @@ export function useWebsiteWebViewScreen(
         description: syntheticEvent.nativeEvent.description?.slice(0, 200) ?? null,
       });
     },
-    [bookingAssistant, isModelo790, startUrl],
+    [bookingAssistant, isModelo790, startUrl, t],
   );
 
   const onHttpError = useCallback<NonNullable<WebViewProps['onHttpError']>>(
@@ -316,7 +379,11 @@ export function useWebsiteWebViewScreen(
       });
 
       if (isModelo790) {
-        setWebViewError({title: 'Official website error', message: 'Please go back to the dashboard and try again later.', detail: `HTTP ${syntheticEvent.nativeEvent.statusCode}`});
+        setWebViewError({
+          title: t('modelo790.errors.siteHttpErrorTitle'),
+          message: t('modelo790.errors.siteHttpErrorMessage'),
+          detail: `HTTP ${syntheticEvent.nativeEvent.statusCode}`,
+        });
       }
       reportClientError('WEBVIEW_HTTP_ERROR', {
         bookingAssistant,
@@ -328,7 +395,7 @@ export function useWebsiteWebViewScreen(
         ),
       });
     },
-    [bookingAssistant, isModelo790, startUrl],
+    [bookingAssistant, isModelo790, startUrl, t],
   );
 
   return {
@@ -336,6 +403,7 @@ export function useWebsiteWebViewScreen(
     bookingAssistant,
     webViewError,
     modelo790ShowWebView,
+    modelo790PdfHandoff,
     startUrl,
     webViewSource,
     onLoadEnd,

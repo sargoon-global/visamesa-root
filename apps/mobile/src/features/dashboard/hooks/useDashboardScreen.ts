@@ -3,7 +3,7 @@ import {
   BookingAssistantId,
   TieStepDetail,
 } from '@/features/home/types/TieStepDetail';
-import {useEffect, useMemo, useState} from 'react';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 import {TFunction} from 'i18next';
 import {useTranslation} from 'react-i18next';
 import {CompositeNavigationProp} from '@react-navigation/native';
@@ -19,6 +19,8 @@ import {formatAppointmentDetailsMessage} from '@/features/dashboard/data/dashboa
 import {syncEmpadronamientoStepFromProfile} from '@/features/dashboard/services/empadronamientoProgressService';
 import {EX17_FORM_ID} from '@/features/pdfGeneration/forms/ex17/ex17Constants';
 import {useEx17FormFlow} from '@/features/dashboard/hooks/useEx17FormFlow';
+import {useModelo790FormFlow} from '@/features/dashboard/hooks/useModelo790FormFlow';
+import {MODELO790_FORM_ID} from '@/features/pdfGeneration/forms/modelo790/modelo790Constants';
 import {reconcileStepStatuses} from '@/features/dashboard/services/progressReconciliationService';
 import {
   buildInitialProgressFromSteps,
@@ -307,10 +309,10 @@ export function useDashboardScreen(
   );
 
   const {
-    enrichRequirements,
+    enrichRequirements: enrichEx17Requirements,
     onFormPress: onEx17FormPress,
-    onFormView,
-    onApproveAndDownloadForm,
+    onFormView: onEx17FormView,
+    onApproveAndDownloadForm: onEx17ApproveAndDownloadForm,
   } = useEx17FormFlow({
     currentStep,
     currentStepId,
@@ -324,12 +326,37 @@ export function useDashboardScreen(
     completeFormRequirement,
   });
 
+  const {
+    enrichRequirements: enrichModelo790Requirements,
+    onFormPress: onModelo790FormPress,
+    onFormView: onModelo790FormView,
+    onApproveAndDownloadForm: onModelo790ApproveAndDownloadForm,
+  } = useModelo790FormFlow({
+    navigation,
+    currentStep,
+    currentStepId,
+    progress,
+    canInteractWithRequirements,
+    progressContext,
+    steps,
+    isAuthenticated,
+    tDashboard,
+    tCommon,
+    completeFormRequirement,
+  });
+
+  const enrichFormRequirements = useCallback(
+    (requirements: RequirementWithProgress[]) =>
+      enrichModelo790Requirements(enrichEx17Requirements(requirements)),
+    [enrichEx17Requirements, enrichModelo790Requirements],
+  );
+
   const currentStepRequirements = useMemo(() => {
     if (!displayProgress || !currentStep) {
       return [];
     }
 
-    return enrichRequirements(
+    return enrichFormRequirements(
       buildRequirementsWithProgress(
         displayProgress,
         currentStep,
@@ -343,7 +370,7 @@ export function useDashboardScreen(
     canStartProcess,
     currentStep,
     displayProgress,
-    enrichRequirements,
+    enrichFormRequirements,
     progressContext,
     steps,
     tDashboard,
@@ -664,16 +691,39 @@ export function useDashboardScreen(
       return;
     }
 
-    if (formId === 'modelo-790-012') {
-      navigation.navigate('WebsiteWebView', {
-        automation: 'modelo-790-012',
-        formCompletion: {stepId: currentStep.id, requirementKey, formId},
-      });
+    if (formId === MODELO790_FORM_ID) {
+      await onModelo790FormPress(formId, requirementKey);
       return;
     }
 
     confirmFormRequirement(formId, requirementKey);
   };
+
+  const onFormView = useCallback(
+    async (formId: string, requirementKey: string) => {
+      if (formId === EX17_FORM_ID) {
+        await onEx17FormView(formId, requirementKey);
+        return;
+      }
+      if (formId === MODELO790_FORM_ID) {
+        await onModelo790FormView(formId, requirementKey);
+      }
+    },
+    [onEx17FormView, onModelo790FormView],
+  );
+
+  const onApproveAndDownloadForm = useCallback(
+    async (formId: string, requirementKey: string) => {
+      if (formId === EX17_FORM_ID) {
+        await onEx17ApproveAndDownloadForm(formId, requirementKey);
+        return;
+      }
+      if (formId === MODELO790_FORM_ID) {
+        await onModelo790ApproveAndDownloadForm(formId, requirementKey);
+      }
+    },
+    [onEx17ApproveAndDownloadForm, onModelo790ApproveAndDownloadForm],
+  );
 
   const isLoading = isStepsLoading || (isAuthenticated && isProgressLoading);
   const error = stepsError ?? progressError;

@@ -6,6 +6,7 @@ import {useTranslation} from 'react-i18next';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 import {Text} from '@/components/ui/Text';
+import {getFormControlContainerStyle} from '@/components/ui/formControlStyles';
 import {BottomSheet} from '@/components/ui/BottomSheet';
 import {Button} from '@/components/ui/Button';
 import {FormField as SchemaFieldType} from '@/features/forms/types/formTypes';
@@ -86,8 +87,9 @@ export function DateInputField({field}: Props) {
               android_ripple={{color: theme.colors.primaryContainer}}
               onPress={() => setShowPicker(true)}
               style={({pressed}) => [
-                styles.trigger,
-                !!fieldState.error && styles.triggerError,
+                getFormControlContainerStyle(theme, {
+                  error: Boolean(fieldState.error),
+                }),
                 pressed && styles.triggerPressed,
               ]}>
               <Text
@@ -152,19 +154,6 @@ const stylesheet = createStyleSheet(theme => ({
   },
   label: {
     color: theme.colors.onSurfaceVariant,
-  },
-  trigger: {
-    minHeight: 48,
-    borderWidth: 1,
-    borderColor: theme.colors.outlineVariant,
-    borderRadius: theme.radii.sm,
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
-    backgroundColor: theme.colors.surface,
-    justifyContent: 'center',
-  },
-  triggerError: {
-    borderColor: theme.colors.error,
   },
   triggerPressed: {
     opacity: 0.88,

@@ -15,6 +15,20 @@ export type FormFieldOption = {
   value: string;
 };
 
+export type FormFieldKeyboard = 'default' | 'numeric' | 'phone' | 'email';
+
+export type FormFieldAutoCapitalize = 'none' | 'sentences' | 'words' | 'characters';
+
+export type FormFieldAutoComplete =
+  | 'name'
+  | 'given-name'
+  | 'family-name'
+  | 'email'
+  | 'tel'
+  | 'postal-code'
+  | 'street-address'
+  | 'off';
+
 export type FormField = {
   id: string;
   label: string;
@@ -22,7 +36,13 @@ export type FormField = {
   required?: boolean;
   placeholder?: string;
   pattern?: string;
+  patternMessage?: string;
   helperText?: string;
+  maxLength?: number;
+  keyboard?: FormFieldKeyboard;
+  autoCapitalize?: FormFieldAutoCapitalize;
+  autoComplete?: FormFieldAutoComplete;
+  searchable?: boolean;
   options?: FormFieldOption[];
   dependsOn?: {
     fieldId: string;

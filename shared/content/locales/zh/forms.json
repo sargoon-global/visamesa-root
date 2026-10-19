@@ -7,10 +7,14 @@
     "required": "必须填写{{label}}。",
     "invalidFormat": "格式无效。请检查输入要求。",
     "reviewForm": "部分字段需要修正。请检查上方表单。",
-    "empadronamientoCertificateExpired": "empadronamiento 证书必须在最近 90 天内签发。"
+    "empadronamientoCertificateExpired": "empadronamiento 证书必须在最近 90 天内签发。",
+    "nieFormat": "请输入 NIE：以 X、Y 或 Z 开头，接 7 位数字和 1 个字母，例如 X1234567A。",
+    "postalCodeFormat": "请输入 5 位邮政编码。",
+    "phoneDigits": "请输入 6 至 15 位电话号码。"
   },
   "phone": {
     "countryCode": "区号",
+    "countryCodePlaceholder": "例如 34",
     "number": "号码"
   },
   "datePicker": {
@@ -79,9 +83,12 @@
         "phoneNumber": {
           "label": "电话号码"
         },
+        "streetType": {
+          "label": "街道类型"
+        },
         "address": {
-          "label": "登记地址",
-          "placeholder": "街道名称",
+          "label": "街道名称",
+          "placeholder": "例如 Mayor",
           "helperText": "这是您正式登记（empadronado）的地址。我们将其用于预约和税务表格，即使您住在别处。"
         },
         "addressNumber": {
@@ -89,16 +96,17 @@
           "placeholder": "例如 10"
         },
         "addressFloor": {
-          "label": "楼层 / 公寓",
-          "placeholder": "例如 3B（可选）"
+          "label": "楼层（piso）",
+          "placeholder": "例如 6（可选）"
+        },
+        "addressDoor": {
+          "label": "门牌（puerta）",
+          "placeholder": "例如 4（可选）"
         },
         "city": {
           "label": "城市 / 城镇",
-          "placeholder": "例如 Barcelona"
-        },
-        "province": {
-          "label": "省 / 州",
-          "placeholder": "例如 Barcelona"
+          "placeholder": "例如 Barcelona",
+          "helperText": "empadronamiento 所在 municipality。VisaMesa 目前仅支持巴塞罗那 TIE 流程。"
         },
         "postalCode": {
           "label": "邮政编码",
@@ -134,6 +142,21 @@
           "widowed": "丧偶",
           "divorced": "离异",
           "separated": "分居"
+        },
+        "streetType": {
+          "calle": "Calle",
+          "carrer": "Carrer",
+          "avenida": "Avenida",
+          "avinguda": "Avinguda",
+          "paseo": "Paseo",
+          "passeig": "Passeig",
+          "plaza": "Plaza",
+          "placa": "Plaça",
+          "ronda": "Ronda",
+          "travesia": "Travesía",
+          "camino": "Camino",
+          "carretera": "Carretera",
+          "otro": "其他"
         }
       }
     }

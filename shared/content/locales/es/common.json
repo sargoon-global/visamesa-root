@@ -69,6 +69,55 @@
     "label": "Idioma",
     "current": "Idioma actual: {{language}}"
   },
+  "select": {
+    "placeholder": "Selecciona una opción",
+    "searchLabel": "Buscar",
+    "searchPlaceholder": "Escribe para filtrar"
+  },
+  "bottomSheet": {
+    "dragToClose": "Arrastra hacia abajo para cerrar"
+  },
+  "modelo790": {
+    "status": {
+      "title": "Preparando tu Modelo 790",
+      "message": "A continuación introducirás el captcha oficial. Cuando se abra el PDF, guárdalo en tu dispositivo."
+    },
+    "backToDashboard": "Volver al panel",
+    "captcha": {
+      "placeholder": "Introduce el captcha",
+      "imageAlt": "Código captcha de seguridad",
+      "downloading": "Descargando…",
+      "openingPdf": "Abriendo PDF…",
+      "retry": "Captcha no aceptado. Prueba con el código nuevo."
+    },
+    "errors": {
+      "profileInvalidTitle": "Algo salió mal",
+      "profileInvalidMessage": "Algo salió mal al preparar este formulario. Vuelve al panel e inténtalo de nuevo.",
+      "profileUnavailableTitle": "Perfil no disponible",
+      "profileUnavailableMessage": "No se pudo cargar tu perfil. Vuelve al panel e inténtalo de nuevo.",
+      "timedOutTitle": "Tiempo agotado del Modelo 790",
+      "timedOutMessage": "El formulario oficial no cargó. Vuelve al panel e inténtalo de nuevo.",
+      "saveFailedTitle": "No se pudo guardar el Modelo 790",
+      "saveFailedMessage": "No se pudo guardar ni abrir el PDF. Vuelve al panel e inténtalo de nuevo.",
+      "siteLoadFailedTitle": "No se pudo cargar la web oficial",
+      "siteLoadFailedMessage": "Vuelve al panel e inténtalo más tarde.",
+      "siteHttpErrorTitle": "Error en la web oficial",
+      "siteHttpErrorMessage": "Vuelve al panel e inténtalo más tarde.",
+      "captchaUnavailableTitle": "Captcha del Modelo 790 no disponible",
+      "captchaUnavailableMessage": "La web oficial no mostró el captcha necesario. Vuelve al panel e inténtalo más tarde.",
+      "formUnavailableTitle": "Formulario Modelo 790 no disponible",
+      "formUnavailableMessage": "No se pudo enviar el formulario oficial. Vuelve al panel e inténtalo de nuevo.",
+      "downloadFailedTitle": "No se pudo descargar el Modelo 790",
+      "downloadFailedHttpMessage": "La web oficial devolvió un error. Vuelve al panel e inténtalo más tarde.",
+      "downloadFailedReadMessage": "No se pudo leer el PDF. Vuelve al panel e inténtalo de nuevo.",
+      "downloadFailedUnexpectedMessage": "La web oficial no devolvió un PDF ni un captcha nuevo. Vuelve al panel e inténtalo más tarde.",
+      "downloadFailedRequestMessage": "Falló la solicitud a la web oficial. Vuelve al panel e inténtalo más tarde.",
+      "submitFailedTitle": "No se pudo enviar el Modelo 790",
+      "submitFailedMessage": "Falló la validación del formulario oficial. Vuelve al panel y revisa tu perfil.",
+      "prepareFailedTitle": "No se pudo preparar el Modelo 790",
+      "prepareFailedMessage": "Algunos campos obligatorios no se pudieron rellenar. Vuelve al panel y revisa tu perfil."
+    }
+  },
   "bookingAssistant": {
     "missingProfile": "Falta la información del perfil del caso",
     "stopTitle": "Detener asistente de reserva",

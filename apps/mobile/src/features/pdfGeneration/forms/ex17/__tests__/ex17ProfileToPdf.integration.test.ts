@@ -2,16 +2,20 @@ import {PDFDocument} from 'pdf-lib';
 
 import {
   completeEx17Personal,
-  completeEx17Profile,
 } from '@/features/pdfGeneration/forms/ex17/__tests__/fixtures/completeEx17Profile';
 import {generateEx17PdfBytes} from '@/features/pdfGeneration/forms/ex17/ex17PdfService';
 import {mapProfileToEx17Data} from '@/features/pdfGeneration/forms/ex17/mapProfileToEx17Data';
+import {parsePersonalInfo} from '@/features/profile/utils/parsePersonalInfo';
 
 describe('EX-17 profile to PDF integration', () => {
   it('fills the generated PDF from a complete personal profile end to end', async () => {
     jest.useFakeTimers();
     jest.setSystemTime(new Date('2026-09-19T12:00:00'));
-    const mappedData = mapProfileToEx17Data(completeEx17Profile);
+    const parsed = parsePersonalInfo(completeEx17Personal);
+    if (!parsed.ok) {
+      throw new Error('Fixture personal info is incomplete');
+    }
+    const mappedData = mapProfileToEx17Data(parsed.data);
     jest.useRealTimers();
 
     const bytes = await generateEx17PdfBytes(mappedData);

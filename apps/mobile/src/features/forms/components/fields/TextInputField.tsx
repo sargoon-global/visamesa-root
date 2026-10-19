@@ -1,12 +1,32 @@
 import React from 'react';
 import {Controller, useFormContext} from 'react-hook-form';
+import type {KeyboardTypeOptions} from 'react-native';
 
 import {TextField} from '@/components/ui/TextField';
-import {FormField as SchemaFieldType} from '@/features/forms/types/formTypes';
+import {
+  FormField as SchemaFieldType,
+  FormFieldKeyboard,
+} from '@/features/forms/types/formTypes';
 
 type Props = {
   field: SchemaFieldType;
 };
+
+function resolveKeyboardType(
+  field: SchemaFieldType,
+): KeyboardTypeOptions | undefined {
+  if (field.keyboard) {
+    const map: Record<FormFieldKeyboard, KeyboardTypeOptions> = {
+      default: 'default',
+      numeric: 'number-pad',
+      phone: 'phone-pad',
+      email: 'email-address',
+    };
+    return map[field.keyboard];
+  }
+
+  return field.type === 'number' ? 'number-pad' : 'default';
+}
 
 export function TextInputField({field}: Props) {
   const {control} = useFormContext();
@@ -24,8 +44,13 @@ export function TextInputField({field}: Props) {
           onBlur={controllerField.onBlur}
           placeholder={field.placeholder}
           error={fieldState.error?.message}
-          keyboardType={field.type === 'number' ? 'numeric' : 'default'}
-          autoCapitalize={field.type === 'text' ? 'sentences' : 'none'}
+          keyboardType={resolveKeyboardType(field)}
+          autoCapitalize={
+            field.autoCapitalize ??
+            (field.type === 'text' ? 'sentences' : 'none')
+          }
+          autoComplete={field.autoComplete}
+          maxLength={field.maxLength}
         />
       )}
     />

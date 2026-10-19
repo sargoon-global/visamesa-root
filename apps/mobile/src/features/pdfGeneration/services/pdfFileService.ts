@@ -6,6 +6,13 @@ export type GeneratedPdfFile = {
   uri: string;
 };
 
+export class PdfDownloadDismissedError extends Error {
+  constructor() {
+    super('PDF download dismissed');
+    this.name = 'PdfDownloadDismissedError';
+  }
+}
+
 type PdfViewerNativeModule = {
   openPdf: (pathOrUri: string) => Promise<void>;
   savePdfBase64: (
@@ -47,4 +54,26 @@ export async function shareGeneratedPdf(file: GeneratedPdfFile) {
     message: file.fileName,
     url: file.uri,
   });
+}
+
+async function sharePdfFile(
+  file: GeneratedPdfFile,
+  options?: {rejectOnDismiss?: boolean},
+) {
+  const result = await Share.share({
+    title: file.fileName,
+    url: file.uri,
+  });
+
+  if (
+    options?.rejectOnDismiss &&
+    result.action === Share.dismissedAction
+  ) {
+    throw new PdfDownloadDismissedError();
+  }
+}
+
+/** Opens the system share sheet so the user can save a generated PDF on device. */
+export async function downloadGeneratedPdfToDevice(file: GeneratedPdfFile) {
+  await sharePdfFile(file, {rejectOnDismiss: true});
 }

@@ -2,6 +2,7 @@ import type { Requirement, TieStepDetail } from '@/features/home/types/TieStepDe
 import type { RequirementLocation } from '@visamesa/content/tieSteps/detail'
 
 import { EX17_FORM_ID } from '@/features/pdfGeneration/forms/ex17/ex17Constants'
+import { MODELO790_FORM_ID } from '@/features/pdfGeneration/forms/modelo790/modelo790Constants'
 
 export type RequirementGroup<T extends Requirement = Requirement> = {
   location?: RequirementLocation
@@ -43,7 +44,11 @@ export const FORM_SHARE_URLS: Record<string, string> = {
 }
 
 export function isGeneratedFormView(requirement: Requirement): boolean {
-  return requirement.formId === EX17_FORM_ID && Boolean(requirement.shareableForm)
+  return (
+    (requirement.formId === EX17_FORM_ID ||
+      requirement.formId === MODELO790_FORM_ID) &&
+    Boolean(requirement.shareableForm)
+  )
 }
 
 export function getRequirementShareMessage(

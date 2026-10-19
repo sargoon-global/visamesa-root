@@ -69,6 +69,55 @@
     "label": "语言",
     "current": "当前语言：{{language}}"
   },
+  "select": {
+    "placeholder": "请选择",
+    "searchLabel": "搜索",
+    "searchPlaceholder": "输入以筛选"
+  },
+  "bottomSheet": {
+    "dragToClose": "向下拖动以关闭"
+  },
+  "modelo790": {
+    "status": {
+      "title": "正在准备 Modelo 790",
+      "message": "接下来您将输入官方验证码。PDF 打开后，请保存到本地。"
+    },
+    "backToDashboard": "返回控制面板",
+    "captcha": {
+      "placeholder": "输入验证码",
+      "imageAlt": "安全验证码",
+      "downloading": "正在下载…",
+      "openingPdf": "正在打开 PDF…",
+      "retry": "验证码未被接受，请尝试新验证码。"
+    },
+    "errors": {
+      "profileInvalidTitle": "出现问题",
+      "profileInvalidMessage": "准备此表格时出现问题。请返回控制面板并重试。",
+      "profileUnavailableTitle": "无法加载个人资料",
+      "profileUnavailableMessage": "无法加载您的个人资料。请返回控制面板并重试。",
+      "timedOutTitle": "Modelo 790 超时",
+      "timedOutMessage": "官方表格未能加载。请返回控制面板并重试。",
+      "saveFailedTitle": "无法保存 Modelo 790",
+      "saveFailedMessage": "无法保存或打开 PDF。请返回控制面板并重试。",
+      "siteLoadFailedTitle": "无法加载官方网站",
+      "siteLoadFailedMessage": "请返回控制面板并稍后再试。",
+      "siteHttpErrorTitle": "官方网站错误",
+      "siteHttpErrorMessage": "请返回控制面板并稍后再试。",
+      "captchaUnavailableTitle": "Modelo 790 验证码不可用",
+      "captchaUnavailableMessage": "官方网站未显示下载所需的验证码。请返回控制面板并稍后再试。",
+      "formUnavailableTitle": "Modelo 790 表格不可用",
+      "formUnavailableMessage": "无法提交官方表格。请返回控制面板并重试。",
+      "downloadFailedTitle": "无法下载 Modelo 790",
+      "downloadFailedHttpMessage": "官方网站返回错误。请返回控制面板并稍后再试。",
+      "downloadFailedReadMessage": "无法读取 PDF。请返回控制面板并重试。",
+      "downloadFailedUnexpectedMessage": "官方网站未返回 PDF 或新验证码。请返回控制面板并稍后再试。",
+      "downloadFailedRequestMessage": "向官方网站发送请求失败。请返回控制面板并稍后再试。",
+      "submitFailedTitle": "无法提交 Modelo 790",
+      "submitFailedMessage": "官方表格验证失败。请返回控制面板并检查您的个人资料。",
+      "prepareFailedTitle": "无法准备 Modelo 790",
+      "prepareFailedMessage": "部分必填字段未能填写。请返回控制面板并检查您的个人资料。"
+    }
+  },
   "bookingAssistant": {
     "missingProfile": "缺少案例资料信息",
     "stopTitle": "停止预约助手",

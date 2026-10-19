@@ -9,6 +9,10 @@ import {
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 import {Text} from '@/components/ui/Text';
+import {
+  getFormControlContainerStyle,
+  getFormControlTextInputStyle,
+} from '@/components/ui/formControlStyles';
 
 export type TextFieldProps = Omit<TextInputProps, 'style'> & {
   label: string;
@@ -40,25 +44,27 @@ export function TextField({
           {helperText}
         </Text>
       ) : null}
-      <TextInput
-        {...props}
-        editable={editable}
-        placeholderTextColor={theme.colors.onSurfaceVariant}
-        onFocus={event => {
-          setIsFocused(true);
-          onFocus?.(event);
-        }}
-        onBlur={event => {
-          setIsFocused(false);
-          onBlur?.(event);
-        }}
-        style={[
-          styles.input,
-          isFocused && styles.inputFocused,
-          !!error && styles.inputError,
-          !editable && styles.inputDisabled,
-        ]}
-      />
+      <View
+        style={getFormControlContainerStyle(theme, {
+          focused: isFocused,
+          error: Boolean(error),
+          disabled: !editable,
+        })}>
+        <TextInput
+          {...props}
+          editable={editable}
+          placeholderTextColor={theme.colors.onSurfaceVariant}
+          onFocus={event => {
+            setIsFocused(true);
+            onFocus?.(event);
+          }}
+          onBlur={event => {
+            setIsFocused(false);
+            onBlur?.(event);
+          }}
+          style={getFormControlTextInputStyle(theme)}
+        />
+      </View>
       <View style={styles.errorSlot}>
         {error ? (
           <Text variant="bodySmall" color="error" style={styles.error}>
@@ -79,30 +85,6 @@ const stylesheet = createStyleSheet(theme => ({
   },
   helper: {
     marginTop: -theme.spacing.xs / 2,
-  },
-  input: {
-    minHeight: 48,
-    borderWidth: 1,
-    borderColor: theme.colors.outlineVariant,
-    borderRadius: theme.radii.sm,
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
-    fontSize: theme.typography.bodyLarge.fontSize,
-    lineHeight: theme.typography.bodyLarge.lineHeight,
-    color: theme.colors.onSurface,
-    backgroundColor: theme.colors.surface,
-  },
-  inputFocused: {
-    borderColor: theme.colors.primary,
-    borderWidth: 2,
-    paddingHorizontal: theme.spacing.md - 1,
-    paddingVertical: theme.spacing.sm - 1,
-  },
-  inputError: {
-    borderColor: theme.colors.error,
-  },
-  inputDisabled: {
-    opacity: 0.6,
   },
   error: {
     marginTop: 0,

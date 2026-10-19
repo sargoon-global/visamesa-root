@@ -18,7 +18,10 @@ function buildFieldSchema(
 ): z.ZodTypeAny {
   const requiredMessage = (label: string) =>
     translate?.('validation.required', {label}) ?? `${label} is required.`;
-  const invalidFormatMessage =
+  const invalidFormatMessage = (formField: FormField) =>
+    (formField.patternMessage
+      ? translate?.(formField.patternMessage)
+      : undefined) ??
     translate?.('validation.invalidFormat') ??
     'Invalid format. Check the input requirements.';
 
@@ -32,12 +35,26 @@ function buildFieldSchema(
       return phoneSchema.optional();
     }
 
-    return phoneSchema.refine(
-      data => Boolean(data.countryCode?.trim()) && Boolean(data.number?.trim()),
-      {
-        message: requiredMessage(field.label),
-      },
-    );
+    return phoneSchema
+      .refine(
+        data => Boolean(data.countryCode?.trim()) && Boolean(data.number?.trim()),
+        {
+          message: requiredMessage(field.label),
+        },
+      )
+      .superRefine((data, ctx) => {
+        const countryCode = (data.countryCode ?? '').replace(/\D/g, '');
+        const number = (data.number ?? '').replace(/\D/g, '');
+        const totalDigits = `${countryCode}${number}`.length;
+        if (totalDigits > 0 && (totalDigits < 6 || totalDigits > 15)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message:
+              translate?.('validation.phoneDigits') ??
+              'Enter a phone number between 6 and 15 digits.',
+          });
+        }
+      });
   }
 
   if (field.type === 'dateRange' || field.type === 'timeRange') {
@@ -57,8 +74,14 @@ function buildFieldSchema(
 
   let zodField = z.string();
 
+  if (field.maxLength) {
+    zodField = zodField.max(field.maxLength, {
+      message: invalidFormatMessage(field),
+    });
+  }
+
   if (field.pattern) {
-    zodField = zodField.regex(new RegExp(field.pattern), invalidFormatMessage);
+    zodField = zodField.regex(new RegExp(field.pattern), invalidFormatMessage(field));
   }
 
   if (!required) {

@@ -8,6 +8,35 @@ import {
   type Modelo790AutomationProfile,
 } from './index';
 
+const testScriptStrings = {
+  captchaPlaceholder: 'Enter captcha',
+  captchaImageAlt: 'Security captcha code',
+  submit: 'Continue',
+  downloading: 'Downloading…',
+  openingPdf: 'Opening PDF…',
+  theme: {
+    primary: '#00215E',
+    onPrimary: '#FFFFFF',
+    error: '#BA1A1A',
+    outline: '#75777F',
+    surface: '#FFFFFF',
+  },
+  captchaRetry: 'Retry captcha',
+  captchaUnavailableTitle: 'Captcha unavailable',
+  captchaUnavailableMessage: 'Captcha unavailable message',
+  formUnavailableTitle: 'Form unavailable',
+  formUnavailableMessage: 'Form unavailable message',
+  downloadFailedTitle: 'Download failed',
+  downloadFailedHttpMessage: 'HTTP failed',
+  downloadFailedReadMessage: 'Read failed',
+  downloadFailedUnexpectedMessage: 'Unexpected failed',
+  downloadFailedRequestMessage: 'Request failed',
+  submitFailedTitle: 'Submit failed',
+  submitFailedMessage: 'Submit failed message',
+  prepareFailedTitle: 'Prepare failed',
+  prepareFailedMessage: 'Prepare failed message',
+};
+
 describe('modelo 790 automation rules', () => {
   const profile: Modelo790AutomationProfile = {
     documentNumber: 'Y1234567X',
@@ -25,7 +54,7 @@ describe('modelo 790 automation rules', () => {
   };
 
   it('builds simple event-ready rules for the official Modelo 790 flow', () => {
-    const rules = buildModelo790InjectionRules(profile);
+    const rules = buildModelo790InjectionRules(profile, testScriptStrings);
 
     expect(MODELO_790_012_START_URL).toBe(MODELO_790_012_FORM_URL);
 
@@ -50,7 +79,7 @@ describe('modelo 790 automation rules', () => {
   });
 
   it('fills profile data and stops before captcha/download', () => {
-    const fillRule = buildModelo790InjectionRules(profile).find(
+    const fillRule = buildModelo790InjectionRules(profile, testScriptStrings).find(
       rule => rule.id === 'modelo-790-fill-form',
     );
 
@@ -69,13 +98,13 @@ describe('modelo 790 automation rules', () => {
   });
 
   it('generates valid injectable JavaScript', () => {
-    buildModelo790InjectionRules(profile).forEach(rule => {
+    buildModelo790InjectionRules(profile, testScriptStrings).forEach(rule => {
       expect(() => new Script(rule.script)).not.toThrow();
     });
   });
 
   it('hides the official page behind a focused captcha/download overlay', () => {
-    const fillRule = buildModelo790InjectionRules(profile).find(
+    const fillRule = buildModelo790InjectionRules(profile, testScriptStrings).find(
       rule => rule.id === 'modelo-790-fill-form',
     );
 
@@ -83,11 +112,11 @@ describe('modelo 790 automation rules', () => {
     expect(fillRule?.script).toContain(
       'body > *:not(#visaMesaModelo790CaptchaOnly)',
     );
-    expect(fillRule?.script).toContain('Download Modelo 790');
+    expect(fillRule?.script).toContain('Continue');
   });
 
   it('keeps page scripts simple without internal polling timers', () => {
-    buildModelo790InjectionRules(profile).forEach(rule => {
+    buildModelo790InjectionRules(profile, testScriptStrings).forEach(rule => {
       expect(rule.script).not.toContain('setTimeout');
       expect(rule.script).not.toContain('setInterval');
       expect(rule.script).not.toContain('MutationObserver');

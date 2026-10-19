@@ -20,6 +20,16 @@ async function renderDashboardScreen(
   return getHookState;
 }
 
+jest.mock('@/features/pdfGeneration/forms/modelo790/modelo790Storage', () => ({
+  loadModelo790PendingReview: jest.fn(() => Promise.resolve(null)),
+  loadModelo790ReviewFile: jest.fn(() => Promise.resolve(null)),
+  loadModelo790CompletedFile: jest.fn(() => Promise.resolve(null)),
+  saveModelo790CompletedFile: jest.fn(() => Promise.resolve()),
+  saveModelo790ReviewFile: jest.fn(() => Promise.resolve()),
+  setModelo790PendingReview: jest.fn(() => Promise.resolve()),
+  clearModelo790LocalSession: jest.fn(() => Promise.resolve()),
+}));
+
 jest.mock('@/features/home/hooks/useTieSteps', () => ({
   useTieSteps: jest.fn(),
 }));
@@ -566,7 +576,11 @@ describe('useDashboardScreen', () => {
 
     expect(navigation.navigate).toHaveBeenCalledWith('WebsiteWebView', {
       automation: 'modelo-790-012',
-      formCompletion: {stepId: 4, requirementKey: 'modelo-790-form', formId: 'modelo-790-012'},
+      modelo790Review: {
+        stepId: 4,
+        requirementKey: 'modelo-790-form',
+        formId: 'modelo-790-012',
+      },
     });
     expect(completeFormRequirement).not.toHaveBeenCalled();
   });

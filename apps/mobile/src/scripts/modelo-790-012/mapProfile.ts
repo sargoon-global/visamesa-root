@@ -1,63 +1,39 @@
-import {normalizePhone, stringToPhone} from '@/features/forms/utils/phoneUtils';
+import {
+  MODELO790_FEE_INPUT_ID,
+  MODELO790_PAYMENT_METHOD,
+} from '@/features/pdfGeneration/forms/modelo790/modelo790Constants';
+import type {PersonalInfo} from '@/features/profile/utils/parsePersonalInfo';
 
 import type {Modelo790AutomationProfile} from './config';
 
-function text(value: unknown): string {
-  return typeof value === 'string' ? value.trim() : '';
+function formatPhoneForModelo790(phone: PersonalInfo['phoneNumber']): string {
+  const countryCode = phone.countryCode.replace(/\D/g, '');
+  const number = phone.number.replace(/\D/g, '');
+  const formatted = countryCode ? `+${countryCode} ${number}` : number;
+  return formatted.slice(0, 15);
 }
 
-/** Never substitute invented identity or contact details into an official form. */
-export function mapProfileToModelo790(
-  personal: Record<string, unknown> | null,
-): Modelo790AutomationProfile | null {
-  if (!personal) {
-    return null;
-  }
-
-  const documentNumber = text(personal.nieNumber);
-  const fullName = [text(personal.firstName), text(personal.lastName), text(personal.secondLastName)]
+/** Maps validated personal info into the official Modelo 790 form shape. */
+export function toModelo790(info: PersonalInfo): Modelo790AutomationProfile {
+  const fullName = [info.firstName, info.lastName, info.secondLastName]
     .filter(Boolean)
     .join(' ');
-  const street = text(personal.address).match(
-    /^(Calle|Carrer|Avenida|Avinguda|Avda|Passeig|Paseo|Plaza|Plaça|Ronda|Travessera|Travesía)\s+(.+)$/i,
-  );
-  const phone = personal.phoneNumber;
-  const phoneParts = phone && typeof phone === 'object'
-    ? normalizePhone(phone as {countryCode?: string; number?: string})
-    : typeof phone === 'string'
-      ? stringToPhone(phone)
-      : null;
-  const countryCode = text(phoneParts?.countryCode).replace(/\D/g, '');
-  const phoneNumber = text(phoneParts?.number).replace(/\D/g, '');
-  const number = text(personal.addressNumber);
-  const city = text(personal.city);
-  const province = text(personal.province);
-  const postalCode = text(personal.postalCode);
-
-  if (
-    !/^[XYZ]\d{7}[A-Z]$/i.test(documentNumber) ||
-    !text(personal.firstName) || !text(personal.lastName) ||
-    !street || !number || !city || !province ||
-    !/^\d{5}$/.test(postalCode) ||
-    (countryCode && countryCode !== '34') || !/^\d{9}$/.test(phoneNumber)
-  ) {
-    return null;
-  }
 
   return {
-    documentNumber,
+    documentNumber: info.nieNumber,
     fullName,
     address: {
-      streetType: street[1],
-      streetName: street[2],
-      number,
-      floor: text(personal.addressFloor),
-      city,
-      province,
-      postalCode,
+      streetType: info.streetType,
+      streetName: info.address,
+      number: info.addressNumber,
+      floor: info.addressFloor ?? '',
+      door: info.addressDoor ?? '',
+      city: info.city,
+      province: info.province,
+      postalCode: info.postalCode,
     },
-    phoneNumber,
-    feeInputId: 'tasa5Input',
-    paymentMethod: 'cash',
+    phoneNumber: formatPhoneForModelo790(info.phoneNumber),
+    feeInputId: MODELO790_FEE_INPUT_ID,
+    paymentMethod: MODELO790_PAYMENT_METHOD,
   };
 }

@@ -7,10 +7,14 @@
     "required": "{{label}} es obligatorio.",
     "invalidFormat": "Formato no válido. Revisa los requisitos del campo.",
     "reviewForm": "Hay campos que corregir. Revisa el formulario de arriba.",
-    "empadronamientoCertificateExpired": "El certificado de empadronamiento debe haberse emitido en los últimos 90 días."
+    "empadronamientoCertificateExpired": "El certificado de empadronamiento debe haberse emitido en los últimos 90 días.",
+    "nieFormat": "Introduce tu NIE con una letra (X, Y o Z), 7 dígitos y una letra final, por ejemplo X1234567A.",
+    "postalCodeFormat": "Introduce un código postal de 5 dígitos.",
+    "phoneDigits": "Introduce un teléfono de entre 6 y 15 dígitos."
   },
   "phone": {
     "countryCode": "Código",
+    "countryCodePlaceholder": "p. ej., 34",
     "number": "Número"
   },
   "datePicker": {
@@ -79,9 +83,12 @@
         "phoneNumber": {
           "label": "Teléfono"
         },
+        "streetType": {
+          "label": "Tipo de vía"
+        },
         "address": {
-          "label": "Dirección registrada",
-          "placeholder": "Nombre de la calle",
+          "label": "Nombre de la vía",
+          "placeholder": "p. ej., Mayor",
           "helperText": "Es la dirección donde estás empadronado. La usamos para citas y trámites fiscales, aunque vivas en otro sitio."
         },
         "addressNumber": {
@@ -89,16 +96,17 @@
           "placeholder": "p. ej., 10"
         },
         "addressFloor": {
-          "label": "Piso / Puerta",
-          "placeholder": "p. ej., 3B (opcional)"
+          "label": "Piso",
+          "placeholder": "p. ej., 6 (opcional)"
+        },
+        "addressDoor": {
+          "label": "Puerta",
+          "placeholder": "p. ej., 4 (opcional)"
         },
         "city": {
           "label": "Localidad",
-          "placeholder": "p. ej., Barcelona"
-        },
-        "province": {
-          "label": "Provincia",
-          "placeholder": "p. ej., Barcelona"
+          "placeholder": "p. ej., Barcelona",
+          "helperText": "Municipio de tu empadronamiento. VisaMesa cubre de momento solo el proceso TIE en Barcelona."
         },
         "postalCode": {
           "label": "Código postal",
@@ -134,6 +142,21 @@
           "widowed": "Viudo/a",
           "divorced": "Divorciado/a",
           "separated": "Separado/a"
+        },
+        "streetType": {
+          "calle": "Calle",
+          "carrer": "Carrer",
+          "avenida": "Avenida",
+          "avinguda": "Avinguda",
+          "paseo": "Paseo",
+          "passeig": "Passeig",
+          "plaza": "Plaza",
+          "placa": "Plaça",
+          "ronda": "Ronda",
+          "travesia": "Travesía",
+          "camino": "Camino",
+          "carretera": "Carretera",
+          "otro": "Otro"
         }
       }
     }

@@ -6,6 +6,7 @@ import {i18n} from '@visamesa/content/i18n';
 import {RequirementWithProgress} from '@/features/dashboard/components/RequirementsChecklist';
 import {useEx17FormFlow} from '@/features/dashboard/hooks/useEx17FormFlow';
 import {EX17_FORM_ID} from '@/features/pdfGeneration/forms/ex17/ex17Constants';
+import {completePersonalRecord} from '@/test/fixtures/personalInfo';
 import {createUserProgress} from '@/test/fixtures/userProgress';
 import {renderHook, rerenderRenderedHook, unmountRenderedHook} from '@/test/renderHook';
 
@@ -35,7 +36,10 @@ jest.mock('@/features/pdfGeneration/forms/ex17/ex17PdfService', () => ({
   saveEx17Pdf: (...args: unknown[]) => mockSaveEx17Pdf(...args),
   openGeneratedPdf: (...args: unknown[]) => mockOpenGeneratedPdf(...args),
   shareGeneratedPdf: (...args: unknown[]) => mockShareGeneratedPdf(...args),
-  downloadEx17PdfToDevice: (...args: unknown[]) =>
+}));
+
+jest.mock('@/features/pdfGeneration/services/pdfFileService', () => ({
+  downloadGeneratedPdfToDevice: (...args: unknown[]) =>
     mockDownloadEx17PdfToDevice(...args),
   PdfDownloadDismissedError: class PdfDownloadDismissedError extends Error {
     constructor() {
@@ -100,7 +104,7 @@ describe('useEx17FormFlow', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     hookOptions = createHookOptions();
-    mockGetProfile.mockResolvedValue({personal: {firstName: 'Juan'}});
+    mockGetProfile.mockResolvedValue({personal: completePersonalRecord});
     mockSaveEx17Pdf.mockResolvedValue(generatedFile);
     mockOpenGeneratedPdf.mockResolvedValue(undefined);
     mockShareGeneratedPdf.mockResolvedValue(undefined);
@@ -291,7 +295,7 @@ describe('useEx17FormFlow', () => {
 
   it('shows a cancelled toast when download is dismissed', async () => {
     const {PdfDownloadDismissedError} = jest.requireMock(
-      '@/features/pdfGeneration/forms/ex17/ex17PdfService',
+      '@/features/pdfGeneration/services/pdfFileService',
     ) as {PdfDownloadDismissedError: new () => Error};
 
     mockDownloadEx17PdfToDevice.mockRejectedValueOnce(new PdfDownloadDismissedError());

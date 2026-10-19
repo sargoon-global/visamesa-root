@@ -1,10 +1,16 @@
 import {
   completeEx17Personal,
-  completeEx17Profile,
 } from '@/features/pdfGeneration/forms/ex17/__tests__/fixtures/completeEx17Profile';
 import {mapProfileToEx17Data} from '@/features/pdfGeneration/forms/ex17/mapProfileToEx17Data';
+import {parsePersonalInfo} from '@/features/profile/utils/parsePersonalInfo';
 
-import type {ProfileData} from '@/features/profile/types/ProfileData';
+function mapEx17FromRecord(personal: Record<string, unknown>) {
+  const parsed = parsePersonalInfo(personal);
+  if (!parsed.ok) {
+    throw new Error('Fixture personal info is incomplete');
+  }
+  return mapProfileToEx17Data(parsed.data);
+}
 
 describe('mapProfileToEx17Data', () => {
   beforeEach(() => {
@@ -17,7 +23,7 @@ describe('mapProfileToEx17Data', () => {
   });
 
   it('maps profile personal fields into EX-17 applicant and notification data', () => {
-    const data = mapProfileToEx17Data(completeEx17Profile);
+    const data = mapEx17FromRecord(completeEx17Personal);
 
     expect(data).toMatchObject({
       applicant: {
@@ -62,21 +68,22 @@ describe('mapProfileToEx17Data', () => {
 
   it('maps gender values to EX-17 sex codes', () => {
     expect(
-      mapProfileToEx17Data({personal: {...completeEx17Personal, gender: 'female'}})
-        .applicant.sex,
+      mapEx17FromRecord({...completeEx17Personal, gender: 'female'}).applicant.sex,
     ).toBe('M');
     expect(
-      mapProfileToEx17Data({personal: {...completeEx17Personal, gender: 'other'}})
-        .applicant.sex,
+      mapEx17FromRecord({...completeEx17Personal, gender: 'other'}).applicant.sex,
     ).toBe('X');
   });
 
   it('leaves NIE parts empty when the NIE format is invalid', () => {
-    const profile: ProfileData = {
-      personal: {...completeEx17Personal, nieNumber: 'INVALID'},
-    };
+    const parsed = parsePersonalInfo(completeEx17Personal);
+    if (!parsed.ok) {
+      throw new Error('Fixture personal info is incomplete');
+    }
 
-    expect(mapProfileToEx17Data(profile).applicant.nie).toEqual({
+    expect(
+      mapProfileToEx17Data({...parsed.data, nieNumber: 'INVALID'}).applicant.nie,
+    ).toEqual({
       prefix: '',
       number: '',
       checkDigit: '',
