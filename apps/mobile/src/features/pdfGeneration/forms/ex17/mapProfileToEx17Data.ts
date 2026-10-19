@@ -1,28 +1,7 @@
-import type {ProfileData} from '@/features/profile/types/ProfileData';
+import type {PersonalInfo} from '@/features/profile/utils/parsePersonalInfo';
 
-type PhoneValue = string | {countryCode?: string; number?: string};
-
-function text(value: unknown) {
-  return typeof value === 'string' ? value.trim() : '';
-}
-
-function upper(value: unknown) {
-  return text(value).toUpperCase();
-}
-
-function phoneToText(value: unknown) {
-  if (typeof value === 'string') {
-    return value;
-  }
-
-  if (value && typeof value === 'object') {
-    const phone = value as PhoneValue;
-    if (typeof phone === 'object') {
-      return [phone.countryCode, phone.number].filter(Boolean).join(' ');
-    }
-  }
-
-  return '';
+function upper(value: string) {
+  return value.trim().toUpperCase();
 }
 
 function parseNie(nieNumber: string) {
@@ -40,8 +19,8 @@ function parseNie(nieNumber: string) {
   };
 }
 
-function mapGenderToSex(gender: unknown) {
-  switch (text(gender).toLowerCase()) {
+function mapGenderToSex(gender: string) {
+  switch (gender.toLowerCase()) {
     case 'male':
       return 'H';
     case 'female':
@@ -62,52 +41,53 @@ function todayIsoDate() {
   return `${year}-${month}-${day}`;
 }
 
-export function mapProfileToEx17Data(profileData: ProfileData) {
-  const personal = profileData.personal ?? {};
-  const nieNumber = text(personal.nieNumber);
-  const passportNumber = text(personal.passportNumber);
-  const nie = parseNie(nieNumber);
+function phoneToText(phone: PersonalInfo['phoneNumber']) {
+  const countryCode = phone.countryCode ? `+${phone.countryCode.replace(/\D/g, '')}` : '';
+  return [countryCode, phone.number.replace(/\D/g, '')].filter(Boolean).join(' ');
+}
+
+export function mapProfileToEx17Data(info: PersonalInfo) {
+  const nie = parseNie(info.nieNumber);
   const fullName = [
-    upper(personal.firstName),
-    upper(personal.lastName),
-    upper(personal.secondLastName),
+    upper(info.firstName),
+    upper(info.lastName),
+    upper(info.secondLastName ?? ''),
   ]
     .filter(Boolean)
     .join(' ');
-  const phoneNumber = phoneToText(personal.phoneNumber);
-  const email = text(personal.email);
+  const phoneNumber = phoneToText(info.phoneNumber);
   const today = todayIsoDate();
   const address = {
-    street: upper(personal.address),
-    number: text(personal.addressNumber),
-    floor: text(personal.addressFloor),
-    city: upper(personal.city),
-    postalCode: text(personal.postalCode),
-    province: upper(personal.province),
+    street: upper(`${info.streetType} ${info.address}`),
+    number: info.addressNumber,
+    floor: info.addressFloor ?? '',
+    city: upper(info.city),
+    postalCode: info.postalCode,
+    province: upper(info.province),
   };
 
   return {
     applicant: {
-      passportNumber,
+      passportNumber: info.passportNumber,
       nie: {
         prefix: nie.prefix,
         number: nie.number,
         checkDigit: nie.checkDigit,
       },
-      firstSurname: upper(personal.lastName),
-      secondSurname: upper(personal.secondLastName),
-      firstName: upper(personal.firstName),
-      sex: mapGenderToSex(personal.gender),
-      birthDate: text(personal.dateOfBirth),
-      birthPlace: upper(personal.cityOfBirth),
-      birthCountry: upper(personal.countryOfBirth),
-      nationality: upper(personal.nationality),
-      maritalStatus: text(personal.maritalStatus),
-      fatherName: upper(personal.fatherName),
-      motherName: upper(personal.motherName),
+      firstSurname: upper(info.lastName),
+      secondSurname: upper(info.secondLastName ?? ''),
+      firstName: upper(info.firstName),
+      sex: mapGenderToSex(info.gender),
+      birthDate: info.dateOfBirth,
+      birthPlace: upper(info.cityOfBirth),
+      birthCountry: upper(info.countryOfBirth),
+      nationality: upper(info.nationality),
+      maritalStatus: info.maritalStatus,
+      fatherName: upper(info.fatherName),
+      motherName: upper(info.motherName),
       address,
       mobilePhone: phoneNumber,
-      email,
+      email: info.email,
       legalRepresentative: {
         fullName: '',
         documentNumber: '',
@@ -135,10 +115,10 @@ export function mapProfileToEx17Data(profileData: ProfileData) {
     },
     notifications: {
       fullNameOrBusinessName: fullName,
-      documentNumber: nieNumber,
+      documentNumber: info.nieNumber,
       address,
       mobilePhone: phoneNumber,
-      email,
+      email: info.email,
       dehuConsent: false,
     },
     request: {
@@ -146,14 +126,14 @@ export function mapProfileToEx17Data(profileData: ProfileData) {
       documentType: 'initialCard',
     },
     signature: {
-      place: upper(personal.city),
+      place: upper(info.city),
       date: today,
       signatureTextOrImagePlaceholder: '',
     },
     destination: {
       office: '',
       dir3Code: '',
-      province: upper(personal.province),
+      province: upper(info.province),
     },
   };
 }

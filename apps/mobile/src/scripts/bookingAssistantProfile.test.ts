@@ -1,82 +1,64 @@
+import {completePersonalInfo} from '@/test/fixtures/personalInfo';
+
 import {
   hasBookingAssistantProfile,
   mapPersonalToCitaPreviaBookingAssistantProfile,
   mapPersonalToEmpadronamientoBookingAssistantProfile,
-} from '@/scripts/bookingAssistantProfile'
+} from '@/scripts/bookingAssistantProfile';
 
 describe('bookingAssistantProfile mappers', () => {
-  const personal = {
-    firstName: 'Jane',
-    lastName: 'Doe',
-    secondLastName: 'Smith',
-    nieNumber: 'X1234567L',
-    passportNumber: 'A12345678',
-    phoneNumber: '600123456',
-    email: 'jane@example.com',
-  }
-
   it('maps personal data for empadronamiento using NIE as the primary identifier', () => {
     expect(
-      mapPersonalToEmpadronamientoBookingAssistantProfile(personal),
+      mapPersonalToEmpadronamientoBookingAssistantProfile(completePersonalInfo),
     ).toEqual({
       personalInfo: {
         identifierType: 'NIE',
-        identifier: 'X1234567L',
-        name: 'Jane',
-        surname: 'Doe',
-        secondSurname: 'Smith',
-        email: 'jane@example.com',
-        phone: '600123456',
+        identifier: 'Y1234567X',
+        name: 'Test',
+        surname: 'User',
+        secondSurname: '',
+        email: 'test@example.com',
+        phone: '+34 600123456',
       },
       motive: 'Booking appointment to request empadronamiento.',
-    })
-  })
-
-  it('maps object-shaped phone numbers for empadronamiento', () => {
-    expect(
-      mapPersonalToEmpadronamientoBookingAssistantProfile({
-        ...personal,
-        phoneNumber: {countryCode: '34', number: '600123456'},
-      })?.personalInfo.phone,
-    ).toBe('+34 600123456')
-  })
+    });
+  });
 
   it('uses fallback email for empadronamiento when profile email is missing', () => {
-    const withoutEmail = {
-      firstName: personal.firstName,
-      lastName: personal.lastName,
-      secondLastName: personal.secondLastName,
-      nieNumber: personal.nieNumber,
-      passportNumber: personal.passportNumber,
-      phoneNumber: personal.phoneNumber,
-    }
-
     expect(
       mapPersonalToEmpadronamientoBookingAssistantProfile(
-        withoutEmail,
+        {...completePersonalInfo, email: ''},
         'fallback@example.com',
-      )?.personalInfo.email,
-    ).toBe('fallback@example.com')
-  })
+      ).personalInfo.email,
+    ).toBe('fallback@example.com');
+  });
 
   it('maps personal data for cita previa using NIE', () => {
-    expect(mapPersonalToCitaPreviaBookingAssistantProfile(personal)).toMatchObject({
+    expect(mapPersonalToCitaPreviaBookingAssistantProfile(completePersonalInfo)).toMatchObject({
       details: {
-        nie: 'X1234567L',
-        Name: 'Jane Doe',
+        nie: 'Y1234567X',
+        Name: 'Test User',
         documentType: 'nie',
       },
-    })
-  })
+    });
+  });
 
   it('validates booking assistant profile readiness', () => {
     expect(
-      hasBookingAssistantProfile(personal, 'empadronamiento'),
-    ).toBe(true)
-    expect(hasBookingAssistantProfile(personal, 'cita-previa')).toBe(true)
-    expect(hasBookingAssistantProfile(null, 'cita-previa')).toBe(false)
+      hasBookingAssistantProfile(
+        completePersonalInfo as unknown as Record<string, unknown>,
+        'empadronamiento',
+      ),
+    ).toBe(true);
+    expect(
+      hasBookingAssistantProfile(
+        completePersonalInfo as unknown as Record<string, unknown>,
+        'cita-previa',
+      ),
+    ).toBe(true);
+    expect(hasBookingAssistantProfile(null, 'cita-previa')).toBe(false);
     expect(
       hasBookingAssistantProfile({firstName: 'Jane'}, 'empadronamiento'),
-    ).toBe(false)
-  })
-})
+    ).toBe(false);
+  });
+});

@@ -1,6 +1,8 @@
 import type { BookingAssistantId } from '@visamesa/content/tieSteps/detail'
 
 import { phoneToString } from '@/features/forms/utils/phoneUtils'
+import type { PersonalInfo } from '@/features/profile/utils/parsePersonalInfo'
+import { parsePersonalInfo } from '@/features/profile/utils/parsePersonalInfo'
 
 import {
   CITA_PREVIA_BOOKING_DEFAULTS,
@@ -13,72 +15,35 @@ import {
   type EmpadronamientoBookingAssistantProfile,
 } from './empadronamiento/config'
 
-function readString(value: unknown): string {
-  return typeof value === 'string' ? value.trim() : ''
-}
-
-function readPhone(value: unknown): string {
-  if (typeof value === 'string') {
-    return value.trim()
-  }
-
-  if (value && typeof value === 'object') {
-    const phone = value as { countryCode?: string; number?: string }
-    if (phone.number) {
-      const countryCode = phone.countryCode?.replace(/^\+/, '') ?? ''
-      return phoneToString({ countryCode, number: phone.number })
-    }
-  }
-
-  return ''
-}
-
 export function mapPersonalToEmpadronamientoBookingAssistantProfile(
-  personal: Record<string, unknown>,
+  info: PersonalInfo,
   fallbackEmail?: string | null,
-): EmpadronamientoBookingAssistantProfile | null {
-  const name = readString(personal.firstName)
-  const surname = readString(personal.lastName)
-  const nieNumber = readString(personal.nieNumber)
-  const passportNumber = readString(personal.passportNumber)
-  const identifier = nieNumber || passportNumber
-  const identifierType = nieNumber ? 'NIE' : 'PASSAPORT'
-  const phone = readPhone(personal.phoneNumber)
-  const email = readString(personal.email) || readString(fallbackEmail)
-
-  if (!name || !surname || !identifier || !phone || !email) {
-    return null
-  }
+): EmpadronamientoBookingAssistantProfile {
+  const identifier = info.nieNumber || info.passportNumber
+  const identifierType = info.nieNumber ? 'NIE' : 'PASSAPORT'
+  const email = info.email || fallbackEmail?.trim() || ''
 
   return {
     personalInfo: {
       identifierType,
       identifier,
-      name,
-      surname,
-      secondSurname: readString(personal.secondLastName),
+      name: info.firstName,
+      surname: info.lastName,
+      secondSurname: info.secondLastName ?? '',
       email,
-      phone,
+      phone: phoneToString(info.phoneNumber),
     },
     motive: EMPADRONAMIENTO_BOOKING_MOTIVE,
   }
 }
 
 export function mapPersonalToCitaPreviaBookingAssistantProfile(
-  personal: Record<string, unknown>,
-): CitaPreviaBookingAssistantProfile | null {
-  const firstName = readString(personal.firstName)
-  const lastName = readString(personal.lastName)
-  const nieNumber = readString(personal.nieNumber)
-
-  if (!firstName || !nieNumber) {
-    return null
-  }
-
+  info: PersonalInfo,
+): CitaPreviaBookingAssistantProfile {
   return {
     details: {
-      nie: nieNumber,
-      Name: [firstName, lastName].filter(Boolean).join(' '),
+      nie: info.nieNumber,
+      Name: [info.firstName, info.lastName].filter(Boolean).join(' '),
       nationality: CITA_PREVIA_BOOKING_DEFAULTS.defaultNationality,
       documentType: 'nie',
     },
@@ -98,20 +63,17 @@ export function hasBookingAssistantProfile(
   bookingAssistantId: BookingAssistantId,
   fallbackEmail?: string | null,
 ): boolean {
-  if (!personal) {
+  const parsed = parsePersonalInfo(personal)
+  if (!parsed.ok) {
     return false
   }
 
   if (bookingAssistantId === 'empadronamiento') {
-    return (
-      mapPersonalToEmpadronamientoBookingAssistantProfile(
-        personal,
-        fallbackEmail,
-      ) !== null
-    )
+    const email = parsed.data.email || fallbackEmail?.trim() || ''
+    return Boolean(email)
   }
 
-  return mapPersonalToCitaPreviaBookingAssistantProfile(personal) !== null
+  return Boolean(parsed.data.firstName && parsed.data.nieNumber)
 }
 
 export {

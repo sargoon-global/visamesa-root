@@ -1,5 +1,10 @@
-import {Share} from 'react-native';
-import {saveGeneratedPdfBase64, openGeneratedPdf, type GeneratedPdfFile} from '@/features/pdfGeneration/services/pdfFileService';
+import {
+  downloadGeneratedPdfToDevice,
+  openGeneratedPdf,
+  saveGeneratedPdfBase64,
+  shareGeneratedPdf as sharePdfFromService,
+  type GeneratedPdfFile,
+} from '@/features/pdfGeneration/services/pdfFileService';
 import {fromByteArray, toByteArray} from 'react-native-quick-base64';
 import {
   PDFCheckBox,
@@ -28,13 +33,10 @@ type Ex17Schema = {
 };
 
 export type {GeneratedPdfFile} from '@/features/pdfGeneration/services/pdfFileService';
-
-export class PdfDownloadDismissedError extends Error {
-  constructor() {
-    super('PDF download dismissed');
-    this.name = 'PdfDownloadDismissedError';
-  }
-}
+export {
+  PdfDownloadDismissedError,
+  downloadGeneratedPdfToDevice,
+} from '@/features/pdfGeneration/services/pdfFileService';
 
 function getPathValue(data: Ex17PdfData, source?: string | null): unknown {
   if (!source) {
@@ -187,27 +189,11 @@ export async function saveEx17Pdf(
 
 export {openGeneratedPdf};
 
-async function sharePdfFile(
-  file: GeneratedPdfFile,
-  options?: {rejectOnDismiss?: boolean},
-) {
-  const result = await Share.share({
-    title: file.fileName,
-    url: file.uri,
-  });
-
-  if (
-    options?.rejectOnDismiss &&
-    result.action === Share.dismissedAction
-  ) {
-    throw new PdfDownloadDismissedError();
-  }
-}
-
 export async function shareGeneratedPdf(file: GeneratedPdfFile) {
-  await sharePdfFile(file);
+  await sharePdfFromService(file);
 }
 
+/** @deprecated Use downloadGeneratedPdfToDevice from pdfFileService */
 export async function downloadEx17PdfToDevice(file: GeneratedPdfFile) {
-  await sharePdfFile(file, {rejectOnDismiss: true});
+  await downloadGeneratedPdfToDevice(file);
 }

@@ -3,19 +3,26 @@ import {PDFDocument} from 'pdf-lib';
 import {Share} from 'react-native';
 
 import {
-  downloadEx17PdfToDevice,
   generateEx17PdfBytes,
   openGeneratedPdf,
-  PdfDownloadDismissedError,
   saveEx17Pdf,
   shareGeneratedPdf,
 } from '@/features/pdfGeneration/forms/ex17/ex17PdfService';
-import {completeEx17Profile} from '@/features/pdfGeneration/forms/ex17/__tests__/fixtures/completeEx17Profile';
+import {
+  downloadGeneratedPdfToDevice,
+  PdfDownloadDismissedError,
+} from '@/features/pdfGeneration/services/pdfFileService';
+import {completeEx17Personal} from '@/features/pdfGeneration/forms/ex17/__tests__/fixtures/completeEx17Profile';
 import {mapProfileToEx17Data} from '@/features/pdfGeneration/forms/ex17/mapProfileToEx17Data';
+import {parsePersonalInfo} from '@/features/profile/utils/parsePersonalInfo';
 
 describe('ex17PdfService', () => {
   it('generates a filled EX-17 PDF from mapped profile data', async () => {
-    const bytes = await generateEx17PdfBytes(mapProfileToEx17Data(completeEx17Profile));
+    const parsed = parsePersonalInfo(completeEx17Personal);
+    if (!parsed.ok) {
+      throw new Error('Fixture personal info is incomplete');
+    }
+    const bytes = await generateEx17PdfBytes(mapProfileToEx17Data(parsed.data));
     const pdfDoc = await PDFDocument.load(bytes);
     const form = pdfDoc.getForm();
 
@@ -28,7 +35,7 @@ describe('ex17PdfService', () => {
   });
 });
 
-describe('downloadEx17PdfToDevice', () => {
+describe('downloadGeneratedPdfToDevice', () => {
   const file = {
     fileName: 'ex17-tie-test.pdf',
     path: '/tmp/ex17-tie-test.pdf',
@@ -42,7 +49,7 @@ describe('downloadEx17PdfToDevice', () => {
   it('shares the generated PDF when the user completes the download flow', async () => {
     jest.spyOn(Share, 'share').mockResolvedValue({action: Share.sharedAction});
 
-    await downloadEx17PdfToDevice(file);
+    await downloadGeneratedPdfToDevice(file);
 
     expect(Share.share).toHaveBeenCalledWith({
       title: file.fileName,
@@ -53,7 +60,7 @@ describe('downloadEx17PdfToDevice', () => {
   it('throws when the user dismisses the download sheet', async () => {
     jest.spyOn(Share, 'share').mockResolvedValue({action: Share.dismissedAction});
 
-    await expect(downloadEx17PdfToDevice(file)).rejects.toBeInstanceOf(
+    await expect(downloadGeneratedPdfToDevice(file)).rejects.toBeInstanceOf(
       PdfDownloadDismissedError,
     );
   });
