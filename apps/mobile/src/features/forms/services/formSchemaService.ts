@@ -1,8 +1,10 @@
+import {enrichProfilePersonalSchema} from '@/features/profile/data/enrichProfilePersonalSchema';
+
 import profilePersonal from '../data/profile-personal.json';
 import {FormSchema} from '../types/formTypes';
 
 const FORM_SCHEMAS: Record<string, FormSchema> = {
-  'profile-personal': profilePersonal as FormSchema,
+  'profile-personal': enrichProfilePersonalSchema(profilePersonal as FormSchema),
 };
 
 export async function fetchFormSchema(formId: string): Promise<FormSchema> {

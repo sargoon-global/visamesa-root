@@ -20,6 +20,7 @@ export function SelectInputField({field}: Props) {
           label={field.label}
           value={String(controllerField.value ?? '')}
           options={field.options ?? []}
+          searchable={field.searchable}
           onChange={controllerField.onChange}
           placeholder={field.placeholder}
           error={fieldState.error?.message}

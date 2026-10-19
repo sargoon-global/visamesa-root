@@ -27,14 +27,17 @@ export function PhoneInputField({field}: Props) {
         <Controller
           control={control}
           name={`${field.id}.countryCode`}
+          defaultValue="34"
           render={({field: countryField}) => (
             <TextField
               label={t('phone.countryCode')}
               value={String(countryField.value ?? '')}
               onChangeText={countryField.onChange}
               onBlur={countryField.onBlur}
-              placeholder="34"
-              keyboardType="phone-pad"
+              placeholder={t('phone.countryCodePlaceholder')}
+              keyboardType="number-pad"
+              maxLength={3}
+              autoComplete="tel-country-code"
               containerStyle={styles.countryCode}
             />
           )}
@@ -50,6 +53,7 @@ export function PhoneInputField({field}: Props) {
               onBlur={numberField.onBlur}
               placeholder="600 000 000"
               keyboardType="phone-pad"
+              autoComplete="tel"
               containerStyle={styles.number}
             />
           )}

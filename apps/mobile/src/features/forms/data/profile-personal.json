@@ -8,14 +8,16 @@
       "label": "schemas.profilePersonal.fields.firstName.label",
       "type": "text",
       "required": true,
-      "placeholder": "schemas.profilePersonal.fields.firstName.placeholder"
+      "placeholder": "schemas.profilePersonal.fields.firstName.placeholder",
+      "autoComplete": "given-name"
     },
     {
       "id": "lastName",
       "label": "schemas.profilePersonal.fields.lastName.label",
       "type": "text",
       "required": true,
-      "placeholder": "schemas.profilePersonal.fields.lastName.placeholder"
+      "placeholder": "schemas.profilePersonal.fields.lastName.placeholder",
+      "autoComplete": "family-name"
     },
     {
       "id": "secondLastName",
@@ -120,7 +122,10 @@
       "type": "text",
       "required": true,
       "placeholder": "schemas.profilePersonal.fields.nieNumber.placeholder",
-      "pattern": "^[XYZxyz]\\d{7}[A-Za-z]$"
+      "pattern": "^[XYZxyz]\\d{7}[A-Za-z]$",
+      "patternMessage": "validation.nieFormat",
+      "maxLength": 9,
+      "autoCapitalize": "characters"
     },
     {
       "id": "passportNumber",
@@ -137,47 +142,63 @@
       "required": true
     },
     {
+      "id": "streetType",
+      "label": "schemas.profilePersonal.fields.streetType.label",
+      "type": "select",
+      "required": true,
+      "options": []
+    },
+    {
       "id": "address",
       "label": "schemas.profilePersonal.fields.address.label",
       "type": "text",
       "required": true,
       "placeholder": "schemas.profilePersonal.fields.address.placeholder",
-      "helperText": "schemas.profilePersonal.fields.address.helperText"
+      "helperText": "schemas.profilePersonal.fields.address.helperText",
+      "autoComplete": "street-address"
     },
     {
       "id": "addressNumber",
       "label": "schemas.profilePersonal.fields.addressNumber.label",
       "type": "text",
       "required": true,
-      "placeholder": "schemas.profilePersonal.fields.addressNumber.placeholder"
+      "placeholder": "schemas.profilePersonal.fields.addressNumber.placeholder",
+      "maxLength": 8
     },
     {
       "id": "addressFloor",
       "label": "schemas.profilePersonal.fields.addressFloor.label",
       "type": "text",
       "required": false,
-      "placeholder": "schemas.profilePersonal.fields.addressFloor.placeholder"
+      "placeholder": "schemas.profilePersonal.fields.addressFloor.placeholder",
+      "keyboard": "numeric"
+    },
+    {
+      "id": "addressDoor",
+      "label": "schemas.profilePersonal.fields.addressDoor.label",
+      "type": "text",
+      "required": false,
+      "placeholder": "schemas.profilePersonal.fields.addressDoor.placeholder"
     },
     {
       "id": "city",
       "label": "schemas.profilePersonal.fields.city.label",
       "type": "text",
       "required": true,
-      "placeholder": "schemas.profilePersonal.fields.city.placeholder"
-    },
-    {
-      "id": "province",
-      "label": "schemas.profilePersonal.fields.province.label",
-      "type": "text",
-      "required": true,
-      "placeholder": "schemas.profilePersonal.fields.province.placeholder"
+      "placeholder": "schemas.profilePersonal.fields.city.placeholder",
+      "helperText": "schemas.profilePersonal.fields.city.helperText"
     },
     {
       "id": "postalCode",
       "label": "schemas.profilePersonal.fields.postalCode.label",
       "type": "text",
       "required": true,
-      "placeholder": "schemas.profilePersonal.fields.postalCode.placeholder"
+      "placeholder": "schemas.profilePersonal.fields.postalCode.placeholder",
+      "pattern": "^\\d{5}$",
+      "patternMessage": "validation.postalCodeFormat",
+      "maxLength": 5,
+      "keyboard": "numeric",
+      "autoComplete": "postal-code"
     },
     {
       "id": "email",
@@ -186,7 +207,9 @@
       "required": true,
       "placeholder": "schemas.profilePersonal.fields.email.placeholder",
       "helperText": "schemas.profilePersonal.fields.email.helperText",
-      "pattern": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
+      "pattern": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$",
+      "keyboard": "email",
+      "autoComplete": "email"
     },
     {
       "id": "hasEmpadronamiento",
