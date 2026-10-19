@@ -1,4 +1,4 @@
-export const buildModelo790FillFormScript = (profile = {}) => {
+export const buildModelo790FillFormScript = (profile = {}, strings = {}) => {
   const documentNumber = JSON.stringify(profile.documentNumber ?? '');
   const fullName = JSON.stringify(profile.fullName ?? '');
   const address = profile.address ?? {};
@@ -13,6 +13,33 @@ export const buildModelo790FillFormScript = (profile = {}) => {
   const phoneNumber = JSON.stringify(profile.phoneNumber ?? '');
   const feeInputId = JSON.stringify(profile.feeInputId ?? 'tasa5Input');
   const paymentMethod = profile.paymentMethod === 'debit' ? 'adeudo' : 'efectivo';
+  const theme = strings.theme ?? {};
+  const ui = {
+    captchaPlaceholder: JSON.stringify(strings.captchaPlaceholder ?? ''),
+    captchaImageAlt: JSON.stringify(strings.captchaImageAlt ?? ''),
+    submit: JSON.stringify(strings.submit ?? ''),
+    downloading: JSON.stringify(strings.downloading ?? ''),
+    openingPdf: JSON.stringify(strings.openingPdf ?? ''),
+    themePrimary: JSON.stringify(theme.primary ?? '#00215E'),
+    themeOnPrimary: JSON.stringify(theme.onPrimary ?? '#FFFFFF'),
+    themeError: JSON.stringify(theme.error ?? '#BA1A1A'),
+    themeOutline: JSON.stringify(theme.outline ?? '#CBD5E1'),
+    themeSurface: JSON.stringify(theme.surface ?? '#FFFFFF'),
+    captchaRetry: JSON.stringify(strings.captchaRetry ?? ''),
+    captchaUnavailableTitle: JSON.stringify(strings.captchaUnavailableTitle ?? ''),
+    captchaUnavailableMessage: JSON.stringify(strings.captchaUnavailableMessage ?? ''),
+    formUnavailableTitle: JSON.stringify(strings.formUnavailableTitle ?? ''),
+    formUnavailableMessage: JSON.stringify(strings.formUnavailableMessage ?? ''),
+    downloadFailedTitle: JSON.stringify(strings.downloadFailedTitle ?? ''),
+    downloadFailedHttpMessage: JSON.stringify(strings.downloadFailedHttpMessage ?? ''),
+    downloadFailedReadMessage: JSON.stringify(strings.downloadFailedReadMessage ?? ''),
+    downloadFailedUnexpectedMessage: JSON.stringify(strings.downloadFailedUnexpectedMessage ?? ''),
+    downloadFailedRequestMessage: JSON.stringify(strings.downloadFailedRequestMessage ?? ''),
+    submitFailedTitle: JSON.stringify(strings.submitFailedTitle ?? ''),
+    submitFailedMessage: JSON.stringify(strings.submitFailedMessage ?? ''),
+    prepareFailedTitle: JSON.stringify(strings.prepareFailedTitle ?? ''),
+    prepareFailedMessage: JSON.stringify(strings.prepareFailedMessage ?? ''),
+  };
 
   return `
     (function() {
@@ -120,8 +147,8 @@ export const buildModelo790FillFormScript = (profile = {}) => {
 
         if (!originalCaptchaField || !captchaImage) {
           postAutomationError(
-            'Modelo 790 captcha is unavailable',
-            'The official site did not show the captcha needed to download the form. Please go back to the dashboard and try again later.',
+            ${ui.captchaUnavailableTitle},
+            ${ui.captchaUnavailableMessage},
             'Missing captcha elements',
           );
           return;
@@ -134,7 +161,7 @@ export const buildModelo790FillFormScript = (profile = {}) => {
           'html, body {',
           '  overflow: hidden !important;',
           '  height: 100% !important;',
-          '  background: #FFFFFF !important;',
+          '  background: ' + ${ui.themeSurface} + ' !important;',
           '}',
           'body > *:not(#visaMesaModelo790CaptchaOnly) {',
           '  visibility: hidden !important;',
@@ -157,7 +184,7 @@ export const buildModelo790FillFormScript = (profile = {}) => {
           'justify-content: center',
           'padding: 24px',
           'box-sizing: border-box',
-          'background: #FFFFFF',
+          'background: ' + ${ui.themeSurface},
           'font-family: -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif',
         ].join(';');
 
@@ -179,6 +206,7 @@ export const buildModelo790FillFormScript = (profile = {}) => {
           src.searchParams.set('_visaMesaRefresh', String(Date.now()));
           image.src = src.toString();
         } catch (error) {}
+        image.alt = ${ui.captchaImageAlt};
         image.style.cssText = 'max-width: 100%; height: auto; align-self: center;';
 
         const retryHint = window.document.createElement('div');
@@ -186,7 +214,7 @@ export const buildModelo790FillFormScript = (profile = {}) => {
         retryHint.textContent = retryMessage || '';
         retryHint.style.cssText = [
           'display: ' + (retryMessage ? 'block' : 'none'),
-          'color: #B42318',
+          'color: ' + ${ui.themeError},
           'font-size: 14px',
           'line-height: 20px',
           'text-align: center',
@@ -198,11 +226,11 @@ export const buildModelo790FillFormScript = (profile = {}) => {
         input.inputMode = 'text';
         input.maxLength = 10;
         input.autocomplete = 'off';
-        input.placeholder = 'Enter captcha';
+        input.placeholder = ${ui.captchaPlaceholder};
         input.style.cssText = [
           'width: 100%',
           'height: 48px',
-          'border: 1px solid #CBD5E1',
+          'border: 1px solid ' + ${ui.themeOutline},
           'border-radius: 12px',
           'padding: 0 14px',
           'font-size: 18px',
@@ -211,17 +239,18 @@ export const buildModelo790FillFormScript = (profile = {}) => {
 
         const button = window.document.createElement('button');
         button.type = 'button';
-        button.textContent = 'Download Modelo 790';
+        button.textContent = ${ui.submit};
         button.style.cssText = [
           'width: 100%',
           'height: 48px',
           'border: 0',
           'border-radius: 999px',
-          'background: #1A73E8',
-          'color: #FFFFFF',
+          'background: ' + ${ui.themePrimary},
+          'color: ' + ${ui.themeOnPrimary},
           'font-size: 16px',
           'font-weight: 700',
         ].join(';');
+        let downloadLocked = false;
         const syncCaptcha = () => {
           originalCaptchaField.value = input.value.trim();
           originalCaptchaField.dispatchEvent(new Event('input', {bubbles: true}));
@@ -240,12 +269,14 @@ export const buildModelo790FillFormScript = (profile = {}) => {
         };
 
         const submitPdf = () => {
-          if (button.disabled) {
+          if (button.disabled || downloadLocked) {
             return;
           }
           syncCaptcha();
           button.disabled = true;
-          button.textContent = 'Downloading…';
+          button.setAttribute('aria-busy', 'true');
+          downloadLocked = true;
+          button.textContent = ${ui.downloading};
           window.document.querySelectorAll('#fondo0 input, #formapago input, #total').forEach(field => {
             field.removeAttribute('disabled');
           });
@@ -253,8 +284,8 @@ export const buildModelo790FillFormScript = (profile = {}) => {
           const form = window.document.querySelector('#f_conc');
           if (!form) {
             postAutomationError(
-              'Modelo 790 form unavailable',
-              'The official form could not be submitted. Please go back to the dashboard and try again.',
+              ${ui.formUnavailableTitle},
+              ${ui.formUnavailableMessage},
               'Missing form',
             );
             return;
@@ -277,12 +308,13 @@ export const buildModelo790FillFormScript = (profile = {}) => {
 
                 if (!response.ok) {
                   postAutomationError(
-                    'Modelo 790 could not be downloaded',
-                    'The official site returned an error. Please go back to the dashboard and try again later.',
+                    ${ui.downloadFailedTitle},
+                    ${ui.downloadFailedHttpMessage},
                     'HTTP ' + response.status,
                   );
+                  downloadLocked = false;
                   button.disabled = false;
-                  button.textContent = 'Download Modelo 790';
+                  button.textContent = ${ui.submit};
                   return;
                 }
 
@@ -291,12 +323,12 @@ export const buildModelo790FillFormScript = (profile = {}) => {
                   reader.onloadend = () => {
                     const result = String(reader.result || '');
                     const base64 = result.slice(result.indexOf(',') + 1);
-                    button.textContent = 'Opening PDF…';
+                    button.textContent = ${ui.openingPdf};
                     postPdf(base64);
                   };
                   reader.onerror = () => postAutomationError(
-                    'Modelo 790 could not be downloaded',
-                    'The PDF could not be read. Please go back to the dashboard and try again.',
+                    ${ui.downloadFailedTitle},
+                    ${ui.downloadFailedReadMessage},
                     'FileReader failed',
                   );
                   reader.readAsDataURL(blob);
@@ -314,7 +346,7 @@ export const buildModelo790FillFormScript = (profile = {}) => {
 
                   if ((hasCaptchaField && hasCaptchaImage) || looksLikeCaptchaResponse(html, officialMessage)) {
                     if (hasCaptchaField && hasCaptchaImage) {
-                      showCaptchaOnly('Captcha was not accepted. Please try the new code.');
+                      showCaptchaOnly(${ui.captchaRetry});
                       return;
                     }
 
@@ -323,20 +355,22 @@ export const buildModelo790FillFormScript = (profile = {}) => {
                   }
 
                   postAutomationError(
-                    'Modelo 790 could not be downloaded',
-                    'The official site did not return a PDF or a new captcha. Please go back to the dashboard and try again later.',
+                    ${ui.downloadFailedTitle},
+                    ${ui.downloadFailedUnexpectedMessage},
                     contentType || 'Unexpected response',
                   );
                 });
               })
               .catch(error => {
                 postAutomationError(
-                  'Modelo 790 could not be downloaded',
-                  'The official site request failed. Please go back to the dashboard and try again later.',
+                  ${ui.downloadFailedTitle},
+                  ${ui.downloadFailedRequestMessage},
                   String(error && error.message ? error.message : error),
                 );
-                button.disabled = false;
-                button.textContent = 'Download Modelo 790';
+                if (!downloadLocked) {
+                  button.disabled = false;
+                  button.textContent = ${ui.submit};
+                }
               });
           };
 
@@ -371,19 +405,21 @@ export const buildModelo790FillFormScript = (profile = {}) => {
             }
             window.alert = message => {
               restoreOfficialHooks();
+              downloadLocked = false;
               button.disabled = false;
-              button.textContent = 'Download Modelo 790';
+              button.textContent = ${ui.submit};
               postAutomationError(
-                'Modelo 790 form could not be submitted',
-                'The official form validation failed. Please go back to the dashboard and check your profile.',
+                ${ui.submitFailedTitle},
+                ${ui.submitFailedMessage},
                 String(message || ''),
               );
             };
             window.validar790_012();
             if (!submittedByOfficialValidator) {
               restoreOfficialHooks();
+              downloadLocked = false;
               button.disabled = false;
-              button.textContent = 'Download Modelo 790';
+              button.textContent = ${ui.submit};
             }
           } else {
             window.document.querySelectorAll('#fondo0 input, #formapago input, #total').forEach(field => {
@@ -436,8 +472,8 @@ export const buildModelo790FillFormScript = (profile = {}) => {
         postDebug('Modelo 790 form filled. Captcha overlay shown.');
       } else {
         postAutomationError(
-          'Modelo 790 form could not be prepared',
-          'Some required fields on the official form could not be filled. Please go back to the dashboard and check your profile.',
+          ${ui.prepareFailedTitle},
+          ${ui.prepareFailedMessage},
           missingValues.join(', ') || 'Fee or payment selection unavailable',
         );
       }

@@ -7,6 +7,7 @@ import {
 } from './initialPage';
 import type {Modelo790AutomationProfile} from './config';
 import {buildModelo790FillFormScript} from './fillForm';
+import type {Modelo790ScriptStrings} from './scriptStrings';
 
 export {
   MODELO_790_012_ENTRY_URL,
@@ -26,6 +27,7 @@ interface Modelo790ScriptEntry {
 
 const buildModelo790ScriptEntries = (
   profile: Modelo790AutomationProfile,
+  strings: Modelo790ScriptStrings,
 ): Modelo790ScriptEntry[] => [
   {
     id: 'modelo-790-open-form',
@@ -44,7 +46,7 @@ const buildModelo790ScriptEntries = (
     id: 'modelo-790-fill-form',
     url: MODELO_790_012_FORM_URL,
     match: {type: 'prefix', value: MODELO_790_012_FORM_URL},
-    script: buildModelo790FillFormScript(profile),
+    script: buildModelo790FillFormScript(profile, strings),
     ready: {
       selector: '#nif',
       allSelectors: ['#nombre', '#f_conc'],
@@ -56,4 +58,7 @@ const buildModelo790ScriptEntries = (
 
 export const buildModelo790InjectionRules = (
   profile: Modelo790AutomationProfile,
-): WebViewInjectionRule[] => buildModelo790ScriptEntries(profile);
+  strings: Modelo790ScriptStrings,
+): WebViewInjectionRule[] => buildModelo790ScriptEntries(profile, strings);
+
+export {buildModelo790ScriptStrings, type Modelo790ScriptStrings} from './scriptStrings';
