@@ -1,18 +1,31 @@
 export const SELECT_OFICINA_SCRIPT = `
   (function() {
-    const submit = () => {
-      document.querySelector('button[type="submit"]').click();
+    const postMessage = (type, payload) => {
+      window.ReactNativeWebView?.postMessage(JSON.stringify({type, payload}));
     };
-    const postSelection = payload => {
-      window.ReactNativeWebView?.postMessage(JSON.stringify({
-        type: 'empadronamiento-selection',
-        payload,
-      }));
+    const submit = () => {
+      const submitControl =
+        document.querySelector('button[type="submit"]') ||
+        document.querySelector('input[type="submit"]') ||
+        Array.from(document.querySelectorAll('button, [role="button"]')).find(button =>
+          /continuar|siguiente|següent|next/i.test(button.textContent || button.getAttribute('aria-label') || ''),
+        );
+
+      if (!submitControl || submitControl.disabled || submitControl.getAttribute('aria-disabled') === 'true') {
+        postMessage('empadronamiento-error', {
+          title: 'Office selection could not continue',
+          message: 'The official continue button was not available after selecting the office.',
+        });
+        return false;
+      }
+
+      submitControl.click();
+      return true;
     };
     const selectOffice = () => {
       const office = document.querySelector('#OAC-DR');
       if (!office) {
-        return;
+        return false;
       }
 
       const label = document.querySelector('label[for="OAC-DR"]');
@@ -20,13 +33,22 @@ export const SELECT_OFICINA_SCRIPT = `
         label?.textContent || office.getAttribute('aria-label') || office.value || 'OAC-DR',
       ).replace(/\\s+/g, ' ').trim();
 
-      sessionStorage.setItem('__visaMesaEmpadronamientoOffice', officeName);
-      postSelection({office: officeName});
+      office.checked = true;
+      office.dispatchEvent(new Event('input', {bubbles: true}));
+      office.dispatchEvent(new Event('change', {bubbles: true}));
       office.click();
+      sessionStorage.setItem('__visaMesaEmpadronamientoOffice', officeName);
+      postMessage('empadronamiento-selection', {office: officeName});
       submit();
+      return true;
     };
 
-    selectOffice();
+    if (!selectOffice()) {
+      postMessage('empadronamiento-error', {
+        title: 'Office selection is unavailable',
+        message: 'The official office selector did not load. Please go back to the dashboard and try again.',
+      });
+    }
   })();
   true;
 `;

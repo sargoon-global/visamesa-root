@@ -163,6 +163,7 @@ const buildEmpadronamientoScriptEntries = (
       value: `${EMPADRONAMIENTO_FORM_PREFIX}/tramitDataOffice`,
     },
     script: SELECT_OFICINA_SCRIPT,
+    ready: {selector: '#OAC-DR', timeoutMs: 30000},
   },
   {
     id: 'empadronamiento-select-date',

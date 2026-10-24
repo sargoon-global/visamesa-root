@@ -422,6 +422,7 @@ Touched:
 - Added a native hidden-WebView status flow and appointment review card.
 - Added explicit native confirmation that injects the official submit click only after user approval.
 - Added official success detection and progress completion with appointment details.
+- Device logs showed `tramitDataOffice` was injected before `#OAC-DR` rendered; added readiness gating for that route and temporary translucent empadronamiento debug styling so the underlying official page can be inspected.
 - Added trusted-host checks, terminal error UI, and safe programmatic exit handling.
 
 ## Do Not Forget

@@ -235,7 +235,7 @@ describe('empadronamiento script map', () => {
             type: 'prefix',
             value: `${EMPADRONAMIENTO_FORM_PREFIX}/tramitDataOffice`,
           },
-          ready: undefined,
+          ready: {selector: '#OAC-DR', timeoutMs: 30000},
         }),
         expect.objectContaining({
           id: 'empadronamiento-select-date',
