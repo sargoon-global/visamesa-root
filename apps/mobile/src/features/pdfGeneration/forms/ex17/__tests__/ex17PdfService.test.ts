@@ -34,6 +34,7 @@ describe('ex17PdfService', () => {
       'P12345678',
     );
     expect(form.getTextField('applicant.nie.prefix').getText()).toBe('X');
+    expect(form.getCheckBox('notifications.dehuConsent').isChecked()).toBe(true);
   });
   it('flattens the generated PDF for system viewers by default', async () => {
     const bytes = await generateEx17PdfBytes({
