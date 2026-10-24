@@ -55,10 +55,13 @@ export function mapPersonalToCitaPreviaBookingAssistantProfile(
       nie: info.nieNumber,
       Name: [info.firstName, info.lastName].filter(Boolean).join(' '),
       nationality: CITA_PREVIA_BOOKING_DEFAULTS.defaultNationality,
+      phone: info.phoneNumber.number.replace(/\D/g, ''),
+      email: info.email,
       documentType: 'nie',
     },
     provinceOptionIndex: CITA_PREVIA_BOOKING_DEFAULTS.provinceOptionIndex,
     tramitesOptionIndex: CITA_PREVIA_BOOKING_DEFAULTS.tramitesOptionIndex,
+    sedeOptionIndex: 0,
   }
 }
 
