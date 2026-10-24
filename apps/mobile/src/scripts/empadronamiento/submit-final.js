@@ -129,6 +129,7 @@ export const DOWNLOAD_EMPADRONAMIENTO_PDF_SCRIPT = `
       if (sent || !buffer) return;
       const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
       if (bytes.length < 5 || String.fromCharCode(...bytes.slice(0, 5)) !== '%PDF-') {
+        postError('The official response was not a PDF.');
         return;
       }
       sent = true;
@@ -146,6 +147,18 @@ export const DOWNLOAD_EMPADRONAMIENTO_PDF_SCRIPT = `
       }));
     };
     const matchesPdfRequest = url => /generate-document|justificant|pdf/i.test(String(url || ''));
+
+    const originalWindowOpen = window.open;
+    window.open = function(url, ...args) {
+      if (matchesPdfRequest(url)) {
+        fetch(url, {credentials: 'include'})
+          .then(response => response.arrayBuffer())
+          .then(postPdf)
+          .catch(error => postError(String(error)));
+        return null;
+      }
+      return originalWindowOpen.call(this, url, ...args);
+    };
 
     const originalFetch = window.fetch;
     window.fetch = function(...args) {
