@@ -127,7 +127,7 @@ export const DOWNLOAD_EMPADRONAMIENTO_PDF_SCRIPT = `
     };
     const postPdf = async buffer => {
       if (sent || !buffer) return;
-      const bytes = new Uint8Array(buffer);
+      const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
       if (bytes.length < 5 || String.fromCharCode(...bytes.slice(0, 5)) !== '%PDF-') {
         return;
       }
@@ -172,6 +172,19 @@ export const DOWNLOAD_EMPADRONAMIENTO_PDF_SCRIPT = `
             postPdf(response);
           } else if (response instanceof Blob) {
             response.arrayBuffer().then(postPdf).catch(error => postError(String(error)));
+          } else if (typeof this.responseText === 'string' && this.responseText) {
+            const text = this.responseText;
+            if (!text.startsWith('%PDF-')) {
+              postError('The official response was not a PDF.');
+              return;
+            }
+            const bytes = new Uint8Array(text.length);
+            for (let index = 0; index < text.length; index += 1) {
+              bytes[index] = text.charCodeAt(index) & 0xff;
+            }
+            postPdf(bytes);
+          } else {
+            postError('The official PDF response was empty.');
           }
         });
         this.addEventListener('error', () => postError('The official PDF request failed.'));
