@@ -1,6 +1,6 @@
 import type { BookingAssistantId } from '@visamesa/content/tieSteps/detail'
 
-import { phoneToString } from '@/features/forms/utils/phoneUtils'
+import {normalizePhone} from '@/features/forms/utils/phoneUtils'
 import type { PersonalInfo } from '@/features/profile/utils/parsePersonalInfo'
 import { parsePersonalInfo } from '@/features/profile/utils/parsePersonalInfo'
 
@@ -14,6 +14,12 @@ import {
   emptyEmpadronamientoBookingAssistantProfile,
   type EmpadronamientoBookingAssistantProfile,
 } from './empadronamiento/config'
+
+function formatSpanishPhoneForEmpadronamiento(
+  phone: PersonalInfo['phoneNumber'],
+): string {
+  return normalizePhone(phone).number ?? ''
+}
 
 export function mapPersonalToEmpadronamientoBookingAssistantProfile(
   info: PersonalInfo,
@@ -31,7 +37,7 @@ export function mapPersonalToEmpadronamientoBookingAssistantProfile(
       surname: info.lastName,
       secondSurname: info.secondLastName ?? '',
       email,
-      phone: phoneToString(info.phoneNumber),
+      phone: formatSpanishPhoneForEmpadronamiento(info.phoneNumber),
     },
     motive: EMPADRONAMIENTO_BOOKING_MOTIVE,
   }

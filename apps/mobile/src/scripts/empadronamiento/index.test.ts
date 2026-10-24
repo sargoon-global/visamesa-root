@@ -1,3 +1,5 @@
+import {Script} from 'node:vm';
+
 import {
   empadronamientoPiiConfig,
   buildEmpadronamientoInjectionRules,
@@ -90,6 +92,25 @@ describe('empadronamiento script map', () => {
         phone: '600123456',
       },
       motive: 'Booking appointment to request empadronamiento.',
+    });
+  });
+
+  it('dismisses known and contextual cookie consent banners on every step', () => {
+    const scriptMap = buildEmpadronamientoScriptMap(profile);
+
+    Object.values(scriptMap).forEach(script => {
+      expect(script).toContain('#onetrust-accept-btn-handler');
+      expect(script).toContain('accepta-les totes');
+      expect(script).toContain('cookieContextPattern');
+      expect(script).toContain('new MutationObserver');
+    });
+  });
+
+  it('generates valid injectable JavaScript for every step', () => {
+    const scriptMap = buildEmpadronamientoScriptMap(profile);
+
+    Object.values(scriptMap).forEach(script => {
+      expect(() => new Script(script)).not.toThrow();
     });
   });
 

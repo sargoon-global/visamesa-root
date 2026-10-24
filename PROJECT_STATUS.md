@@ -295,9 +295,8 @@ Completed 2026-10-10:
 Known worktrees:
 
 - `/home/gs-44/projects/visamesa-root`
-- `/home/gs-44/projects/visamesa-modelo-790-pr84`
 
-Do not delete without checking status and asking user.
+The old `/home/gs-44/projects/visamesa-modelo-790-pr84` worktree was removed after its changes landed on `main`.
 
 ### 9. iOS validation
 
@@ -307,7 +306,7 @@ Needs macOS/CocoaPods.
 
 ### 10. Documentation / release notes
 
-Status: In progress on stacked branch `docs/mobile-dev-setup-notes`
+Status: Completed and merged
 
 Touched:
 
@@ -320,6 +319,24 @@ Added notes:
 - Modelo 790 uses the official captcha entered by user.
 - Raw official page should stay hidden except focused captcha UI.
 - PDFs open in native/system viewer; user should save locally.
+
+### 11. Empadronamiento cookie and Spanish phone handling
+
+Status: In progress on branch `fix/empadronamiento-cookie-spanish-phone`
+
+Goal:
+
+- Dismiss cookie consent reliably, including banners rendered after the main page content.
+- Send only the Spanish national phone number to the Barcelona appointment form, without `+34` or country-code formatting.
+
+Touched:
+
+- `apps/mobile/src/scripts/bookingAssistantProfile.ts`
+- `apps/mobile/src/scripts/bookingAssistantProfile.test.ts`
+- `apps/mobile/src/scripts/empadronamiento/cookie-consent.js`
+- `apps/mobile/src/scripts/empadronamiento/index.ts`
+- `apps/mobile/src/scripts/empadronamiento/index.test.ts`
+- `apps/mobile/src/scripts/empadronamiento/initia.js`
 
 ## Recent Task Log
 
@@ -364,6 +381,14 @@ Added notes:
 - Final checks on `main` passed: type-check, lint, full mobile Jest (92 suites / 381 tests), Android debug build.
 - Attempted device install/launch; install blocked by device policy (`INSTALL_FAILED_USER_RESTRICTED`), existing app JS started but device screenshot stayed black.
 - User later verified the repeated wrong-captcha flow on device: more than 4 wrong captcha attempts stayed retryable.
+
+### 2026-10-24 — Empadronamiento cookie and phone fixes
+
+- Started branch `fix/empadronamiento-cookie-spanish-phone` from latest `main`.
+- Changed empadronamiento profile mapping to use only the normalized national phone number.
+- Added cookie-consent handling to every empadronamiento automation step.
+- Cookie handling supports common consent-manager selectors, Catalan/Spanish/English accept-all labels, and late-rendered banners via `MutationObserver`.
+- Left unrelated pre-existing untracked files untouched.
 
 ## Do Not Forget
 
