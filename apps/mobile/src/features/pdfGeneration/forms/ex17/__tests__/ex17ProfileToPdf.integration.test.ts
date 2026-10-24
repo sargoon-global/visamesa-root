@@ -18,7 +18,7 @@ describe('EX-17 profile to PDF integration', () => {
     const mappedData = mapProfileToEx17Data(parsed.data);
     jest.useRealTimers();
 
-    const bytes = await generateEx17PdfBytes(mappedData);
+    const bytes = await generateEx17PdfBytes(mappedData, {flatten: false});
     const pdfDoc = await PDFDocument.load(bytes);
     const form = pdfDoc.getForm();
 

@@ -163,7 +163,10 @@ function fillField(
   }
 }
 
-export async function generateEx17PdfBytes(data: Ex17PdfData) {
+export async function generateEx17PdfBytes(
+  data: Ex17PdfData,
+  options: {flatten?: boolean} = {},
+) {
   const templateBytes = toByteArray(EX17_TIE_BLANK_SEMANTIC_PDF_BASE64, true);
   const pdfDoc = await PDFDocument.load(templateBytes);
   const form = pdfDoc.getForm();
@@ -175,6 +178,11 @@ export async function generateEx17PdfBytes(data: Ex17PdfData) {
   }
 
   form.updateFieldAppearances();
+  // Flatten the completed form so system PDF viewers render the generated
+  // values instead of relying on AcroForm appearance support.
+  if (options.flatten ?? true) {
+    form.flatten();
+  }
   return pdfDoc.save();
 }
 
