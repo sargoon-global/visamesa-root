@@ -37,12 +37,10 @@ import {
 import {
   buildEmpadronamientoInjectionRules,
   CONFIRM_EMPADRONAMIENTO_SUBMIT_SCRIPT,
-  DOWNLOAD_EMPADRONAMIENTO_PDF_SCRIPT,
   EMPADRONAMIENTO_HOME_URL,
 } from '@/scripts/empadronamiento';
 import {
   isEmpadronamientoMessage,
-  isEmpadronamientoPdf,
   type EmpadronamientoAppointmentDraft,
 } from '@/scripts/empadronamiento/messages';
 import {
@@ -110,10 +108,7 @@ export type UseWebsiteWebViewScreenResult = {
   empadronamientoAppointment: EmpadronamientoAppointmentDraft;
   empadronamientoReviewReady: boolean;
   empadronamientoSubmitting: boolean;
-  empadronamientoCompleted: boolean;
-  empadronamientoPdfSaving: boolean;
   confirmEmpadronamientoAppointment: () => void;
-  saveEmpadronamientoAppointmentPdf: () => void;
   bookingAssistantExitAllowedRef: RefObject<boolean>;
   goBackToDashboard: () => void;
   startUrl: string;
@@ -167,10 +162,6 @@ export function useWebsiteWebViewScreen(
     useState(false);
   const [empadronamientoSubmitting, setEmpadronamientoSubmitting] =
     useState(false);
-  const [empadronamientoCompleted, setEmpadronamientoCompleted] =
-    useState(false);
-  const [empadronamientoPdfSaving, setEmpadronamientoPdfSaving] =
-    useState(false);
   const pdfInFlight = useRef(false);
   const empadronamientoCompletionInFlight = useRef(false);
   const bookingAssistantExitAllowedRef = useRef(false);
@@ -192,8 +183,6 @@ export function useWebsiteWebViewScreen(
     setEmpadronamientoAppointment({});
     setEmpadronamientoReviewReady(false);
     setEmpadronamientoSubmitting(false);
-    setEmpadronamientoCompleted(false);
-    setEmpadronamientoPdfSaving(false);
     empadronamientoCompletionInFlight.current = false;
   }, [isEmpadronamiento]);
 
@@ -359,22 +348,6 @@ export function useWebsiteWebViewScreen(
     navigation.goBack();
   }, [navigation]);
 
-  const saveEmpadronamientoAppointmentPdf = useCallback(() => {
-    if (
-      !isEmpadronamiento ||
-      !empadronamientoCompleted ||
-      empadronamientoPdfSaving
-    ) {
-      return;
-    }
-    setEmpadronamientoPdfSaving(true);
-    webViewRef.current?.injectJavaScript(DOWNLOAD_EMPADRONAMIENTO_PDF_SCRIPT);
-  }, [
-    empadronamientoCompleted,
-    empadronamientoPdfSaving,
-    isEmpadronamiento,
-  ]);
-
   const confirmEmpadronamientoAppointment = useCallback(() => {
     if (!isEmpadronamiento || empadronamientoSubmitting) {
       return;
@@ -395,60 +368,6 @@ export function useWebsiteWebViewScreen(
 
       try {
         const message = JSON.parse(event.nativeEvent.data);
-
-        if (isEmpadronamiento && isEmpadronamientoPdf(message)) {
-          if (!isTrustedEmpadronamientoMessageUrl(event.nativeEvent.url)) {
-            return;
-          }
-          if (!empadronamientoPdfSaving) {
-            return;
-          }
-          (async () => {
-            try {
-              const file = await saveGeneratedPdfBase64(
-                message.payload.base64,
-                message.payload.fileName,
-              );
-              const appointment: BookingAssistantAppointmentSummary = {
-                office: empadronamientoAppointment.office || 'Barcelona appointment office',
-                date: empadronamientoAppointment.date || '',
-                time: empadronamientoAppointment.time || '',
-                location: empadronamientoAppointment.location || undefined,
-                confirmationCode:
-                  empadronamientoAppointment.confirmationCode || undefined,
-              };
-              await openGeneratedPdf(file);
-              const completion = route.params?.bookingCompletion;
-              if (completion) {
-                const progress = await fetchUserProgress();
-                await updateRequirementProgress(
-                  progress,
-                  completion.stepId,
-                  completion.requirementKey,
-                  {
-                    completed: true,
-                    source: {
-                      type: ASSISTED_BOOKING_REQUIREMENT_TYPE,
-                      bookingAssistantId: 'empadronamiento',
-                      completedAt: new Date().toISOString(),
-                      appointment,
-                    },
-                  },
-                );
-              }
-              bookingAssistantExitAllowedRef.current = true;
-              navigation.goBack();
-            } catch (error) {
-              setEmpadronamientoPdfSaving(false);
-              setWebViewError({
-                title: t('empadronamiento.errors.pdfSaveFailedTitle'),
-                message: t('empadronamiento.errors.pdfSaveFailedMessage'),
-                detail: error instanceof Error ? error.message : undefined,
-              });
-            }
-          })();
-          return;
-        }
 
         if (isEmpadronamiento && isEmpadronamientoMessage(message)) {
           if (!isTrustedEmpadronamientoMessageUrl(event.nativeEvent.url)) {
@@ -491,9 +410,47 @@ export function useWebsiteWebViewScreen(
               ...empadronamientoAppointment,
               ...(message.payload ?? {}),
             };
-            setEmpadronamientoAppointment(appointmentDraft);
-            setEmpadronamientoCompleted(true);
-            setEmpadronamientoSubmitting(false);
+            (async () => {
+              try {
+                const appointment: BookingAssistantAppointmentSummary = {
+                  office: appointmentDraft.office || 'Barcelona appointment office',
+                  date: appointmentDraft.date || '',
+                  time: appointmentDraft.time || '',
+                  location: appointmentDraft.location || undefined,
+                  confirmationCode: appointmentDraft.confirmationCode || undefined,
+                };
+                const completion = route.params?.bookingCompletion;
+                if (completion) {
+                  const progress = await fetchUserProgress();
+                  await updateRequirementProgress(
+                    progress,
+                    completion.stepId,
+                    completion.requirementKey,
+                    {
+                      completed: true,
+                      source: {
+                        type: ASSISTED_BOOKING_REQUIREMENT_TYPE,
+                        bookingAssistantId: 'empadronamiento',
+                        completedAt: new Date().toISOString(),
+                        appointment,
+                      },
+                    },
+                  );
+                }
+                bookingAssistantExitAllowedRef.current = true;
+                navigation.goBack();
+              } catch (error) {
+                empadronamientoCompletionInFlight.current = false;
+                setEmpadronamientoSubmitting(false);
+                setWebViewError({
+                  title: t('bookingAssistant.bookingFailedTitle'),
+                  message:
+                    error instanceof Error
+                      ? error.message
+                      : t('bookingAssistant.unknownError'),
+                });
+              }
+            })();
             return;
           }
         }
@@ -552,7 +509,6 @@ export function useWebsiteWebViewScreen(
     },
     [
       empadronamientoAppointment,
-      empadronamientoPdfSaving,
       handleInjectionMessage,
       isEmpadronamiento,
       isModelo790,
@@ -638,10 +594,7 @@ export function useWebsiteWebViewScreen(
     empadronamientoAppointment,
     empadronamientoReviewReady,
     empadronamientoSubmitting,
-    empadronamientoCompleted,
-    empadronamientoPdfSaving,
     confirmEmpadronamientoAppointment,
-    saveEmpadronamientoAppointmentPdf,
     bookingAssistantExitAllowedRef,
     goBackToDashboard,
     startUrl,

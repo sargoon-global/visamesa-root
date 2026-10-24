@@ -32,7 +32,6 @@ export {
   type EmpadronamientoBookingAssistantProfile,
 } from './config';
 export {EMPADRONAMIENTO_HOME_URL} from './initia';
-export {DOWNLOAD_EMPADRONAMIENTO_PDF_SCRIPT} from './submit-final';
 
 /** Appointment flow pages after starting the tramit (update if Barcelona changes routes). */
 const EMPADRONAMIENTO_CITA_PREFIX = `${EMPADRONAMIENTO_HOME_URL}/cita`;

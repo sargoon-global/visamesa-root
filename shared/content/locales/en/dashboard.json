@@ -26,7 +26,7 @@
   "appointmentDate": "Date: {{date}}",
   "appointmentTime": "Time: {{time}}",
   "appointmentLocation": "Location: {{location}}",
-  "appointmentConfirmation": "Confirmation: {{code}}",
+  "appointmentReferenceCode": "Reference code: {{code}}",
   "stepCompleted": "Step completed",
   "completeStepFallback": "Complete step",
   "confirmCompletionTitle": "Confirm completion",

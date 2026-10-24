@@ -26,7 +26,7 @@
   "appointmentDate": "日期：{{date}}",
   "appointmentTime": "时间：{{time}}",
   "appointmentLocation": "地点：{{location}}",
-  "appointmentConfirmation": "确认码：{{code}}",
+  "appointmentReferenceCode": "参考代码：{{code}}",
   "stepCompleted": "步骤已完成",
   "completeStepFallback": "完成步骤",
   "confirmCompletionTitle": "确认完成",

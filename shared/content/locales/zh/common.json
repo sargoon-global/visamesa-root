@@ -139,12 +139,6 @@
       "confirmationCode": "预约代码",
       "confirm": "确认预约"
     },
-    "confirmed": {
-      "title": "预约已确认",
-      "message": "离开前请保存官方预约确认凭证。",
-      "savePdf": "保存预约 PDF",
-      "savingPdf": "正在保存预约 PDF…"
-    },
     "backToDashboard": "返回控制面板",
     "errors": {
       "timedOutTitle": "预约超时",
@@ -152,9 +146,7 @@
       "siteLoadFailedTitle": "无法加载官方网站",
       "siteLoadFailedMessage": "请返回控制面板，稍后重试。",
       "siteHttpErrorTitle": "官方网站错误",
-      "siteHttpErrorMessage": "请返回控制面板，稍后重试。",
-      "pdfSaveFailedTitle": "无法保存预约 PDF",
-      "pdfSaveFailedMessage": "无法保存或打开官方预约确认 PDF。请重试。"
+      "siteHttpErrorMessage": "请返回控制面板，稍后重试。"
     }
   },
   "bookingAssistant": {

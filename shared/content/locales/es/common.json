@@ -139,12 +139,6 @@
       "confirmationCode": "Código de la cita",
       "confirm": "Confirmar cita"
     },
-    "confirmed": {
-      "title": "Cita confirmada",
-      "message": "Guarda el justificante oficial de la cita antes de salir.",
-      "savePdf": "Guardar justificante PDF",
-      "savingPdf": "Guardando justificante PDF…"
-    },
     "backToDashboard": "Volver al panel",
     "errors": {
       "timedOutTitle": "La reserva de la cita agotó el tiempo de espera",
@@ -152,9 +146,7 @@
       "siteLoadFailedTitle": "No se pudo cargar la web oficial",
       "siteLoadFailedMessage": "Vuelve al panel e inténtalo más tarde.",
       "siteHttpErrorTitle": "Error en la web oficial",
-      "siteHttpErrorMessage": "Vuelve al panel e inténtalo más tarde.",
-      "pdfSaveFailedTitle": "No se pudo guardar el justificante",
-      "pdfSaveFailedMessage": "No se pudo guardar o abrir el justificante oficial. Inténtalo de nuevo."
+      "siteHttpErrorMessage": "Vuelve al panel e inténtalo más tarde."
     }
   },
   "bookingAssistant": {

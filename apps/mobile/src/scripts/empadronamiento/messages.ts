@@ -2,9 +2,7 @@ import type {BookingAssistantAppointmentSummary} from '@/features/dashboard/type
 
 export type EmpadronamientoAppointmentDraft = Partial<
   BookingAssistantAppointmentSummary
-> & {
-  pdfUrl?: string;
-};
+>;
 
 type EmpadronamientoSelectionMessage = {
   type: 'empadronamiento-selection';
@@ -34,38 +32,12 @@ type EmpadronamientoBookingCompleteMessage = {
   payload: EmpadronamientoAppointmentDraft;
 };
 
-type EmpadronamientoPdfMessage = {
-  __visaMesaEmpadronamientoPdf: true;
-  payload: {
-    base64: string;
-    fileName: string;
-  };
-};
-
 export type EmpadronamientoWebViewMessage =
   | EmpadronamientoSelectionMessage
   | EmpadronamientoReviewReadyMessage
   | EmpadronamientoSubmitStartedMessage
   | EmpadronamientoBookingCompleteMessage
   | EmpadronamientoErrorMessage;
-
-export function isEmpadronamientoPdf(value: unknown): value is EmpadronamientoPdfMessage {
-  if (!value || typeof value !== 'object') {
-    return false;
-  }
-  const message = value as {
-    __visaMesaEmpadronamientoPdf?: boolean;
-    payload?: {base64?: string; fileName?: string};
-  };
-  return (
-    message.__visaMesaEmpadronamientoPdf === true &&
-    typeof message.payload?.base64 === 'string' &&
-    message.payload.base64.startsWith('JVBERi0') &&
-    message.payload.base64.length <= 20_000_000 &&
-    typeof message.payload.fileName === 'string' &&
-    /^empadronamiento-cita-\d+\.pdf$/.test(message.payload.fileName)
-  );
-}
 
 export function isEmpadronamientoMessage(
   value: unknown,

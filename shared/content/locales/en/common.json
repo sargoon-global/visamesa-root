@@ -139,12 +139,6 @@
       "confirmationCode": "Confirmation code",
       "confirm": "Confirm appointment"
     },
-    "confirmed": {
-      "title": "Appointment confirmed",
-      "message": "Save the official appointment confirmation before leaving.",
-      "savePdf": "Save appointment PDF",
-      "savingPdf": "Saving appointment PDF…"
-    },
     "backToDashboard": "Back to dashboard",
     "errors": {
       "timedOutTitle": "Appointment booking timed out",
@@ -152,9 +146,7 @@
       "siteLoadFailedTitle": "Official website could not be loaded",
       "siteLoadFailedMessage": "Please go back to the dashboard and try again later.",
       "siteHttpErrorTitle": "Official website error",
-      "siteHttpErrorMessage": "Please go back to the dashboard and try again later.",
-      "pdfSaveFailedTitle": "Appointment PDF could not be saved",
-      "pdfSaveFailedMessage": "The official confirmation PDF could not be saved or opened. Please try again."
+      "siteHttpErrorMessage": "Please go back to the dashboard and try again later."
     }
   },
   "bookingAssistant": {

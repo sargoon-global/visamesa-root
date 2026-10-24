@@ -21,7 +21,7 @@ type DashboardTranslate = (
     | 'appointmentDate'
     | 'appointmentTime'
     | 'appointmentLocation'
-    | 'appointmentConfirmation',
+    | 'appointmentReferenceCode',
   options?: Record<string, string>,
 ) => string;
 
@@ -39,14 +39,14 @@ export function formatAppointmentDetailsMessage(
     t('appointmentTime', {time: appointment.time}),
   ];
 
-  if (appointment.location) {
-    lines.push(t('appointmentLocation', {location: appointment.location}));
-  }
-
   if (appointment.confirmationCode) {
     lines.push(
-      t('appointmentConfirmation', {code: appointment.confirmationCode}),
+      t('appointmentReferenceCode', {code: appointment.confirmationCode}),
     );
+  }
+
+  if (appointment.location) {
+    lines.push(t('appointmentLocation', {location: appointment.location}));
   }
 
   return lines.join('\n');
