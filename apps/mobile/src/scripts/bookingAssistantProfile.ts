@@ -18,7 +18,11 @@ import {
 function formatSpanishPhoneForEmpadronamiento(
   phone: PersonalInfo['phoneNumber'],
 ): string {
-  return normalizePhone(phone).number ?? ''
+  const normalized = normalizePhone(phone)
+  const countryCode = normalized.countryCode ?? ''
+  const number = normalized.number ?? ''
+
+  return countryCode === '34' && /^[6-9]\d{8}$/.test(number) ? number : ''
 }
 
 export function mapPersonalToEmpadronamientoBookingAssistantProfile(
@@ -76,7 +80,10 @@ export function hasBookingAssistantProfile(
 
   if (bookingAssistantId === 'empadronamiento') {
     const email = parsed.data.email || fallbackEmail?.trim() || ''
-    return Boolean(email)
+    const spanishPhone = formatSpanishPhoneForEmpadronamiento(
+      parsed.data.phoneNumber,
+    )
+    return Boolean(email && spanishPhone)
   }
 
   return Boolean(parsed.data.firstName && parsed.data.nieNumber)

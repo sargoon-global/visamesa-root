@@ -33,6 +33,36 @@ describe('bookingAssistantProfile mappers', () => {
     expect(mapped.personalInfo.phone).toBe('600123456');
   });
 
+  it('does not map a foreign phone as a Spanish empadronamiento number', () => {
+    const mapped = mapPersonalToEmpadronamientoBookingAssistantProfile({
+      ...completePersonalInfo,
+      phoneNumber: {countryCode: '44', number: '7700900123'},
+    });
+
+    expect(mapped.personalInfo.phone).toBe('');
+    expect(
+      hasBookingAssistantProfile(
+        {
+          ...completePersonalInfo,
+          phoneNumber: {countryCode: '44', number: '7700900123'},
+        } as unknown as Record<string, unknown>,
+        'empadronamiento',
+      ),
+    ).toBe(false);
+  });
+
+  it('rejects malformed Spanish national numbers for empadronamiento', () => {
+    expect(
+      hasBookingAssistantProfile(
+        {
+          ...completePersonalInfo,
+          phoneNumber: {countryCode: '34', number: '12345'},
+        } as unknown as Record<string, unknown>,
+        'empadronamiento',
+      ),
+    ).toBe(false);
+  });
+
   it('uses fallback email for empadronamiento when profile email is missing', () => {
     expect(
       mapPersonalToEmpadronamientoBookingAssistantProfile(

@@ -322,7 +322,7 @@ Added notes:
 
 ### 11. Empadronamiento cookie and Spanish phone handling
 
-Status: In progress on branch `fix/empadronamiento-cookie-spanish-phone`
+Status: Cookie/country-code fix merged in PR #119; stricter Spanish-number validation in progress on branch `fix/empadronamiento-spanish-phone-validation`
 
 Goal:
 
@@ -388,6 +388,8 @@ Touched:
 - Changed empadronamiento profile mapping to use only the normalized national phone number.
 - Added cookie-consent handling to every empadronamiento automation step.
 - Cookie handling supports common consent-manager selectors, Catalan/Spanish/English accept-all labels, and late-rendered banners via `MutationObserver`.
+- PR #119 merged the cookie handling and removal of `+34` from the submitted phone value.
+- Started a follow-up guard so empadronamiento readiness requires an actual Spanish `+34` number with a valid 9-digit national format.
 - Left unrelated pre-existing untracked files untouched.
 
 ## Do Not Forget
