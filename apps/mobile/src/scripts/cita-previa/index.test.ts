@@ -27,6 +27,8 @@ describe('cita previa script map', () => {
         'https://icp.administracionelectronica.gob.es/icpplustieb/acInfo',
         'https://icp.administracionelectronica.gob.es/icpplustieb/acEntrada',
         'https://icp.administracionelectronica.gob.es/icpplustieb/citar?p=8&locale=es',
+        'https://icp.administracionelectronica.gob.es/icpplustieb/acOpciones',
+        'https://icp.administracionelectronica.gob.es/icpplustieb/acVerFormulario',
         'https://icp.administracionelectronica.gob.es/icpplustieb/acValidarEntrada',
       ]),
     );
@@ -71,6 +73,21 @@ describe('cita previa script map', () => {
         'https://icp.administracionelectronica.gob.es/icpplustieb/acEntrada'
       ],
     ).toContain('88');
+    expect(
+      scriptMap[
+        'https://icp.administracionelectronica.gob.es/icpplustieb/acOpciones'
+      ],
+    ).toContain('#idSede');
+    expect(
+      scriptMap[
+        'https://icp.administracionelectronica.gob.es/icpplustieb/acVerFormulario'
+      ],
+    ).toContain('#txtTelefonoCitado');
+    expect(
+      scriptMap[
+        'https://icp.administracionelectronica.gob.es/icpplustieb/acVerFormulario'
+      ],
+    ).toContain('test@example.com');
   });
 
   it('exports a default pii config for manual runs', () => {
@@ -83,6 +100,7 @@ describe('cita previa script map', () => {
       },
       provinceOptionIndex: 9,
       tramitesOptionIndex: 17,
+      sedeOptionIndex: 0,
     });
   });
 
@@ -99,7 +117,7 @@ describe('cita previa script map', () => {
   it('converts the map into exact-match injection rules', () => {
     const rules = buildCitaPreviaInjectionRules(profile);
 
-    expect(rules).toHaveLength(7);
+    expect(rules).toHaveLength(9);
     expect(rules.every(rule => Boolean(rule.ready?.selector))).toBe(true);
     expect(rules).toEqual(
       expect.arrayContaining([
@@ -157,6 +175,25 @@ describe('cita previa script map', () => {
               'https://icp.administracionelectronica.gob.es/icpplustieb/citar?p=8&locale=es',
           },
           ready: {selector: '#tramiteGrupo\\[0\\]'},
+        }),
+        expect.objectContaining({
+          match: {
+            type: 'prefix',
+            value:
+              'https://icp.administracionelectronica.gob.es/icpplustieb/acOpciones',
+          },
+          ready: {selector: '#idSede, select[name="idSede"]'},
+        }),
+        expect.objectContaining({
+          match: {
+            type: 'prefix',
+            value:
+              'https://icp.administracionelectronica.gob.es/icpplustieb/acVerFormulario',
+          },
+          ready: {
+            selector: '#txtTelefonoCitado',
+            allSelectors: ['#emailUNO', '#emailDOS', '#btnSiguiente'],
+          },
         }),
         expect.objectContaining({
           match: {

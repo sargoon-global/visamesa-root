@@ -7,6 +7,11 @@ import {buildDetailsScript, DETAILS_URL} from './details';
 import {CLAVE_SCRIPT, CLAVE_URL} from './clave';
 import {INITIAL_PAGE_SCRIPT, ICP_PLUS_URL} from './initialPage';
 import {buildOficinaScript, OFICINA_URL} from './oficina';
+import {
+  APPOINTMENT_FORM_URL,
+  buildAppointmentFormScript,
+} from './appointmentForm';
+import {buildPlaceScript, PLACE_URL} from './place';
 import {buildProvinciaScript, PROVINCIA_URL} from './provincia';
 import {SOLICITAR_CITA_SCRIPT, SOLICITAR_CITA_URL} from './solicitarCita';
 
@@ -53,6 +58,11 @@ const buildCitaPreviaScriptEntries = (
     : '#txtPaisNac option';
 
   const provinciaScript = buildProvinciaScript(profile.provinceOptionIndex);
+  const placeScript = buildPlaceScript(profile.sedeOptionIndex ?? 0);
+  const appointmentFormScript = buildAppointmentFormScript({
+    phone: profile.details.phone,
+    email: profile.details.email,
+  });
 
   return [
     {
@@ -116,6 +126,29 @@ const buildCitaPreviaScriptEntries = (
       script: buildOficinaScript(profile.tramitesOptionIndex),
       ready: {
         selector: '#tramiteGrupo\\[0\\]',
+      },
+    },
+    {
+      url: PLACE_URL,
+      script: placeScript,
+      match: {
+        type: 'prefix',
+        value: PLACE_URL,
+      },
+      ready: {
+        selector: '#idSede, select[name="idSede"]',
+      },
+    },
+    {
+      url: APPOINTMENT_FORM_URL,
+      script: appointmentFormScript,
+      match: {
+        type: 'prefix',
+        value: APPOINTMENT_FORM_URL,
+      },
+      ready: {
+        selector: '#txtTelefonoCitado',
+        allSelectors: ['#emailUNO', '#emailDOS', '#btnSiguiente'],
       },
     },
     {
