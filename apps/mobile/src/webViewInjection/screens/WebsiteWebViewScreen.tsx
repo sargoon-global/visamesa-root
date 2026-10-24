@@ -177,11 +177,8 @@ const WebsiteWebViewScreen = () => {
   const isEmpadronamiento =
     !isModelo790 && route.params?.bookingAssistant === 'empadronamiento';
   const shouldHideModelo790WebView = isModelo790 && !modelo790ShowWebView;
-  const showEmpadronamientoOfficialConfirmation =
-    __DEV__ && isEmpadronamiento && empadronamientoCompleted;
   const shouldHideWebView =
-    shouldHideModelo790WebView ||
-    (isEmpadronamiento && !showEmpadronamientoOfficialConfirmation);
+    shouldHideModelo790WebView || isEmpadronamiento;
   const showModelo790StatusOverlay =
     isModelo790 &&
     shouldHideModelo790WebView &&
@@ -246,10 +243,7 @@ const WebsiteWebViewScreen = () => {
           shouldHideWebView ? styles.hiddenWebView : null,
         ]}
       />
-      {isEmpadronamiento &&
-      empadronamientoCompleted &&
-      !showEmpadronamientoOfficialConfirmation &&
-      !webViewError ? (
+      {isEmpadronamiento && empadronamientoCompleted && !webViewError ? (
         <View style={styles.statusOverlay} pointerEvents="auto">
           <View style={styles.appointmentCard}>
             <Text style={styles.statusTitle}>
