@@ -23,14 +23,22 @@ export const SELECT_OFICINA_SCRIPT = `
       return true;
     };
     const selectOffice = () => {
-      const office = document.querySelector('#OAC-DR');
+      const office =
+        document.querySelector('input[type="radio"][name="oficinas"]') ||
+        document.querySelector('#OAC-DR');
       if (!office) {
         return false;
       }
 
-      const label = document.querySelector('label[for="OAC-DR"]');
+      const label = office.id
+        ? document.querySelector('label[for="' + office.id + '"]')
+        : null;
       const officeName = String(
-        label?.textContent || office.getAttribute('aria-label') || office.value || 'OAC-DR',
+        label?.textContent ||
+          office.getAttribute('aria-label') ||
+          office.value ||
+          office.id ||
+          'office',
       ).replace(/\\s+/g, ' ').trim();
 
       office.checked = true;

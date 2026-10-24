@@ -227,7 +227,7 @@ describe('empadronamiento script map', () => {
             type: 'prefix',
             value: `${EMPADRONAMIENTO_CITA_PREFIX}/select-oficina`,
           },
-          ready: {selector: '#OAC-DR'},
+          ready: {selector: 'input[type="radio"][name="oficinas"]'},
         }),
         expect.objectContaining({
           id: 'empadronamiento-select-oficina-form',
@@ -235,7 +235,10 @@ describe('empadronamiento script map', () => {
             type: 'prefix',
             value: `${EMPADRONAMIENTO_FORM_PREFIX}/tramitDataOffice`,
           },
-          ready: {selector: '#OAC-DR', timeoutMs: 30000},
+          ready: {
+            selector: 'input[type="radio"][name="oficinas"]',
+            timeoutMs: 30000,
+          },
         }),
         expect.objectContaining({
           id: 'empadronamiento-select-date',

@@ -153,7 +153,7 @@ const buildEmpadronamientoScriptEntries = (
       value: `${EMPADRONAMIENTO_CITA_PREFIX}/select-oficina`,
     },
     script: SELECT_OFICINA_SCRIPT,
-    ready: {selector: '#OAC-DR'},
+    ready: {selector: 'input[type="radio"][name="oficinas"]'},
   },
   {
     id: 'empadronamiento-select-oficina-form',
@@ -163,7 +163,10 @@ const buildEmpadronamientoScriptEntries = (
       value: `${EMPADRONAMIENTO_FORM_PREFIX}/tramitDataOffice`,
     },
     script: SELECT_OFICINA_SCRIPT,
-    ready: {selector: '#OAC-DR', timeoutMs: 30000},
+    ready: {
+      selector: 'input[type="radio"][name="oficinas"]',
+      timeoutMs: 30000,
+    },
   },
   {
     id: 'empadronamiento-select-date',
