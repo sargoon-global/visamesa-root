@@ -83,6 +83,35 @@ const stylesheet = createStyleSheet(theme => ({
     color: theme.colors.onPrimary,
     fontWeight: '700',
   },
+  appointmentCard: {
+    width: '100%',
+    maxWidth: 420,
+    gap: theme.spacing.md,
+  },
+  appointmentDetails: {
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+    borderRadius: theme.radii.md,
+    backgroundColor: theme.colors.surfaceContainer,
+  },
+  appointmentLabel: {
+    fontSize: 13,
+    color: theme.colors.onSurfaceVariant,
+  },
+  appointmentValue: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: theme.colors.onSurface,
+  },
+  confirmButton: {
+    backgroundColor: theme.colors.primary,
+    padding: theme.spacing.md,
+    alignItems: 'center',
+    borderRadius: theme.radii.md,
+  },
+  confirmButtonDisabled: {
+    opacity: 0.5,
+  },
 }));
 
 const WebsiteWebViewScreen = () => {
@@ -96,6 +125,13 @@ const WebsiteWebViewScreen = () => {
     webViewError,
     modelo790ShowWebView,
     modelo790PdfHandoff,
+    empadronamientoRuleId,
+    empadronamientoAppointment,
+    empadronamientoReviewReady,
+    empadronamientoSubmitting,
+    confirmEmpadronamientoAppointment,
+    bookingAssistantExitAllowedRef,
+    goBackToDashboard,
     onLoadEnd,
     onLoadStart,
     onNavigationStateChange,
@@ -108,6 +144,7 @@ const WebsiteWebViewScreen = () => {
     const unsubscribe = navigation.addListener('beforeRemove', event => {
       if (
         route.params?.automation === 'modelo-790-012' ||
+        bookingAssistantExitAllowedRef.current ||
         (event.data.action.type !== 'GO_BACK' &&
           event.data.action.type !== 'POP')
       ) {
@@ -131,16 +168,46 @@ const WebsiteWebViewScreen = () => {
     });
 
     return unsubscribe;
-  }, [navigation, route.params?.automation, t]);
+  }, [bookingAssistantExitAllowedRef, navigation, route.params?.automation, t]);
 
   const isModelo790 = route.params?.automation === 'modelo-790-012';
+  const isEmpadronamiento =
+    !isModelo790 && route.params?.bookingAssistant === 'empadronamiento';
   const shouldHideModelo790WebView = isModelo790 && !modelo790ShowWebView;
+  const shouldHideWebView =
+    shouldHideModelo790WebView || isEmpadronamiento;
   const showModelo790StatusOverlay =
     isModelo790 &&
     shouldHideModelo790WebView &&
     !webViewError &&
     !modelo790PdfHandoff;
   const showModelo790PdfHandoff = isModelo790 && modelo790PdfHandoff && !webViewError;
+  const empadronamientoStatusKey = (() => {
+    if (empadronamientoSubmitting) {
+      return 'submitting';
+    }
+    if (empadronamientoRuleId?.includes('personal-info')) {
+      return 'personalInfo';
+    }
+    if (empadronamientoRuleId?.includes('select-oficina')) {
+      return 'office';
+    }
+    if (empadronamientoRuleId?.includes('select-date')) {
+      return 'date';
+    }
+    if (empadronamientoRuleId?.includes('select-time')) {
+      return 'time';
+    }
+    if (empadronamientoRuleId?.includes('motive')) {
+      return 'motive';
+    }
+    return 'preparing';
+  })();
+  const canConfirmEmpadronamiento = Boolean(
+    empadronamientoAppointment.office &&
+      empadronamientoAppointment.date &&
+      empadronamientoAppointment.time,
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -169,9 +236,63 @@ const WebsiteWebViewScreen = () => {
         )}
         style={[
           styles.webView,
-          shouldHideModelo790WebView ? styles.hiddenWebView : null,
+          shouldHideWebView ? styles.hiddenWebView : null,
         ]}
       />
+      {isEmpadronamiento && !empadronamientoReviewReady && !webViewError ? (
+        <View style={styles.statusOverlay} pointerEvents="auto">
+          <View style={styles.statusCard}>
+            <ActivityIndicator size="large" color={theme.colors.primary} />
+            <Text style={styles.statusTitle}>
+              {t('empadronamiento.status.title')}
+            </Text>
+            <Text style={styles.statusMessage}>
+              {t(`empadronamiento.status.${empadronamientoStatusKey}`)}
+            </Text>
+          </View>
+        </View>
+      ) : null}
+      {isEmpadronamiento && empadronamientoReviewReady && !webViewError ? (
+        <View style={styles.statusOverlay} pointerEvents="auto">
+          <View style={styles.appointmentCard}>
+            <Text style={styles.statusTitle}>
+              {t('empadronamiento.review.title')}
+            </Text>
+            <Text style={styles.statusMessage}>
+              {t('empadronamiento.review.message')}
+            </Text>
+            <View style={styles.appointmentDetails}>
+              {(['office', 'date', 'time', 'location'] as const).map(field =>
+                empadronamientoAppointment[field] ? (
+                  <View key={field}>
+                    <Text style={styles.appointmentLabel}>
+                      {t(`empadronamiento.review.${field}`)}
+                    </Text>
+                    <Text style={styles.appointmentValue}>
+                      {empadronamientoAppointment[field]}
+                    </Text>
+                  </View>
+                ) : null,
+              )}
+            </View>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{disabled: !canConfirmEmpadronamiento}}
+              disabled={!canConfirmEmpadronamiento}
+              onPress={confirmEmpadronamientoAppointment}
+              style={[
+                styles.confirmButton,
+                !canConfirmEmpadronamiento
+                  ? styles.confirmButtonDisabled
+                  : null,
+              ]}>
+              <Text style={styles.backLabel}>
+                {t('empadronamiento.review.confirm')}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
       {showModelo790StatusOverlay ? (
         <View style={styles.statusOverlay} pointerEvents="auto">
           <View style={styles.statusCard}>
@@ -193,7 +314,7 @@ const WebsiteWebViewScreen = () => {
           </View>
         </View>
       ) : null}
-      {isModelo790 && webViewError ? (
+      {(isModelo790 || isEmpadronamiento) && webViewError ? (
         <View style={styles.errorOverlay}>
           <View style={styles.errorCard}>
             <Text style={styles.errorTitle}>{webViewError.title}</Text>
@@ -203,9 +324,13 @@ const WebsiteWebViewScreen = () => {
             ) : null}
             <Pressable
               accessibilityRole="button"
-              onPress={() => navigation.goBack()}
+              onPress={goBackToDashboard}
               style={styles.backButton}>
-              <Text style={styles.backLabel}>{t('modelo790.backToDashboard')}</Text>
+              <Text style={styles.backLabel}>
+                {isModelo790
+                  ? t('modelo790.backToDashboard')
+                  : t('empadronamiento.backToDashboard')}
+              </Text>
             </Pressable>
           </View>
         </View>

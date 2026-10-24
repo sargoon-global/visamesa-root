@@ -338,6 +338,28 @@ Touched:
 - `apps/mobile/src/scripts/empadronamiento/index.test.ts`
 - `apps/mobile/src/scripts/empadronamiento/initia.js`
 
+### 12. Empadronamiento native status and final confirmation
+
+Status: In progress on branch `feat/empadronamiento-native-status-confirmation`
+
+Goal:
+
+- Keep the official WebView hidden behind native progress/status UI.
+- Capture the selected office, date, and time during automation.
+- Show a native appointment review screen before official submission.
+- Submit only after explicit user confirmation.
+- Mark the dashboard requirement complete only after the official site confirms the booking.
+
+Touched:
+
+- `apps/mobile/src/scripts/empadronamiento/{select-oficina.js,select-date.js,select-time.js,submit-final.js,index.ts,index.test.ts,messages.ts,messages.test.ts}`
+- `apps/mobile/src/webViewInjection/useWebsiteWebViewScreen.ts`
+- `apps/mobile/src/webViewInjection/screens/WebsiteWebViewScreen.tsx`
+- `apps/mobile/src/navigation/types.ts`
+- `apps/mobile/src/features/dashboard/hooks/useDashboardScreen.ts`
+- `apps/mobile/src/features/dashboard/hooks/useDashboardScreen.test.ts`
+- `shared/content/locales/{en,es,zh}/common.json`
+
 ## Recent Task Log
 
 ### 2026-10-10 — Sync main after PR #112
@@ -391,6 +413,16 @@ Touched:
 - PR #119 merged the cookie handling and removal of `+34` from the submitted phone value.
 - PR #120 added a guard so empadronamiento readiness requires an actual Spanish `+34` number with a valid 9-digit national format.
 - Left unrelated pre-existing untracked files untouched.
+
+### 2026-10-24 — Empadronamiento native status and review gate
+
+- Confirmed the previous final-submit script existed but auto-submitted immediately.
+- Replaced auto-submit with a WebView-to-native review-ready message.
+- Added selection messages and session storage fallbacks for office/date/time.
+- Added a native hidden-WebView status flow and appointment review card.
+- Added explicit native confirmation that injects the official submit click only after user approval.
+- Added official success detection and progress completion with appointment details.
+- Added trusted-host checks, terminal error UI, and safe programmatic exit handling.
 
 ## Do Not Forget
 

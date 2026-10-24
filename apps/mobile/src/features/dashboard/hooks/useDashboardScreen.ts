@@ -585,6 +585,10 @@ export function useDashboardScreen(
 
     navigation.navigate('WebsiteWebView', {
       bookingAssistant: bookingAssistantId,
+      bookingCompletion: {
+        stepId: currentStep.id,
+        requirementKey,
+      },
     });
   };
 

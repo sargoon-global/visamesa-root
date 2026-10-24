@@ -118,6 +118,36 @@
       "prepareFailedMessage": "部分必填字段未能填写。请返回控制面板并检查您的个人资料。"
     }
   },
+  "empadronamiento": {
+    "status": {
+      "title": "正在预约住址登记",
+      "preparing": "正在打开官方预约服务…",
+      "personalInfo": "正在填写个人信息…",
+      "motive": "正在选择预约原因…",
+      "office": "正在选择办事处…",
+      "date": "正在查找最早可用日期…",
+      "time": "正在选择可用时间…",
+      "submitting": "正在通过官方服务确认预约…"
+    },
+    "review": {
+      "title": "检查预约信息",
+      "message": "确认前请检查以下信息。只有在您确认后才会提交官方预约。",
+      "office": "办事处",
+      "date": "日期",
+      "time": "时间",
+      "location": "地点",
+      "confirm": "确认预约"
+    },
+    "backToDashboard": "返回控制面板",
+    "errors": {
+      "timedOutTitle": "预约超时",
+      "timedOutMessage": "官方预约服务未能加载。请返回控制面板后重试。",
+      "siteLoadFailedTitle": "无法加载官方网站",
+      "siteLoadFailedMessage": "请返回控制面板，稍后重试。",
+      "siteHttpErrorTitle": "官方网站错误",
+      "siteHttpErrorMessage": "请返回控制面板，稍后重试。"
+    }
+  },
   "bookingAssistant": {
     "missingProfile": "缺少案例资料信息",
     "stopTitle": "停止预约助手",

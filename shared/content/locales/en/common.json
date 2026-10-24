@@ -118,6 +118,36 @@
       "prepareFailedMessage": "Some required fields on the official form could not be filled. Please go back to the dashboard and check your profile."
     }
   },
+  "empadronamiento": {
+    "status": {
+      "title": "Booking your empadronamiento appointment",
+      "preparing": "Opening the official appointment service…",
+      "personalInfo": "Entering your personal information…",
+      "motive": "Selecting the appointment reason…",
+      "office": "Selecting the appointment office…",
+      "date": "Finding the first available date…",
+      "time": "Selecting an available time…",
+      "submitting": "Confirming your appointment with the official service…"
+    },
+    "review": {
+      "title": "Review your appointment",
+      "message": "Check these details before confirming. The official booking will only be submitted after you confirm.",
+      "office": "Office",
+      "date": "Date",
+      "time": "Time",
+      "location": "Location",
+      "confirm": "Confirm appointment"
+    },
+    "backToDashboard": "Back to dashboard",
+    "errors": {
+      "timedOutTitle": "Appointment booking timed out",
+      "timedOutMessage": "The official appointment service did not load. Please go back to the dashboard and try again.",
+      "siteLoadFailedTitle": "Official website could not be loaded",
+      "siteLoadFailedMessage": "Please go back to the dashboard and try again later.",
+      "siteHttpErrorTitle": "Official website error",
+      "siteHttpErrorMessage": "Please go back to the dashboard and try again later."
+    }
+  },
   "bookingAssistant": {
     "missingProfile": "Case profile information is missing",
     "stopTitle": "Stop booking assistant",

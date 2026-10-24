@@ -20,7 +20,11 @@ import {
   EMPADRONAMIENTO_TRAMIT_URL,
   START_TRAMIT_SCRIPT,
 } from './start-tramit';
-import {SUBMIT_FINAL_SCRIPT} from './submit-final';
+import {
+  CONFIRM_EMPADRONAMIENTO_SUBMIT_SCRIPT,
+  EMPADRONAMIENTO_RESULT_SCRIPT,
+  SUBMIT_FINAL_SCRIPT,
+} from './submit-final';
 import {TEMA_SCRIPT} from './tema';
 
 export {
@@ -44,6 +48,7 @@ interface EmpadronamientoScriptEntry {
   match: WebViewInjectionRule['match'];
   script: string;
   ready?: WebViewInjectionRule['ready'];
+  reinjectOnLoadEnd?: WebViewInjectionRule['reinjectOnLoadEnd'];
 }
 
 const buildEmpadronamientoScriptEntries = (
@@ -208,6 +213,17 @@ const buildEmpadronamientoScriptEntries = (
     },
     script: SUBMIT_FINAL_SCRIPT,
     ready: {selector: 'button[type="submit"]'},
+    reinjectOnLoadEnd: true,
+  },
+  {
+    id: 'empadronamiento-result',
+    url: EMPADRONAMIENTO_FORM_PREFIX,
+    match: {
+      type: 'regex',
+      value: /^https:\/\/seuelectronica\.ajuntament\.barcelona\.cat\/oficinavirtual\/(?:form\/diac-cites\/ca\/citizen\/sol|ca\/cita)/,
+    },
+    script: EMPADRONAMIENTO_RESULT_SCRIPT,
+    reinjectOnLoadEnd: true,
   },
 ];
 
@@ -241,7 +257,10 @@ export const buildEmpadronamientoInjectionRules = (
       match: entry.match,
       script: withEmpadronamientoCookieConsent(entry.script),
       ready: entry.ready,
+      reinjectOnLoadEnd: entry.reinjectOnLoadEnd,
     }))
     .sort(
       (left, right) => getRuleMatchLength(right) - getRuleMatchLength(left),
     );
+
+export {CONFIRM_EMPADRONAMIENTO_SUBMIT_SCRIPT};

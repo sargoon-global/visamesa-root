@@ -147,7 +147,15 @@ export const SELECT_DATE_SCRIPT = `
         .sort((a, b) => a.date - b.date);
 
       if (availableCells.length) {
-        availableCells[0].cell.click();
+        const selected = availableCells[0];
+        const selectedDate =
+          selected.cell.getAttribute('aria-label') || selected.date.toLocaleDateString();
+        sessionStorage.setItem('__visaMesaEmpadronamientoDate', selectedDate);
+        window.ReactNativeWebView?.postMessage(JSON.stringify({
+          type: 'empadronamiento-selection',
+          payload: {date: selectedDate},
+        }));
+        selected.cell.click();
         submitWhenReady();
         return true;
       }

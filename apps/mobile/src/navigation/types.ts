@@ -42,6 +42,10 @@ export type RootStackParamList = {
   MainTabs: NavigatorScreenParams<MainTabParamList>;
   WebsiteWebView: {
     bookingAssistant?: BookingAssistantId;
+    bookingCompletion?: {
+      stepId: number;
+      requirementKey: string;
+    };
     automation?: 'modelo-790-012';
     modelo790Review?: {
       stepId: number;
