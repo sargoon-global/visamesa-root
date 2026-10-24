@@ -427,6 +427,7 @@ Touched:
 - Added a native post-confirmation screen showing office/date/time/location and confirmation code, with an explicit official PDF save/open action; requirement completion now waits until the PDF is successfully handed off to the native viewer.
 - Fixed disabled PDF action: Barcelona’s confirmation page has no PDF `href`; the justificante tile triggers an Angular XHR to `generate-document-nointer/…/justificantTramit`. The native action now hooks the official fetch/XHR response, clicks that tile, and hands the returned PDF to React Native.
 - Added handling for XHR PDF responses delivered as binary `responseText` as well as ArrayBuffer/Blob; the previous attempt remained in saving state because no recognized response reached React Native.
+- Added a temporary `__DEV__`-only diagnostic mode that reveals the official confirmation page after booking, allowing direct tapping of Barcelona’s justificante control; remove this diagnostic after the download path is understood.
 - Added trusted-host checks, terminal error UI, and safe programmatic exit handling.
 
 ## Do Not Forget
