@@ -1,4 +1,4 @@
-import {isEmpadronamientoMessage} from './messages';
+import {isEmpadronamientoMessage, isEmpadronamientoPdf} from './messages';
 
 describe('empadronamiento WebView messages', () => {
   it.each([
@@ -11,6 +11,18 @@ describe('empadronamiento WebView messages', () => {
     expect(isEmpadronamientoMessage({type, payload: {time: '10:30'}})).toBe(
       true,
     );
+  });
+
+  it('accepts a valid PDF handoff', () => {
+    expect(
+      isEmpadronamientoPdf({
+        __visaMesaEmpadronamientoPdf: true,
+        payload: {
+          base64: 'JVBERi0xLjQ=',
+          fileName: 'empadronamiento-cita-16723164.pdf',
+        },
+      }),
+    ).toBe(true);
   });
 
   it('rejects unrelated messages', () => {

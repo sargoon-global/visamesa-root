@@ -10,6 +10,15 @@ const APPOINTMENT_DETAIL_HELPERS = `
     const value = label.nextElementSibling || label.parentElement?.querySelector('dd, td, .value');
     return cleanText(value?.textContent);
   };
+  const findPdfLink = () => Array.from(document.querySelectorAll('a[href]')).find(link =>
+    /pdf|justificant|justificante|download|descargue/i.test(
+      cleanText(link.textContent) + ' ' + link.getAttribute('href'),
+    ),
+  );
+  const readConfirmationCode = () => {
+    const match = bodyText.match(/(?:c[oó]digo|codi)\\s*(?:de la cita|de cita)?\\s*:?\\s*(\\d{5,})/i);
+    return match?.[1] || textAfterLabel(/codi|c[oó]digo|confirmation/i);
+  };
   const readAppointment = () => ({
     office:
       textAfterLabel(/oficina|office|centre|centro/i) ||
@@ -24,7 +33,8 @@ const APPOINTMENT_DETAIL_HELPERS = `
       sessionStorage.getItem('__visaMesaEmpadronamientoTime') ||
       '',
     location: textAfterLabel(/adreça|direcci[oó]n|address/i),
-    confirmationCode: textAfterLabel(/codi|c[oó]digo|confirmation/i),
+    confirmationCode: readConfirmationCode(),
+    pdfUrl: findPdfLink()?.href || '',
   });
   const postMessage = (type, payload) => {
     window.ReactNativeWebView?.postMessage(JSON.stringify({type, payload}));
@@ -87,6 +97,62 @@ export const CONFIRM_EMPADRONAMIENTO_SUBMIT_SCRIPT = `
       type: 'empadronamiento-submit-started',
     }));
     submitButton.click();
+  })();
+  true;
+`;
+
+export const DOWNLOAD_EMPADRONAMIENTO_PDF_SCRIPT = `
+  (async function() {
+    const link = Array.from(document.querySelectorAll('a[href]')).find(anchor =>
+      /pdf|justificant|justificante|download|descargue/i.test(
+        String(anchor.textContent || '') + ' ' + anchor.getAttribute('href'),
+      ),
+    );
+    if (!link?.href) {
+      window.ReactNativeWebView?.postMessage(JSON.stringify({
+        type: 'empadronamiento-error',
+        payload: {
+          title: 'Appointment PDF unavailable',
+          message: 'The official confirmation PDF could not be found. Please try again from the dashboard.',
+        },
+      }));
+      return;
+    }
+
+    try {
+      const response = await fetch(link.href, {credentials: 'include'});
+      if (!response.ok) {
+        throw new Error('HTTP ' + response.status);
+      }
+      const buffer = await response.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      let binary = '';
+      const chunkSize = 0x8000;
+      for (let index = 0; index < bytes.length; index += chunkSize) {
+        binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
+      }
+      const base64 = btoa(binary);
+      if (!base64.startsWith('JVBERi0')) {
+        throw new Error('The official response was not a PDF');
+      }
+      const code = (document.body?.innerText || '').match(/(?:c[oó]digo|codi)\\s*(?:de la cita|de cita)?\\s*:?\\s*(\\d{5,})/i)?.[1] || 'confirmation';
+      window.ReactNativeWebView?.postMessage(JSON.stringify({
+        __visaMesaEmpadronamientoPdf: true,
+        payload: {
+          base64,
+          fileName: 'empadronamiento-cita-' + code + '.pdf',
+        },
+      }));
+    } catch (error) {
+      window.ReactNativeWebView?.postMessage(JSON.stringify({
+        type: 'empadronamiento-error',
+        payload: {
+          title: 'Appointment PDF could not be downloaded',
+          message: 'The official confirmation PDF could not be downloaded. Please try again later.',
+          detail: String(error?.message || error),
+        },
+      }));
+    }
   })();
   true;
 `;

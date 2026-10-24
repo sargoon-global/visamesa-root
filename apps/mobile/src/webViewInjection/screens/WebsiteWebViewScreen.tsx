@@ -129,7 +129,10 @@ const WebsiteWebViewScreen = () => {
     empadronamientoAppointment,
     empadronamientoReviewReady,
     empadronamientoSubmitting,
+    empadronamientoCompleted,
+    empadronamientoPdfSaving,
     confirmEmpadronamientoAppointment,
+    saveEmpadronamientoAppointmentPdf,
     bookingAssistantExitAllowedRef,
     goBackToDashboard,
     onLoadEnd,
@@ -208,6 +211,9 @@ const WebsiteWebViewScreen = () => {
       empadronamientoAppointment.date &&
       empadronamientoAppointment.time,
   );
+  const canSaveEmpadronamientoPdf = Boolean(
+    empadronamientoAppointment.pdfUrl,
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -239,7 +245,52 @@ const WebsiteWebViewScreen = () => {
           shouldHideWebView ? styles.hiddenWebView : null,
         ]}
       />
-      {isEmpadronamiento && !empadronamientoReviewReady && !webViewError ? (
+      {isEmpadronamiento && empadronamientoCompleted && !webViewError ? (
+        <View style={styles.statusOverlay} pointerEvents="auto">
+          <View style={styles.appointmentCard}>
+            <Text style={styles.statusTitle}>
+              {t('empadronamiento.confirmed.title')}
+            </Text>
+            <Text style={styles.statusMessage}>
+              {t('empadronamiento.confirmed.message')}
+            </Text>
+            <View style={styles.appointmentDetails}>
+              {(['office', 'date', 'time', 'location', 'confirmationCode'] as const).map(field =>
+                empadronamientoAppointment[field] ? (
+                  <View key={field}>
+                    <Text style={styles.appointmentLabel}>
+                      {t(`empadronamiento.review.${field}`)}
+                    </Text>
+                    <Text style={styles.appointmentValue}>
+                      {empadronamientoAppointment[field]}
+                    </Text>
+                  </View>
+                ) : null,
+              )}
+            </View>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{
+                disabled: empadronamientoPdfSaving || !canSaveEmpadronamientoPdf,
+              }}
+              disabled={empadronamientoPdfSaving || !canSaveEmpadronamientoPdf}
+              onPress={saveEmpadronamientoAppointmentPdf}
+              style={[
+                styles.confirmButton,
+                empadronamientoPdfSaving || !canSaveEmpadronamientoPdf
+                  ? styles.confirmButtonDisabled
+                  : null,
+              ]}>
+              <Text style={styles.backLabel}>
+                {empadronamientoPdfSaving
+                  ? t('empadronamiento.confirmed.savingPdf')
+                  : t('empadronamiento.confirmed.savePdf')}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
+      {isEmpadronamiento && !empadronamientoCompleted && !empadronamientoReviewReady && !webViewError ? (
         <View style={styles.statusOverlay} pointerEvents="auto">
           <View style={styles.statusCard}>
             <ActivityIndicator size="large" color={theme.colors.primary} />
@@ -252,7 +303,7 @@ const WebsiteWebViewScreen = () => {
           </View>
         </View>
       ) : null}
-      {isEmpadronamiento && empadronamientoReviewReady && !webViewError ? (
+      {isEmpadronamiento && !empadronamientoCompleted && empadronamientoReviewReady && !webViewError ? (
         <View style={styles.statusOverlay} pointerEvents="auto">
           <View style={styles.appointmentCard}>
             <Text style={styles.statusTitle}>
