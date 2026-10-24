@@ -102,57 +102,97 @@ export const CONFIRM_EMPADRONAMIENTO_SUBMIT_SCRIPT = `
 `;
 
 export const DOWNLOAD_EMPADRONAMIENTO_PDF_SCRIPT = `
-  (async function() {
-    const link = Array.from(document.querySelectorAll('a[href]')).find(anchor =>
-      /pdf|justificant|justificante|download|descargue/i.test(
-        String(anchor.textContent || '') + ' ' + anchor.getAttribute('href'),
-      ),
-    );
-    if (!link?.href) {
-      window.ReactNativeWebView?.postMessage(JSON.stringify({
-        type: 'empadronamiento-error',
-        payload: {
-          title: 'Appointment PDF unavailable',
-          message: 'The official confirmation PDF could not be found. Please try again from the dashboard.',
-        },
-      }));
+  (function() {
+    if (window.__visaMesaEmpadronamientoPdfDownloadStarted) {
       return;
     }
+    window.__visaMesaEmpadronamientoPdfDownloadStarted = true;
 
-    try {
-      const response = await fetch(link.href, {credentials: 'include'});
-      if (!response.ok) {
-        throw new Error('HTTP ' + response.status);
-      }
-      const buffer = await response.arrayBuffer();
-      const bytes = new Uint8Array(buffer);
-      let binary = '';
-      const chunkSize = 0x8000;
-      for (let index = 0; index < bytes.length; index += chunkSize) {
-        binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
-      }
-      const base64 = btoa(binary);
-      if (!base64.startsWith('JVBERi0')) {
-        throw new Error('The official response was not a PDF');
-      }
-      const code = (document.body?.innerText || '').match(/(?:c[oó]digo|codi)\\s*(?:de la cita|de cita)?\\s*:?\\s*(\\d{5,})/i)?.[1] || 'confirmation';
-      window.ReactNativeWebView?.postMessage(JSON.stringify({
-        __visaMesaEmpadronamientoPdf: true,
-        payload: {
-          base64,
-          fileName: 'empadronamiento-cita-' + code + '.pdf',
-        },
-      }));
-    } catch (error) {
+    const cleanText = value => String(value || '').replace(/\\s+/g, ' ').trim();
+    const code = document.body?.innerText.match(
+      /(?:c[oó]digo|codi)\\s*(?:de la cita|de cita)?\\s*:?\\s*(\\d{5,})/i,
+    )?.[1] || 'confirmation';
+    let sent = false;
+
+    const postError = detail => {
+      if (sent) return;
       window.ReactNativeWebView?.postMessage(JSON.stringify({
         type: 'empadronamiento-error',
         payload: {
           title: 'Appointment PDF could not be downloaded',
           message: 'The official confirmation PDF could not be downloaded. Please try again later.',
-          detail: String(error?.message || error),
+          detail,
         },
       }));
+    };
+    const postPdf = async buffer => {
+      if (sent || !buffer) return;
+      const bytes = new Uint8Array(buffer);
+      if (bytes.length < 5 || String.fromCharCode(...bytes.slice(0, 5)) !== '%PDF-') {
+        return;
+      }
+      sent = true;
+      let binary = '';
+      const chunkSize = 0x8000;
+      for (let index = 0; index < bytes.length; index += chunkSize) {
+        binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
+      }
+      window.ReactNativeWebView?.postMessage(JSON.stringify({
+        __visaMesaEmpadronamientoPdf: true,
+        payload: {
+          base64: btoa(binary),
+          fileName: 'empadronamiento-cita-' + code + '.pdf',
+        },
+      }));
+    };
+    const matchesPdfRequest = url => /generate-document|justificant|pdf/i.test(String(url || ''));
+
+    const originalFetch = window.fetch;
+    window.fetch = function(...args) {
+      return originalFetch.apply(this, args).then(response => {
+        const url = typeof args[0] === 'string' ? args[0] : args[0]?.url;
+        if (matchesPdfRequest(url)) {
+          response.clone().arrayBuffer().then(postPdf).catch(error => postError(String(error)));
+        }
+        return response;
+      });
+    };
+
+    const originalOpen = XMLHttpRequest.prototype.open;
+    const originalSend = XMLHttpRequest.prototype.send;
+    XMLHttpRequest.prototype.open = function(method, url, ...rest) {
+      this.__visaMesaPdfUrl = url;
+      return originalOpen.call(this, method, url, ...rest);
+    };
+    XMLHttpRequest.prototype.send = function(...args) {
+      if (matchesPdfRequest(this.__visaMesaPdfUrl)) {
+        this.addEventListener('load', () => {
+          const response = this.response;
+          if (response instanceof ArrayBuffer) {
+            postPdf(response);
+          } else if (response instanceof Blob) {
+            response.arrayBuffer().then(postPdf).catch(error => postError(String(error)));
+          }
+        });
+        this.addEventListener('error', () => postError('The official PDF request failed.'));
+      }
+      return originalSend.apply(this, args);
+    };
+
+    const link = document.querySelector('a[href*=".pdf" i]');
+    if (link?.href) {
+      fetch(link.href, {credentials: 'include'}).then(response => response.arrayBuffer()).then(postPdf).catch(error => postError(String(error)));
+      return;
     }
+
+    const downloadControl = Array.from(document.querySelectorAll('.dates-content, [role="button"], button')).find(element =>
+      /justificant|justificante|download|descargue/i.test(cleanText(element.textContent)),
+    );
+    if (!downloadControl) {
+      postError('The official download control was not found.');
+      return;
+    }
+    downloadControl.click();
   })();
   true;
 `;

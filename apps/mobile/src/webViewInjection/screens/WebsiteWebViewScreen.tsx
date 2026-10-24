@@ -211,9 +211,7 @@ const WebsiteWebViewScreen = () => {
       empadronamientoAppointment.date &&
       empadronamientoAppointment.time,
   );
-  const canSaveEmpadronamientoPdf = Boolean(
-    empadronamientoAppointment.pdfUrl,
-  );
+  const canSaveEmpadronamientoPdf = empadronamientoCompleted;
 
   return (
     <SafeAreaView style={styles.container}>
