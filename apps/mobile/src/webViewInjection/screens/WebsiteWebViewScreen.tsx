@@ -23,9 +23,6 @@ const stylesheet = createStyleSheet(theme => ({
   hiddenWebView: {
     opacity: 0,
   },
-  empadronamientoDebugWebView: {
-    opacity: 0.45,
-  },
   loading: {
     flex: 1,
     alignItems: 'center',
@@ -56,9 +53,6 @@ const stylesheet = createStyleSheet(theme => ({
     color: theme.colors.onSurfaceVariant,
     textAlign: 'center',
     lineHeight: 24,
-  },
-  empadronamientoDebugOverlay: {
-    backgroundColor: 'rgba(255, 255, 255, 0.78)',
   },
   errorOverlay: {
     position: 'absolute',
@@ -243,13 +237,10 @@ const WebsiteWebViewScreen = () => {
         style={[
           styles.webView,
           shouldHideWebView ? styles.hiddenWebView : null,
-          isEmpadronamiento ? styles.empadronamientoDebugWebView : null,
         ]}
       />
       {isEmpadronamiento && !empadronamientoReviewReady && !webViewError ? (
-        <View
-          style={[styles.statusOverlay, styles.empadronamientoDebugOverlay]}
-          pointerEvents="auto">
+        <View style={styles.statusOverlay} pointerEvents="auto">
           <View style={styles.statusCard}>
             <ActivityIndicator size="large" color={theme.colors.primary} />
             <Text style={styles.statusTitle}>
@@ -262,9 +253,7 @@ const WebsiteWebViewScreen = () => {
         </View>
       ) : null}
       {isEmpadronamiento && empadronamientoReviewReady && !webViewError ? (
-        <View
-          style={[styles.statusOverlay, styles.empadronamientoDebugOverlay]}
-          pointerEvents="auto">
+        <View style={styles.statusOverlay} pointerEvents="auto">
           <View style={styles.appointmentCard}>
             <Text style={styles.statusTitle}>
               {t('empadronamiento.review.title')}
@@ -326,11 +315,7 @@ const WebsiteWebViewScreen = () => {
         </View>
       ) : null}
       {(isModelo790 || isEmpadronamiento) && webViewError ? (
-        <View
-          style={[
-            styles.errorOverlay,
-            isEmpadronamiento ? styles.empadronamientoDebugOverlay : null,
-          ]}>
+        <View style={styles.errorOverlay}>
           <View style={styles.errorCard}>
             <Text style={styles.errorTitle}>{webViewError.title}</Text>
             <Text style={styles.errorMessage}>{webViewError.message}</Text>

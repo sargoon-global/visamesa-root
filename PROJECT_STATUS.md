@@ -422,7 +422,8 @@ Touched:
 - Added a native hidden-WebView status flow and appointment review card.
 - Added explicit native confirmation that injects the official submit click only after user approval.
 - Added official success detection and progress completion with appointment details.
-- Device logs and Chrome WebView inspection showed the real office route uses radio inputs named `oficinas` with IDs such as `OAC-CV`, not the stale `#OAC-DR` selector; the continue control is an `input[type="submit"]`/`Següent` button. Updated selectors and temporary translucent empadronamiento debug styling so the underlying official page can be inspected.
+- Device logs and Chrome WebView inspection showed the real office route uses radio inputs named `oficinas` with IDs such as `OAC-CV`, not the stale `#OAC-DR` selector; the continue control is an `input[type="submit"]`/`Següent` button. Updated selectors and verified the office step on-device.
+- Removed the temporary translucent debugging styles after successful device verification; empadronamiento WebView is hidden again during automation.
 - Added trusted-host checks, terminal error UI, and safe programmatic exit handling.
 
 ## Do Not Forget
