@@ -11,8 +11,9 @@ const APPOINTMENT_DETAIL_HELPERS = `
     return cleanText(value?.textContent);
   };
   const readConfirmationCode = () => {
-    const match = bodyText.match(/(?:c[oó]digo|codi)\\s*(?:de la cita|de cita)?\\s*:?\\s*(\\d{5,})/i);
-    return match?.[1] || textAfterLabel(/codi|c[oó]digo|confirmation/i);
+    const bodyText = cleanText(document.body?.innerText);
+    const match = bodyText.match(/(?:c[oó]digo|codi)\\s*(?:de la cita|de cita)?\\s*:?\\s*([A-Z0-9-]{5,})/i);
+    return match?.[1] || textAfterLabel(/codi|c[oó]digo|confirmation|reference/i);
   };
   const readAppointment = () => ({
     office:
@@ -40,15 +41,17 @@ const APPOINTMENT_DETAIL_HELPERS = `
         cleanText(button.textContent),
       ),
     );
-  const bodyText = cleanText(document.body?.innerText);
-  const successPattern = /cita.{0,40}(confirmada|reservada|concertada)|reserva.{0,40}(confirmada|realitzada)|appointment.{0,40}(confirmed|booked)/i;
+  const isSuccessPage = () => {
+    const bodyText = cleanText(document.body?.innerText);
+    return /cita.{0,40}(confirmada|reservada|concertada)|reserva.{0,40}(confirmada|realitzada)|appointment.{0,40}(confirmed|booked)/i.test(bodyText);
+  };
 `;
 
 export const SUBMIT_FINAL_SCRIPT = `
   (function() {
     ${APPOINTMENT_DETAIL_HELPERS}
 
-    if (successPattern.test(bodyText)) {
+    if (isSuccessPage()) {
       postMessage('empadronamiento-booking-complete', readAppointment());
       return;
     }
@@ -80,8 +83,7 @@ export const CONFIRM_EMPADRONAMIENTO_SUBMIT_SCRIPT = `
       window.ReactNativeWebView?.postMessage(JSON.stringify({
         type: 'empadronamiento-error',
         payload: {
-          title: 'Appointment could not be confirmed',
-          message: 'The official confirmation button is unavailable. Please go back to the dashboard and try again.',
+          code: 'confirmation_unavailable',
         },
       }));
       return;
@@ -99,15 +101,37 @@ export const EMPADRONAMIENTO_RESULT_SCRIPT = `
   (function() {
     ${APPOINTMENT_DETAIL_HELPERS}
 
-    if (successPattern.test(bodyText)) {
-      postMessage('empadronamiento-booking-complete', readAppointment());
-      return;
-    }
+    window.__visaMesaEmpadronamientoResultObserver?.disconnect();
+    let observer;
+    const processResultPage = () => {
+      if (isSuccessPage()) {
+        observer?.disconnect();
+        postMessage('empadronamiento-booking-complete', readAppointment());
+        return true;
+      }
 
-    const submitButton = findConfirmationButton();
-    if (submitButton && !window.__visaMesaEmpadronamientoReviewPosted) {
-      window.__visaMesaEmpadronamientoReviewPosted = true;
-      postMessage('empadronamiento-review-ready', readAppointment());
+      const submitButton = findConfirmationButton();
+      if (submitButton && !window.__visaMesaEmpadronamientoReviewPosted) {
+        window.__visaMesaEmpadronamientoReviewPosted = true;
+        observer?.disconnect();
+        postMessage('empadronamiento-review-ready', readAppointment());
+        return true;
+      }
+
+      return false;
+    };
+
+    if (!processResultPage()) {
+      const target = document.documentElement || document.body;
+      if (target && typeof MutationObserver !== 'undefined') {
+        observer = new MutationObserver(processResultPage);
+        window.__visaMesaEmpadronamientoResultObserver = observer;
+        observer.observe(target, {
+          childList: true,
+          subtree: true,
+          characterData: true,
+        });
+      }
     }
   })();
   true;

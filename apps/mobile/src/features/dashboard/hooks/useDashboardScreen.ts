@@ -4,7 +4,7 @@ import {
   TieStepDetail,
 } from '@/features/home/types/TieStepDetail';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {Clipboard} from 'react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
 import {TFunction} from 'i18next';
 import {useTranslation} from 'react-i18next';
 import {CompositeNavigationProp} from '@react-navigation/native';

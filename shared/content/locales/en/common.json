@@ -146,7 +146,15 @@
       "siteLoadFailedTitle": "Official website could not be loaded",
       "siteLoadFailedMessage": "Please go back to the dashboard and try again later.",
       "siteHttpErrorTitle": "Official website error",
-      "siteHttpErrorMessage": "Please go back to the dashboard and try again later."
+      "siteHttpErrorMessage": "Please go back to the dashboard and try again later.",
+      "officeContinueUnavailableTitle": "Office selection could not continue",
+      "officeContinueUnavailableMessage": "The official continue button was not available after selecting the office.",
+      "officeSelectorUnavailableTitle": "Office selection is unavailable",
+      "officeSelectorUnavailableMessage": "The official office selector did not load. Please go back to the dashboard and try again.",
+      "confirmationUnavailableTitle": "Appointment could not be confirmed",
+      "confirmationUnavailableMessage": "The official confirmation button is unavailable. Please go back to the dashboard and try again.",
+      "detailsUnavailableTitle": "Appointment details could not be read",
+      "detailsUnavailableMessage": "The official service did not provide complete appointment details. Please check the confirmation email and SMS, then try again if needed."
     }
   },
   "bookingAssistant": {

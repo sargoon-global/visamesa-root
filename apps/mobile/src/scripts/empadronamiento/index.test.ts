@@ -307,5 +307,8 @@ describe('empadronamiento script map', () => {
     expect(CONFIRM_EMPADRONAMIENTO_SUBMIT_SCRIPT).toContain(
       'submitButton.click()',
     );
+    expect(finalRule?.script).toContain('MutationObserver');
+    expect(finalRule?.script).toContain('booking-complete');
+    expect(finalRule?.script).not.toContain('Barcelona appointment office');
   });
 });

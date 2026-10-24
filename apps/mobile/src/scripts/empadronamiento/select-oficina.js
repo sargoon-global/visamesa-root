@@ -13,8 +13,7 @@ export const SELECT_OFICINA_SCRIPT = `
 
       if (!submitControl || submitControl.disabled || submitControl.getAttribute('aria-disabled') === 'true') {
         postMessage('empadronamiento-error', {
-          title: 'Office selection could not continue',
-          message: 'The official continue button was not available after selecting the office.',
+          code: 'office_continue_unavailable',
         });
         return false;
       }
@@ -53,8 +52,7 @@ export const SELECT_OFICINA_SCRIPT = `
 
     if (!selectOffice()) {
       postMessage('empadronamiento-error', {
-        title: 'Office selection is unavailable',
-        message: 'The official office selector did not load. Please go back to the dashboard and try again.',
+        code: 'office_selector_unavailable',
       });
     }
   })();

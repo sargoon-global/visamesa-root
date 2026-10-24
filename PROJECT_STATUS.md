@@ -430,6 +430,7 @@ Touched:
 - Temporarily exposed the official confirmation page for direct device inspection; removed that diagnostic after confirming the device’s official download control itself becomes disabled after tapping. Native empadronamiento masking is restored.
 - Removed the appointment PDF/save flow. Successful booking now stores office, date, time, reference code, and optional location immediately; the dashboard eye action is the supported way to view those details.
 - Enhanced the dashboard appointment dialog with copy icons for the office and reference code, plus email/SMS confirmation guidance.
+- Hardened empadronamiento completion: required appointment fields are validated before progress is saved, confirmation pages use mutation-based readiness, WebView payloads are runtime-validated, errors are localized, and the overlay uses theme tokens.
 - Added trusted-host checks, terminal error UI, and safe programmatic exit handling.
 
 ## Do Not Forget

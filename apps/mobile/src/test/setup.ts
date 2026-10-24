@@ -17,6 +17,11 @@ jest.mock('react-native-unistyles', () => {
 
 jest.mock('@react-native-vector-icons/material-icons', () => 'MaterialIcons');
 
+jest.mock('@react-native-clipboard/clipboard', () => ({
+  __esModule: true,
+  default: {setString: jest.fn(), getString: jest.fn()},
+}));
+
 jest.mock('react-native-quick-base64', () => ({
   toByteArray: (value: string) => Uint8Array.from(Buffer.from(value, 'base64')),
   fromByteArray: (value: Uint8Array) => Buffer.from(value).toString('base64'),

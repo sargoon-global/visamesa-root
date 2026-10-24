@@ -146,7 +146,15 @@
       "siteLoadFailedTitle": "无法加载官方网站",
       "siteLoadFailedMessage": "请返回控制面板，稍后重试。",
       "siteHttpErrorTitle": "官方网站错误",
-      "siteHttpErrorMessage": "请返回控制面板，稍后重试。"
+      "siteHttpErrorMessage": "请返回控制面板，稍后重试。",
+      "officeContinueUnavailableTitle": "无法继续选择办事处",
+      "officeContinueUnavailableMessage": "选择办事处后，官方继续按钮不可用。",
+      "officeSelectorUnavailableTitle": "无法选择办事处",
+      "officeSelectorUnavailableMessage": "官方办事处选择器未加载。请返回控制面板后重试。",
+      "confirmationUnavailableTitle": "无法确认预约",
+      "confirmationUnavailableMessage": "官方确认按钮不可用。请返回控制面板后重试。",
+      "detailsUnavailableTitle": "无法读取预约信息",
+      "detailsUnavailableMessage": "官方服务未提供完整的预约信息。请查看确认邮件和短信，必要时重试。"
     }
   },
   "bookingAssistant": {

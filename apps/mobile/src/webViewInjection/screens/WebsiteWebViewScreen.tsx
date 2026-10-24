@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {ActivityIndicator, Alert, Pressable, Text, View} from 'react-native';
+import {ActivityIndicator, Alert, Pressable, View} from 'react-native';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -8,9 +8,21 @@ import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 import {RootStackParamList} from '@/navigation/types';
 import {getWebViewUserAgent} from '@/webViewInjection/webViewDefaults';
+import {Text} from '@/components/ui/Text';
 import {useWebsiteWebViewScreen} from '@/webViewInjection/useWebsiteWebViewScreen';
 
 type WebsiteWebViewRouteProp = RouteProp<RootStackParamList, 'WebsiteWebView'>;
+
+function withAlpha(hexColor: string, alpha: number): string {
+  const normalized = hexColor.replace('#', '');
+  const value = normalized.length === 3
+    ? normalized.split('').map(character => character + character).join('')
+    : normalized;
+  const red = Number.parseInt(value.slice(0, 2), 16);
+  const green = Number.parseInt(value.slice(2, 4), 16);
+  const blue = Number.parseInt(value.slice(4, 6), 16);
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+}
 
 const stylesheet = createStyleSheet(theme => ({
   container: {
@@ -32,7 +44,7 @@ const stylesheet = createStyleSheet(theme => ({
   statusOverlay: {
     position: 'absolute',
     inset: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.78)',
+    backgroundColor: withAlpha(theme.colors.scrim, 0.78),
     alignItems: 'center',
     justifyContent: 'center',
     padding: theme.spacing.lg,
@@ -43,16 +55,10 @@ const stylesheet = createStyleSheet(theme => ({
     maxWidth: 360,
   },
   statusTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: theme.colors.onSurface,
     textAlign: 'center',
   },
   statusMessage: {
-    fontSize: 16,
-    color: theme.colors.onSurfaceVariant,
     textAlign: 'center',
-    lineHeight: 24,
   },
   errorOverlay: {
     position: 'absolute',
@@ -64,15 +70,8 @@ const stylesheet = createStyleSheet(theme => ({
   errorCard: {
     gap: theme.spacing.md,
   },
-  errorTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: theme.colors.onSurface,
-  },
-  errorMessage: {
-    fontSize: 16,
-    color: theme.colors.onSurfaceVariant,
-  },
+  errorTitle: {},
+  errorMessage: {},
   backButton: {
     backgroundColor: theme.colors.primary,
     padding: theme.spacing.md,
@@ -94,15 +93,8 @@ const stylesheet = createStyleSheet(theme => ({
     borderRadius: theme.radii.md,
     backgroundColor: theme.colors.surfaceContainer,
   },
-  appointmentLabel: {
-    fontSize: 13,
-    color: theme.colors.onSurfaceVariant,
-  },
-  appointmentValue: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: theme.colors.onSurface,
-  },
+  appointmentLabel: {},
+  appointmentValue: {},
   confirmButton: {
     backgroundColor: theme.colors.primary,
     padding: theme.spacing.md,
@@ -243,10 +235,10 @@ const WebsiteWebViewScreen = () => {
         <View style={styles.statusOverlay} pointerEvents="auto">
           <View style={styles.statusCard}>
             <ActivityIndicator size="large" color={theme.colors.primary} />
-            <Text style={styles.statusTitle}>
+            <Text variant="headlineSmall" color="onSurface" style={styles.statusTitle}>
               {t('empadronamiento.status.title')}
             </Text>
-            <Text style={styles.statusMessage}>
+            <Text variant="bodyLarge" color="onSurfaceVariant" style={styles.statusMessage}>
               {t(`empadronamiento.status.${empadronamientoStatusKey}`)}
             </Text>
           </View>
@@ -255,20 +247,20 @@ const WebsiteWebViewScreen = () => {
       {isEmpadronamiento && empadronamientoReviewReady && !webViewError ? (
         <View style={styles.statusOverlay} pointerEvents="auto">
           <View style={styles.appointmentCard}>
-            <Text style={styles.statusTitle}>
+            <Text variant="headlineSmall" color="onSurface" style={styles.statusTitle}>
               {t('empadronamiento.review.title')}
             </Text>
-            <Text style={styles.statusMessage}>
+            <Text variant="bodyLarge" color="onSurfaceVariant" style={styles.statusMessage}>
               {t('empadronamiento.review.message')}
             </Text>
             <View style={styles.appointmentDetails}>
               {(['office', 'date', 'time', 'location'] as const).map(field =>
                 empadronamientoAppointment[field] ? (
                   <View key={field}>
-                    <Text style={styles.appointmentLabel}>
+                    <Text variant="labelMedium" color="onSurfaceVariant" style={styles.appointmentLabel}>
                       {t(`empadronamiento.review.${field}`)}
                     </Text>
-                    <Text style={styles.appointmentValue}>
+                    <Text variant="bodyLarge" color="onSurface" style={styles.appointmentValue}>
                       {empadronamientoAppointment[field]}
                     </Text>
                   </View>
@@ -297,8 +289,10 @@ const WebsiteWebViewScreen = () => {
         <View style={styles.statusOverlay} pointerEvents="auto">
           <View style={styles.statusCard}>
             <ActivityIndicator size="large" color={theme.colors.primary} />
-            <Text style={styles.statusTitle}>{t('modelo790.status.title')}</Text>
-            <Text style={styles.statusMessage}>
+            <Text variant="headlineSmall" color="onSurface" style={styles.statusTitle}>
+              {t('modelo790.status.title')}
+            </Text>
+            <Text variant="bodyLarge" color="onSurfaceVariant" style={styles.statusMessage}>
               {t('modelo790.status.message')}
             </Text>
           </View>
@@ -308,7 +302,7 @@ const WebsiteWebViewScreen = () => {
         <View style={styles.statusOverlay} pointerEvents="auto">
           <View style={styles.statusCard}>
             <ActivityIndicator size="large" color={theme.colors.primary} />
-            <Text style={styles.statusTitle}>
+            <Text variant="headlineSmall" color="onSurface" style={styles.statusTitle}>
               {t('modelo790.captcha.openingPdf')}
             </Text>
           </View>
@@ -317,10 +311,16 @@ const WebsiteWebViewScreen = () => {
       {(isModelo790 || isEmpadronamiento) && webViewError ? (
         <View style={styles.errorOverlay}>
           <View style={styles.errorCard}>
-            <Text style={styles.errorTitle}>{webViewError.title}</Text>
-            <Text style={styles.errorMessage}>{webViewError.message}</Text>
+            <Text variant="headlineSmall" color="onSurface" style={styles.errorTitle}>
+              {webViewError.title}
+            </Text>
+            <Text variant="bodyLarge" color="onSurfaceVariant" style={styles.errorMessage}>
+              {webViewError.message}
+            </Text>
             {webViewError.detail ? (
-              <Text style={styles.errorMessage}>{webViewError.detail}</Text>
+              <Text variant="bodyMedium" color="onSurfaceVariant" style={styles.errorMessage}>
+                {webViewError.detail}
+              </Text>
             ) : null}
             <Pressable
               accessibilityRole="button"

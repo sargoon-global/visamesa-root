@@ -42,6 +42,7 @@ import {
 import {
   isEmpadronamientoMessage,
   type EmpadronamientoAppointmentDraft,
+  type EmpadronamientoErrorCode,
 } from '@/scripts/empadronamiento/messages';
 import {
   buildModelo790InjectionRules,
@@ -96,6 +97,19 @@ function isTrustedEmpadronamientoMessageUrl(
     url,
     'seuelectronica.ajuntament.barcelona.cat',
   );
+}
+
+function isCompleteEmpadronamientoAppointment(
+  appointment: EmpadronamientoAppointmentDraft,
+): appointment is BookingAssistantAppointmentSummary & {
+  confirmationCode: string;
+} {
+  return [
+    appointment.office,
+    appointment.date,
+    appointment.time,
+    appointment.confirmationCode,
+  ].every(value => typeof value === 'string' && value.trim().length > 0);
 }
 
 export type UseWebsiteWebViewScreenResult = {
@@ -376,7 +390,24 @@ export function useWebsiteWebViewScreen(
           if (message.type === 'empadronamiento-error') {
             setEmpadronamientoReviewReady(false);
             setEmpadronamientoSubmitting(false);
-            setWebViewError(message.payload);
+            const errorKeyByCode: Record<
+              EmpadronamientoErrorCode,
+              {title: string; message: string}
+            > = {
+              office_continue_unavailable: {
+                title: t('empadronamiento.errors.officeContinueUnavailableTitle'),
+                message: t('empadronamiento.errors.officeContinueUnavailableMessage'),
+              },
+              office_selector_unavailable: {
+                title: t('empadronamiento.errors.officeSelectorUnavailableTitle'),
+                message: t('empadronamiento.errors.officeSelectorUnavailableMessage'),
+              },
+              confirmation_unavailable: {
+                title: t('empadronamiento.errors.confirmationUnavailableTitle'),
+                message: t('empadronamiento.errors.confirmationUnavailableMessage'),
+              },
+            };
+            setWebViewError(errorKeyByCode[message.payload.code]);
             return;
           }
 
@@ -412,12 +443,21 @@ export function useWebsiteWebViewScreen(
             };
             (async () => {
               try {
+                if (!isCompleteEmpadronamientoAppointment(appointmentDraft)) {
+                  setEmpadronamientoSubmitting(false);
+                  setWebViewError({
+                    title: t('empadronamiento.errors.detailsUnavailableTitle'),
+                    message: t('empadronamiento.errors.detailsUnavailableMessage'),
+                  });
+                  return;
+                }
+
                 const appointment: BookingAssistantAppointmentSummary = {
-                  office: appointmentDraft.office || 'Barcelona appointment office',
-                  date: appointmentDraft.date || '',
-                  time: appointmentDraft.time || '',
-                  location: appointmentDraft.location || undefined,
-                  confirmationCode: appointmentDraft.confirmationCode || undefined,
+                  office: appointmentDraft.office.trim(),
+                  date: appointmentDraft.date.trim(),
+                  time: appointmentDraft.time.trim(),
+                  location: appointmentDraft.location?.trim() || undefined,
+                  confirmationCode: appointmentDraft.confirmationCode.trim(),
                 };
                 const completion = route.params?.bookingCompletion;
                 if (completion) {
