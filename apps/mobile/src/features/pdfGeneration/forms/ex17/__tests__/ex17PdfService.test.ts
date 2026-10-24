@@ -22,7 +22,9 @@ describe('ex17PdfService', () => {
     if (!parsed.ok) {
       throw new Error('Fixture personal info is incomplete');
     }
-    const bytes = await generateEx17PdfBytes(mapProfileToEx17Data(parsed.data));
+    const bytes = await generateEx17PdfBytes(mapProfileToEx17Data(parsed.data), {
+      flatten: false,
+    });
     const pdfDoc = await PDFDocument.load(bytes);
     const form = pdfDoc.getForm();
 
@@ -32,6 +34,14 @@ describe('ex17PdfService', () => {
       'P12345678',
     );
     expect(form.getTextField('applicant.nie.prefix').getText()).toBe('X');
+  });
+  it('flattens the generated PDF for system viewers by default', async () => {
+    const bytes = await generateEx17PdfBytes({
+      applicant: {firstName: 'JUAN'},
+    });
+    const pdfDoc = await PDFDocument.load(bytes);
+
+    expect(pdfDoc.getForm().getFields()).toHaveLength(0);
   });
 });
 
