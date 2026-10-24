@@ -2,6 +2,7 @@ import type {WebViewInjectionRule} from '../../webViewInjection/scriptRegistry';
 
 import type {EmpadronamientoBookingAssistantProfile} from './config';
 import {empadronamientoPiiConfig} from './config';
+import {withEmpadronamientoCookieConsent} from './cookie-consent';
 import {EMPADRONAMIENTO_HOME_URL, INITIA_SCRIPT} from './initia';
 import {buildMotiveScript} from './motive';
 import {
@@ -215,7 +216,7 @@ export const buildEmpadronamientoScriptMap = (
 ): EmpadronamientoScriptMap =>
   buildEmpadronamientoScriptEntries(profile).reduce<EmpadronamientoScriptMap>(
     (scriptMap, entry) => {
-      scriptMap[entry.url] = entry.script;
+      scriptMap[entry.url] = withEmpadronamientoCookieConsent(entry.script);
       return scriptMap;
     },
     {},
@@ -238,7 +239,7 @@ export const buildEmpadronamientoInjectionRules = (
     .map(entry => ({
       id: entry.id,
       match: entry.match,
-      script: entry.script,
+      script: withEmpadronamientoCookieConsent(entry.script),
       ready: entry.ready,
     }))
     .sort(

@@ -18,10 +18,19 @@ describe('bookingAssistantProfile mappers', () => {
         surname: 'User',
         secondSurname: '',
         email: 'test@example.com',
-        phone: '+34 600123456',
+        phone: '600123456',
       },
       motive: 'Booking appointment to request empadronamiento.',
     });
+  });
+
+  it('removes the Spanish country code from the empadronamiento phone', () => {
+    const mapped = mapPersonalToEmpadronamientoBookingAssistantProfile({
+      ...completePersonalInfo,
+      phoneNumber: {countryCode: '34', number: '34600123456'},
+    });
+
+    expect(mapped.personalInfo.phone).toBe('600123456');
   });
 
   it('uses fallback email for empadronamiento when profile email is missing', () => {
