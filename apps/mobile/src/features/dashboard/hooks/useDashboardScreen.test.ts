@@ -543,6 +543,10 @@ describe('useDashboardScreen', () => {
 
     expect(navigation.navigate).toHaveBeenCalledWith('WebsiteWebView', {
       bookingAssistant: 'empadronamiento',
+      bookingCompletion: {
+        stepId: 1,
+        requirementKey: 'appointment-confirmation',
+      },
     });
   });
 

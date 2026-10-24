@@ -338,6 +338,28 @@ Touched:
 - `apps/mobile/src/scripts/empadronamiento/index.test.ts`
 - `apps/mobile/src/scripts/empadronamiento/initia.js`
 
+### 12. Empadronamiento native status and final confirmation
+
+Status: In progress on branch `feat/empadronamiento-native-status-confirmation`
+
+Goal:
+
+- Keep the official WebView hidden behind native progress/status UI.
+- Capture the selected office, date, and time during automation.
+- Show a native appointment review screen before official submission.
+- Submit only after explicit user confirmation.
+- Mark the dashboard requirement complete only after the official site confirms the booking.
+
+Touched:
+
+- `apps/mobile/src/scripts/empadronamiento/{select-oficina.js,select-date.js,select-time.js,submit-final.js,index.ts,index.test.ts,messages.ts,messages.test.ts}`
+- `apps/mobile/src/webViewInjection/useWebsiteWebViewScreen.ts`
+- `apps/mobile/src/webViewInjection/screens/WebsiteWebViewScreen.tsx`
+- `apps/mobile/src/navigation/types.ts`
+- `apps/mobile/src/features/dashboard/hooks/useDashboardScreen.ts`
+- `apps/mobile/src/features/dashboard/hooks/useDashboardScreen.test.ts`
+- `shared/content/locales/{en,es,zh}/common.json`
+
 ## Recent Task Log
 
 ### 2026-10-10 — Sync main after PR #112
@@ -391,6 +413,25 @@ Touched:
 - PR #119 merged the cookie handling and removal of `+34` from the submitted phone value.
 - PR #120 added a guard so empadronamiento readiness requires an actual Spanish `+34` number with a valid 9-digit national format.
 - Left unrelated pre-existing untracked files untouched.
+
+### 2026-10-24 — Empadronamiento native status and review gate
+
+- Confirmed the previous final-submit script existed but auto-submitted immediately.
+- Replaced auto-submit with a WebView-to-native review-ready message.
+- Added selection messages and session storage fallbacks for office/date/time.
+- Added a native hidden-WebView status flow and appointment review card.
+- Added explicit native confirmation that injects the official submit click only after user approval.
+- Added official success detection and progress completion with appointment details.
+- Device logs and Chrome WebView inspection showed the real office route uses radio inputs named `oficinas` with IDs such as `OAC-CV`, not the stale `#OAC-DR` selector; the continue control is an `input[type="submit"]`/`Següent` button. Updated selectors and verified the office step on-device.
+- Removed the temporary translucent debugging styles after successful device verification; empadronamiento WebView is hidden again during automation.
+- Added a native post-confirmation screen showing office/date/time/location and confirmation code, with an explicit official PDF save/open action; requirement completion now waits until the PDF is successfully handed off to the native viewer.
+- Fixed disabled PDF action: Barcelona’s confirmation page has no PDF `href`; the justificante tile triggers an Angular XHR to `generate-document-nointer/…/justificantTramit`. The native action now hooks the official fetch/XHR response, clicks that tile, and hands the returned PDF to React Native.
+- Added handling for XHR PDF responses delivered as binary `responseText` as well as ArrayBuffer/Blob; the previous attempt remained in saving state because no recognized response reached React Native.
+- Temporarily exposed the official confirmation page for direct device inspection; removed that diagnostic after confirming the device’s official download control itself becomes disabled after tapping. Native empadronamiento masking is restored.
+- Removed the appointment PDF/save flow. Successful booking now stores office, date, time, reference code, and optional location immediately; the dashboard eye action is the supported way to view those details.
+- Enhanced the dashboard appointment dialog with copy icons for the office and reference code, plus email/SMS confirmation guidance.
+- Hardened empadronamiento completion: required appointment fields are validated before progress is saved, confirmation pages use mutation-based readiness, WebView payloads are runtime-validated, errors are localized, and the overlay uses theme tokens.
+- Added trusted-host checks, terminal error UI, and safe programmatic exit handling.
 
 ## Do Not Forget
 

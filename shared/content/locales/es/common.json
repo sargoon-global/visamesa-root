@@ -118,6 +118,45 @@
       "prepareFailedMessage": "Algunos campos obligatorios no se pudieron rellenar. Vuelve al panel y revisa tu perfil."
     }
   },
+  "empadronamiento": {
+    "status": {
+      "title": "Reservando tu cita de empadronamiento",
+      "preparing": "Abriendo el servicio oficial de citas…",
+      "personalInfo": "Introduciendo tus datos personales…",
+      "motive": "Seleccionando el motivo de la cita…",
+      "office": "Seleccionando la oficina…",
+      "date": "Buscando la primera fecha disponible…",
+      "time": "Seleccionando una hora disponible…",
+      "submitting": "Confirmando tu cita con el servicio oficial…"
+    },
+    "review": {
+      "title": "Revisa tu cita",
+      "message": "Comprueba estos datos antes de confirmar. La reserva oficial solo se enviará después de tu confirmación.",
+      "office": "Oficina",
+      "date": "Fecha",
+      "time": "Hora",
+      "location": "Ubicación",
+      "confirmationCode": "Código de la cita",
+      "confirm": "Confirmar cita"
+    },
+    "backToDashboard": "Volver al panel",
+    "errors": {
+      "timedOutTitle": "La reserva de la cita agotó el tiempo de espera",
+      "timedOutMessage": "El servicio oficial de citas no se cargó. Vuelve al panel e inténtalo de nuevo.",
+      "siteLoadFailedTitle": "No se pudo cargar la web oficial",
+      "siteLoadFailedMessage": "Vuelve al panel e inténtalo más tarde.",
+      "siteHttpErrorTitle": "Error en la web oficial",
+      "siteHttpErrorMessage": "Vuelve al panel e inténtalo más tarde.",
+      "officeContinueUnavailableTitle": "No se pudo continuar con la selección",
+      "officeContinueUnavailableMessage": "El botón oficial para continuar no estaba disponible después de seleccionar la oficina.",
+      "officeSelectorUnavailableTitle": "La selección de oficina no está disponible",
+      "officeSelectorUnavailableMessage": "No se cargó el selector oficial de oficinas. Vuelve al panel e inténtalo de nuevo.",
+      "confirmationUnavailableTitle": "No se pudo confirmar la cita",
+      "confirmationUnavailableMessage": "El botón oficial de confirmación no está disponible. Vuelve al panel e inténtalo de nuevo.",
+      "detailsUnavailableTitle": "No se pudieron leer los datos de la cita",
+      "detailsUnavailableMessage": "El servicio oficial no proporcionó todos los datos de la cita. Revisa el correo electrónico y el SMS de confirmación e inténtalo de nuevo si es necesario."
+    }
+  },
   "bookingAssistant": {
     "missingProfile": "Falta la información del perfil del caso",
     "stopTitle": "Detener asistente de reserva",

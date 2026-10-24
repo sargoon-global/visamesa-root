@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {ActivityIndicator, Alert, Pressable, Text, View} from 'react-native';
+import {ActivityIndicator, Alert, Pressable, View} from 'react-native';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -8,9 +8,21 @@ import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 import {RootStackParamList} from '@/navigation/types';
 import {getWebViewUserAgent} from '@/webViewInjection/webViewDefaults';
+import {Text} from '@/components/ui/Text';
 import {useWebsiteWebViewScreen} from '@/webViewInjection/useWebsiteWebViewScreen';
 
 type WebsiteWebViewRouteProp = RouteProp<RootStackParamList, 'WebsiteWebView'>;
+
+function withAlpha(hexColor: string, alpha: number): string {
+  const normalized = hexColor.replace('#', '');
+  const value = normalized.length === 3
+    ? normalized.split('').map(character => character + character).join('')
+    : normalized;
+  const red = Number.parseInt(value.slice(0, 2), 16);
+  const green = Number.parseInt(value.slice(2, 4), 16);
+  const blue = Number.parseInt(value.slice(4, 6), 16);
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+}
 
 const stylesheet = createStyleSheet(theme => ({
   container: {
@@ -32,7 +44,7 @@ const stylesheet = createStyleSheet(theme => ({
   statusOverlay: {
     position: 'absolute',
     inset: 0,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: withAlpha(theme.colors.scrim, 0.78),
     alignItems: 'center',
     justifyContent: 'center',
     padding: theme.spacing.lg,
@@ -43,16 +55,10 @@ const stylesheet = createStyleSheet(theme => ({
     maxWidth: 360,
   },
   statusTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: theme.colors.onSurface,
     textAlign: 'center',
   },
   statusMessage: {
-    fontSize: 16,
-    color: theme.colors.onSurfaceVariant,
     textAlign: 'center',
-    lineHeight: 24,
   },
   errorOverlay: {
     position: 'absolute',
@@ -64,15 +70,8 @@ const stylesheet = createStyleSheet(theme => ({
   errorCard: {
     gap: theme.spacing.md,
   },
-  errorTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: theme.colors.onSurface,
-  },
-  errorMessage: {
-    fontSize: 16,
-    color: theme.colors.onSurfaceVariant,
-  },
+  errorTitle: {},
+  errorMessage: {},
   backButton: {
     backgroundColor: theme.colors.primary,
     padding: theme.spacing.md,
@@ -82,6 +81,28 @@ const stylesheet = createStyleSheet(theme => ({
   backLabel: {
     color: theme.colors.onPrimary,
     fontWeight: '700',
+  },
+  appointmentCard: {
+    width: '100%',
+    maxWidth: 420,
+    gap: theme.spacing.md,
+  },
+  appointmentDetails: {
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+    borderRadius: theme.radii.md,
+    backgroundColor: theme.colors.surfaceContainer,
+  },
+  appointmentLabel: {},
+  appointmentValue: {},
+  confirmButton: {
+    backgroundColor: theme.colors.primary,
+    padding: theme.spacing.md,
+    alignItems: 'center',
+    borderRadius: theme.radii.md,
+  },
+  confirmButtonDisabled: {
+    opacity: 0.5,
   },
 }));
 
@@ -96,6 +117,13 @@ const WebsiteWebViewScreen = () => {
     webViewError,
     modelo790ShowWebView,
     modelo790PdfHandoff,
+    empadronamientoRuleId,
+    empadronamientoAppointment,
+    empadronamientoReviewReady,
+    empadronamientoSubmitting,
+    confirmEmpadronamientoAppointment,
+    bookingAssistantExitAllowedRef,
+    goBackToDashboard,
     onLoadEnd,
     onLoadStart,
     onNavigationStateChange,
@@ -108,6 +136,7 @@ const WebsiteWebViewScreen = () => {
     const unsubscribe = navigation.addListener('beforeRemove', event => {
       if (
         route.params?.automation === 'modelo-790-012' ||
+        bookingAssistantExitAllowedRef.current ||
         (event.data.action.type !== 'GO_BACK' &&
           event.data.action.type !== 'POP')
       ) {
@@ -131,16 +160,46 @@ const WebsiteWebViewScreen = () => {
     });
 
     return unsubscribe;
-  }, [navigation, route.params?.automation, t]);
+  }, [bookingAssistantExitAllowedRef, navigation, route.params?.automation, t]);
 
   const isModelo790 = route.params?.automation === 'modelo-790-012';
+  const isEmpadronamiento =
+    !isModelo790 && route.params?.bookingAssistant === 'empadronamiento';
   const shouldHideModelo790WebView = isModelo790 && !modelo790ShowWebView;
+  const shouldHideWebView =
+    shouldHideModelo790WebView || isEmpadronamiento;
   const showModelo790StatusOverlay =
     isModelo790 &&
     shouldHideModelo790WebView &&
     !webViewError &&
     !modelo790PdfHandoff;
   const showModelo790PdfHandoff = isModelo790 && modelo790PdfHandoff && !webViewError;
+  const empadronamientoStatusKey = (() => {
+    if (empadronamientoSubmitting) {
+      return 'submitting';
+    }
+    if (empadronamientoRuleId?.includes('personal-info')) {
+      return 'personalInfo';
+    }
+    if (empadronamientoRuleId?.includes('select-oficina')) {
+      return 'office';
+    }
+    if (empadronamientoRuleId?.includes('select-date')) {
+      return 'date';
+    }
+    if (empadronamientoRuleId?.includes('select-time')) {
+      return 'time';
+    }
+    if (empadronamientoRuleId?.includes('motive')) {
+      return 'motive';
+    }
+    return 'preparing';
+  })();
+  const canConfirmEmpadronamiento = Boolean(
+    empadronamientoAppointment.office &&
+      empadronamientoAppointment.date &&
+      empadronamientoAppointment.time,
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -169,15 +228,71 @@ const WebsiteWebViewScreen = () => {
         )}
         style={[
           styles.webView,
-          shouldHideModelo790WebView ? styles.hiddenWebView : null,
+          shouldHideWebView ? styles.hiddenWebView : null,
         ]}
       />
+      {isEmpadronamiento && !empadronamientoReviewReady && !webViewError ? (
+        <View style={styles.statusOverlay} pointerEvents="auto">
+          <View style={styles.statusCard}>
+            <ActivityIndicator size="large" color={theme.colors.primary} />
+            <Text variant="headlineSmall" color="onSurface" style={styles.statusTitle}>
+              {t('empadronamiento.status.title')}
+            </Text>
+            <Text variant="bodyLarge" color="onSurfaceVariant" style={styles.statusMessage}>
+              {t(`empadronamiento.status.${empadronamientoStatusKey}`)}
+            </Text>
+          </View>
+        </View>
+      ) : null}
+      {isEmpadronamiento && empadronamientoReviewReady && !webViewError ? (
+        <View style={styles.statusOverlay} pointerEvents="auto">
+          <View style={styles.appointmentCard}>
+            <Text variant="headlineSmall" color="onSurface" style={styles.statusTitle}>
+              {t('empadronamiento.review.title')}
+            </Text>
+            <Text variant="bodyLarge" color="onSurfaceVariant" style={styles.statusMessage}>
+              {t('empadronamiento.review.message')}
+            </Text>
+            <View style={styles.appointmentDetails}>
+              {(['office', 'date', 'time', 'location'] as const).map(field =>
+                empadronamientoAppointment[field] ? (
+                  <View key={field}>
+                    <Text variant="labelMedium" color="onSurfaceVariant" style={styles.appointmentLabel}>
+                      {t(`empadronamiento.review.${field}`)}
+                    </Text>
+                    <Text variant="bodyLarge" color="onSurface" style={styles.appointmentValue}>
+                      {empadronamientoAppointment[field]}
+                    </Text>
+                  </View>
+                ) : null,
+              )}
+            </View>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{disabled: !canConfirmEmpadronamiento}}
+              disabled={!canConfirmEmpadronamiento}
+              onPress={confirmEmpadronamientoAppointment}
+              style={[
+                styles.confirmButton,
+                !canConfirmEmpadronamiento
+                  ? styles.confirmButtonDisabled
+                  : null,
+              ]}>
+              <Text style={styles.backLabel}>
+                {t('empadronamiento.review.confirm')}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
       {showModelo790StatusOverlay ? (
         <View style={styles.statusOverlay} pointerEvents="auto">
           <View style={styles.statusCard}>
             <ActivityIndicator size="large" color={theme.colors.primary} />
-            <Text style={styles.statusTitle}>{t('modelo790.status.title')}</Text>
-            <Text style={styles.statusMessage}>
+            <Text variant="headlineSmall" color="onSurface" style={styles.statusTitle}>
+              {t('modelo790.status.title')}
+            </Text>
+            <Text variant="bodyLarge" color="onSurfaceVariant" style={styles.statusMessage}>
               {t('modelo790.status.message')}
             </Text>
           </View>
@@ -187,25 +302,35 @@ const WebsiteWebViewScreen = () => {
         <View style={styles.statusOverlay} pointerEvents="auto">
           <View style={styles.statusCard}>
             <ActivityIndicator size="large" color={theme.colors.primary} />
-            <Text style={styles.statusTitle}>
+            <Text variant="headlineSmall" color="onSurface" style={styles.statusTitle}>
               {t('modelo790.captcha.openingPdf')}
             </Text>
           </View>
         </View>
       ) : null}
-      {isModelo790 && webViewError ? (
+      {(isModelo790 || isEmpadronamiento) && webViewError ? (
         <View style={styles.errorOverlay}>
           <View style={styles.errorCard}>
-            <Text style={styles.errorTitle}>{webViewError.title}</Text>
-            <Text style={styles.errorMessage}>{webViewError.message}</Text>
+            <Text variant="headlineSmall" color="onSurface" style={styles.errorTitle}>
+              {webViewError.title}
+            </Text>
+            <Text variant="bodyLarge" color="onSurfaceVariant" style={styles.errorMessage}>
+              {webViewError.message}
+            </Text>
             {webViewError.detail ? (
-              <Text style={styles.errorMessage}>{webViewError.detail}</Text>
+              <Text variant="bodyMedium" color="onSurfaceVariant" style={styles.errorMessage}>
+                {webViewError.detail}
+              </Text>
             ) : null}
             <Pressable
               accessibilityRole="button"
-              onPress={() => navigation.goBack()}
+              onPress={goBackToDashboard}
               style={styles.backButton}>
-              <Text style={styles.backLabel}>{t('modelo790.backToDashboard')}</Text>
+              <Text style={styles.backLabel}>
+                {isModelo790
+                  ? t('modelo790.backToDashboard')
+                  : t('empadronamiento.backToDashboard')}
+              </Text>
             </Pressable>
           </View>
         </View>

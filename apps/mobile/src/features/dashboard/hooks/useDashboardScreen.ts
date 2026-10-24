@@ -3,7 +3,8 @@ import {
   BookingAssistantId,
   TieStepDetail,
 } from '@/features/home/types/TieStepDetail';
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import Clipboard from '@react-native-clipboard/clipboard';
 import {TFunction} from 'i18next';
 import {useTranslation} from 'react-i18next';
 import {CompositeNavigationProp} from '@react-navigation/native';
@@ -15,7 +16,10 @@ import {useAuth} from '@/contexts/AuthContext';
 import {useEntitlements} from '@/contexts/EntitlementsContext';
 import {usePricingLink} from '@/hooks/usePricingLink';
 import {RequirementWithProgress} from '@/features/dashboard/components/RequirementsChecklist';
-import {formatAppointmentDetailsMessage} from '@/features/dashboard/data/dashboardContent';
+import {
+  AppointmentDetailsMessage,
+  formatAppointmentDetailsMessage,
+} from '@/features/dashboard/data/dashboardContent';
 import {syncEmpadronamientoStepFromProfile} from '@/features/dashboard/services/empadronamientoProgressService';
 import {EX17_FORM_ID} from '@/features/pdfGeneration/forms/ex17/ex17Constants';
 import {useEx17FormFlow} from '@/features/dashboard/hooks/useEx17FormFlow';
@@ -585,6 +589,10 @@ export function useDashboardScreen(
 
     navigation.navigate('WebsiteWebView', {
       bookingAssistant: bookingAssistantId,
+      bookingCompletion: {
+        stepId: currentStep.id,
+        requirementKey,
+      },
     });
   };
 
@@ -602,12 +610,28 @@ export function useDashboardScreen(
         ? requirementProgress.source.appointment
         : undefined;
 
+    if (!appointment) {
+      showAlert(
+        tDashboard('appointmentDetailsTitle'),
+        formatAppointmentDetailsMessage(
+          (key, options) => tDashboard(key, options),
+          appointment,
+        ),
+        [{text: tCommon('actions.gotIt')}],
+      );
+      return;
+    }
+
     showAlert(
       tDashboard('appointmentDetailsTitle'),
-      formatAppointmentDetailsMessage(
-        (key, options) => tDashboard(key, options),
+      React.createElement(AppointmentDetailsMessage, {
+        t: (key, options) => tDashboard(key, options),
         appointment,
-      ),
+        onCopy: (value: string) => {
+          Clipboard.setString(value);
+          showToast(tDashboard('appointmentCopied'));
+        },
+      }),
       [{text: tCommon('actions.gotIt')}],
     );
   };

@@ -5,6 +5,7 @@ import {
   buildEmpadronamientoInjectionRules,
   buildEmpadronamientoScriptMap,
   type EmpadronamientoBookingAssistantProfile,
+  CONFIRM_EMPADRONAMIENTO_SUBMIT_SCRIPT,
 } from './index';
 import {EMPADRONAMIENTO_HOME_URL} from './initia';
 import {EMPADRONAMIENTO_SEARCH_RESULT_URL} from './OSC-select';
@@ -126,10 +127,14 @@ describe('empadronamiento script map', () => {
   it('converts entries into injection rules with exact and prefix matches', () => {
     const rules = buildEmpadronamientoInjectionRules(profile);
 
-    expect(rules).toHaveLength(16);
+    expect(rules).toHaveLength(17);
     expect(
       rules
-        .filter(rule => rule.id !== 'empadronamiento-select-oficina-form')
+        .filter(
+          rule =>
+            rule.id !== 'empadronamiento-select-oficina-form' &&
+            rule.id !== 'empadronamiento-result',
+        )
         .every(rule => Boolean(rule.ready?.selector)),
     ).toBe(true);
     expect(rules).toEqual(
@@ -222,7 +227,7 @@ describe('empadronamiento script map', () => {
             type: 'prefix',
             value: `${EMPADRONAMIENTO_CITA_PREFIX}/select-oficina`,
           },
-          ready: {selector: '#OAC-DR'},
+          ready: {selector: 'input[type="radio"][name="oficinas"]'},
         }),
         expect.objectContaining({
           id: 'empadronamiento-select-oficina-form',
@@ -230,7 +235,10 @@ describe('empadronamiento script map', () => {
             type: 'prefix',
             value: `${EMPADRONAMIENTO_FORM_PREFIX}/tramitDataOffice`,
           },
-          ready: undefined,
+          ready: {
+            selector: 'input[type="radio"][name="oficinas"]',
+            timeoutMs: 30000,
+          },
         }),
         expect.objectContaining({
           id: 'empadronamiento-select-date',
@@ -274,8 +282,33 @@ describe('empadronamiento script map', () => {
             value: `${EMPADRONAMIENTO_CITA_PREFIX}/submit-final`,
           },
           ready: {selector: 'button[type="submit"]'},
+          reinjectOnLoadEnd: true,
+        }),
+        expect.objectContaining({
+          id: 'empadronamiento-result',
+          match: expect.objectContaining({type: 'regex'}),
+          reinjectOnLoadEnd: true,
         }),
       ]),
     );
+  });
+
+  it('waits for native confirmation before final official submission', () => {
+    const rules = buildEmpadronamientoInjectionRules(profile);
+    const finalRule = rules.find(
+      rule => rule.id === 'empadronamiento-submit-final',
+    );
+
+    expect(finalRule?.script).toContain('empadronamiento-review-ready');
+    expect(finalRule?.script).not.toContain('submitButton.click()');
+    expect(CONFIRM_EMPADRONAMIENTO_SUBMIT_SCRIPT).toContain(
+      'empadronamiento-submit-started',
+    );
+    expect(CONFIRM_EMPADRONAMIENTO_SUBMIT_SCRIPT).toContain(
+      'submitButton.click()',
+    );
+    expect(finalRule?.script).toContain('MutationObserver');
+    expect(finalRule?.script).toContain('booking-complete');
+    expect(finalRule?.script).not.toContain('Barcelona appointment office');
   });
 });

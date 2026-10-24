@@ -5,7 +5,15 @@ import {useTranslation} from 'react-i18next';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
 
 import {useAuth} from '@/contexts/AuthContext';
-import {BookingAssistantId} from '@/features/home/types/TieStepDetail';
+import {
+  ASSISTED_BOOKING_REQUIREMENT_TYPE,
+  BookingAssistantId,
+} from '@/features/home/types/TieStepDetail';
+import type {BookingAssistantAppointmentSummary} from '@/features/dashboard/types/UserProgress';
+import {
+  fetchUserProgress,
+  updateRequirementProgress,
+} from '@/features/dashboard/services/progressService';
 import {
   saveModelo790ReviewFile,
   setModelo790PendingReview,
@@ -28,8 +36,14 @@ import {
 } from '@/scripts/cita-previa';
 import {
   buildEmpadronamientoInjectionRules,
+  CONFIRM_EMPADRONAMIENTO_SUBMIT_SCRIPT,
   EMPADRONAMIENTO_HOME_URL,
 } from '@/scripts/empadronamiento';
+import {
+  isEmpadronamientoMessage,
+  type EmpadronamientoAppointmentDraft,
+  type EmpadronamientoErrorCode,
+} from '@/scripts/empadronamiento/messages';
 import {
   buildModelo790InjectionRules,
   buildModelo790ScriptStrings,
@@ -56,17 +70,46 @@ type WebViewProps = ComponentProps<typeof WebView>;
 
 const webViewScreenStylesheet = createStyleSheet(() => ({}));
 
-function isTrustedModelo790MessageUrl(url: string | undefined): boolean {
+function isTrustedOfficialMessageUrl(
+  url: string | undefined,
+  hostname: string,
+): boolean {
   if (!url) {
     return false;
   }
 
   try {
     const parsedUrl = new URL(url);
-    return parsedUrl.protocol === 'https:' && parsedUrl.hostname === 'sede.policia.gob.es';
+    return parsedUrl.protocol === 'https:' && parsedUrl.hostname === hostname;
   } catch {
     return false;
   }
+}
+
+function isTrustedModelo790MessageUrl(url: string | undefined): boolean {
+  return isTrustedOfficialMessageUrl(url, 'sede.policia.gob.es');
+}
+
+function isTrustedEmpadronamientoMessageUrl(
+  url: string | undefined,
+): boolean {
+  return isTrustedOfficialMessageUrl(
+    url,
+    'seuelectronica.ajuntament.barcelona.cat',
+  );
+}
+
+function isCompleteEmpadronamientoAppointment(
+  appointment: EmpadronamientoAppointmentDraft,
+): appointment is BookingAssistantAppointmentSummary & {
+  confirmationCode: string;
+} {
+  return [
+    appointment.office,
+    appointment.date,
+    appointment.time,
+    appointment.confirmationCode,
+  ].every(value => typeof value === 'string' && value.trim().length > 0);
 }
 
 export type UseWebsiteWebViewScreenResult = {
@@ -75,6 +118,13 @@ export type UseWebsiteWebViewScreenResult = {
   webViewError: AutomationWebViewError | null;
   modelo790ShowWebView: boolean;
   modelo790PdfHandoff: boolean;
+  empadronamientoRuleId: string | null;
+  empadronamientoAppointment: EmpadronamientoAppointmentDraft;
+  empadronamientoReviewReady: boolean;
+  empadronamientoSubmitting: boolean;
+  confirmEmpadronamientoAppointment: () => void;
+  bookingAssistantExitAllowedRef: RefObject<boolean>;
+  goBackToDashboard: () => void;
   startUrl: string;
   webViewSource: ReturnType<typeof buildCitaPreviaWebViewSource>;
   onLoadEnd: () => void;
@@ -92,6 +142,8 @@ export function useWebsiteWebViewScreen(
 ): UseWebsiteWebViewScreenResult {
   const bookingAssistant = route.params?.bookingAssistant ?? 'cita-previa';
   const isModelo790 = route.params?.automation === 'modelo-790-012';
+  const isEmpadronamiento =
+    !isModelo790 && bookingAssistant === 'empadronamiento';
   const {t} = useTranslation('common');
   const {theme} = useStyles(webViewScreenStylesheet);
   const modelo790ScriptStrings = useMemo(
@@ -118,7 +170,15 @@ export function useWebsiteWebViewScreen(
   const [modelo790ShowWebView, setModelo790ShowWebView] = useState(false);
   const [modelo790PdfHandoff, setModelo790PdfHandoff] = useState(false);
   const [modelo790Profile, setModelo790Profile] = useState<Modelo790AutomationProfile | null>(null);
+  const [empadronamientoAppointment, setEmpadronamientoAppointment] =
+    useState<EmpadronamientoAppointmentDraft>({});
+  const [empadronamientoReviewReady, setEmpadronamientoReviewReady] =
+    useState(false);
+  const [empadronamientoSubmitting, setEmpadronamientoSubmitting] =
+    useState(false);
   const pdfInFlight = useRef(false);
+  const empadronamientoCompletionInFlight = useRef(false);
+  const bookingAssistantExitAllowedRef = useRef(false);
   const modelo790CaptchaReadyRef = useRef(false);
   const webViewRef = useRef<WebViewHandle>(null);
   const [profileLoaded, setProfileLoaded] = useState(false);
@@ -128,6 +188,17 @@ export function useWebsiteWebViewScreen(
   const [citaPreviaProfile, setCitaPreviaProfile] = useState(
     emptyCitaPreviaBookingAssistantProfile,
   );
+
+  useEffect(() => {
+    if (!isEmpadronamiento) {
+      return;
+    }
+
+    setEmpadronamientoAppointment({});
+    setEmpadronamientoReviewReady(false);
+    setEmpadronamientoSubmitting(false);
+    empadronamientoCompletionInFlight.current = false;
+  }, [isEmpadronamiento]);
 
   useEffect(() => {
     if (!isModelo790) {return;}
@@ -239,6 +310,11 @@ export function useWebsiteWebViewScreen(
           title: t('modelo790.errors.timedOutTitle'),
           message: t('modelo790.errors.timedOutMessage'),
         });
+      } else if (isEmpadronamiento) {
+        setWebViewError({
+          title: t('empadronamiento.errors.timedOutTitle'),
+          message: t('empadronamiento.errors.timedOutMessage'),
+        });
       }
       reportClientError('WEBVIEW_INJECTION_TIMEOUT', {
         bookingAssistant,
@@ -248,10 +324,11 @@ export function useWebsiteWebViewScreen(
         timeoutMs: payload.timeoutMs,
       });
     },
-    [bookingAssistant, isModelo790, t],
+    [bookingAssistant, isEmpadronamiento, isModelo790, t],
   );
 
   const {
+    activeRule,
     handleMessage: handleInjectionMessage,
     onLoadEnd,
     onLoadStart: onInjectionLoadStart,
@@ -280,6 +357,23 @@ export function useWebsiteWebViewScreen(
     onInjectionLoadStart();
   }, [isModelo790, onInjectionLoadStart]);
 
+  const goBackToDashboard = useCallback(() => {
+    bookingAssistantExitAllowedRef.current = true;
+    navigation.goBack();
+  }, [navigation]);
+
+  const confirmEmpadronamientoAppointment = useCallback(() => {
+    if (!isEmpadronamiento || empadronamientoSubmitting) {
+      return;
+    }
+
+    setEmpadronamientoReviewReady(false);
+    setEmpadronamientoSubmitting(true);
+    webViewRef.current?.injectJavaScript(
+      CONFIRM_EMPADRONAMIENTO_SUBMIT_SCRIPT,
+    );
+  }, [empadronamientoSubmitting, isEmpadronamiento]);
+
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
       if (handleInjectionMessage(event.nativeEvent.data)) {
@@ -288,6 +382,118 @@ export function useWebsiteWebViewScreen(
 
       try {
         const message = JSON.parse(event.nativeEvent.data);
+
+        if (isEmpadronamiento && isEmpadronamientoMessage(message)) {
+          if (!isTrustedEmpadronamientoMessageUrl(event.nativeEvent.url)) {
+            return;
+          }
+          if (message.type === 'empadronamiento-error') {
+            setEmpadronamientoReviewReady(false);
+            setEmpadronamientoSubmitting(false);
+            const errorKeyByCode: Record<
+              EmpadronamientoErrorCode,
+              {title: string; message: string}
+            > = {
+              office_continue_unavailable: {
+                title: t('empadronamiento.errors.officeContinueUnavailableTitle'),
+                message: t('empadronamiento.errors.officeContinueUnavailableMessage'),
+              },
+              office_selector_unavailable: {
+                title: t('empadronamiento.errors.officeSelectorUnavailableTitle'),
+                message: t('empadronamiento.errors.officeSelectorUnavailableMessage'),
+              },
+              confirmation_unavailable: {
+                title: t('empadronamiento.errors.confirmationUnavailableTitle'),
+                message: t('empadronamiento.errors.confirmationUnavailableMessage'),
+              },
+            };
+            setWebViewError(errorKeyByCode[message.payload.code]);
+            return;
+          }
+
+          if (
+            message.type === 'empadronamiento-selection' ||
+            message.type === 'empadronamiento-review-ready'
+          ) {
+            setEmpadronamientoAppointment(current => ({
+              ...current,
+              ...(message.payload ?? {}),
+            }));
+            if (message.type === 'empadronamiento-review-ready') {
+              setEmpadronamientoReviewReady(true);
+              setEmpadronamientoSubmitting(false);
+            }
+            return;
+          }
+
+          if (message.type === 'empadronamiento-submit-started') {
+            setEmpadronamientoReviewReady(false);
+            setEmpadronamientoSubmitting(true);
+            return;
+          }
+
+          if (message.type === 'empadronamiento-booking-complete') {
+            if (empadronamientoCompletionInFlight.current) {
+              return;
+            }
+            empadronamientoCompletionInFlight.current = true;
+            const appointmentDraft = {
+              ...empadronamientoAppointment,
+              ...(message.payload ?? {}),
+            };
+            (async () => {
+              try {
+                if (!isCompleteEmpadronamientoAppointment(appointmentDraft)) {
+                  setEmpadronamientoSubmitting(false);
+                  setWebViewError({
+                    title: t('empadronamiento.errors.detailsUnavailableTitle'),
+                    message: t('empadronamiento.errors.detailsUnavailableMessage'),
+                  });
+                  return;
+                }
+
+                const appointment: BookingAssistantAppointmentSummary = {
+                  office: appointmentDraft.office.trim(),
+                  date: appointmentDraft.date.trim(),
+                  time: appointmentDraft.time.trim(),
+                  location: appointmentDraft.location?.trim() || undefined,
+                  confirmationCode: appointmentDraft.confirmationCode.trim(),
+                };
+                const completion = route.params?.bookingCompletion;
+                if (completion) {
+                  const progress = await fetchUserProgress();
+                  await updateRequirementProgress(
+                    progress,
+                    completion.stepId,
+                    completion.requirementKey,
+                    {
+                      completed: true,
+                      source: {
+                        type: ASSISTED_BOOKING_REQUIREMENT_TYPE,
+                        bookingAssistantId: 'empadronamiento',
+                        completedAt: new Date().toISOString(),
+                        appointment,
+                      },
+                    },
+                  );
+                }
+                bookingAssistantExitAllowedRef.current = true;
+                navigation.goBack();
+              } catch (error) {
+                empadronamientoCompletionInFlight.current = false;
+                setEmpadronamientoSubmitting(false);
+                setWebViewError({
+                  title: t('bookingAssistant.bookingFailedTitle'),
+                  message:
+                    error instanceof Error
+                      ? error.message
+                      : t('bookingAssistant.unknownError'),
+                });
+              }
+            })();
+            return;
+          }
+        }
 
         if (isModelo790 && isModelo790Error(message)) {
           setWebViewError(message.payload);
@@ -341,7 +547,16 @@ export function useWebsiteWebViewScreen(
         // Ignore non-JSON messages from the page.
       }
     },
-    [handleInjectionMessage, isModelo790, navigation, route.params?.modelo790Review, t],
+    [
+      empadronamientoAppointment,
+      handleInjectionMessage,
+      isEmpadronamiento,
+      isModelo790,
+      navigation,
+      route.params?.bookingCompletion,
+      route.params?.modelo790Review,
+      t,
+    ],
   );
 
   const onError = useCallback<NonNullable<WebViewProps['onError']>>(
@@ -357,6 +572,11 @@ export function useWebsiteWebViewScreen(
           title: t('modelo790.errors.siteLoadFailedTitle'),
           message: t('modelo790.errors.siteLoadFailedMessage'),
         });
+      } else if (isEmpadronamiento) {
+        setWebViewError({
+          title: t('empadronamiento.errors.siteLoadFailedTitle'),
+          message: t('empadronamiento.errors.siteLoadFailedMessage'),
+        });
       }
       reportClientError('WEBVIEW_LOAD_FAILED', {
         bookingAssistant,
@@ -367,7 +587,7 @@ export function useWebsiteWebViewScreen(
         description: syntheticEvent.nativeEvent.description?.slice(0, 200) ?? null,
       });
     },
-    [bookingAssistant, isModelo790, startUrl, t],
+    [bookingAssistant, isEmpadronamiento, isModelo790, startUrl, t],
   );
 
   const onHttpError = useCallback<NonNullable<WebViewProps['onHttpError']>>(
@@ -384,6 +604,12 @@ export function useWebsiteWebViewScreen(
           message: t('modelo790.errors.siteHttpErrorMessage'),
           detail: `HTTP ${syntheticEvent.nativeEvent.statusCode}`,
         });
+      } else if (isEmpadronamiento) {
+        setWebViewError({
+          title: t('empadronamiento.errors.siteHttpErrorTitle'),
+          message: t('empadronamiento.errors.siteHttpErrorMessage'),
+          detail: `HTTP ${syntheticEvent.nativeEvent.statusCode}`,
+        });
       }
       reportClientError('WEBVIEW_HTTP_ERROR', {
         bookingAssistant,
@@ -395,7 +621,7 @@ export function useWebsiteWebViewScreen(
         ),
       });
     },
-    [bookingAssistant, isModelo790, startUrl, t],
+    [bookingAssistant, isEmpadronamiento, isModelo790, startUrl, t],
   );
 
   return {
@@ -404,6 +630,13 @@ export function useWebsiteWebViewScreen(
     webViewError,
     modelo790ShowWebView,
     modelo790PdfHandoff,
+    empadronamientoRuleId: isEmpadronamiento ? activeRule?.id ?? null : null,
+    empadronamientoAppointment,
+    empadronamientoReviewReady,
+    empadronamientoSubmitting,
+    confirmEmpadronamientoAppointment,
+    bookingAssistantExitAllowedRef,
+    goBackToDashboard,
     startUrl,
     webViewSource,
     onLoadEnd,
