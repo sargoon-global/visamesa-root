@@ -21,6 +21,11 @@ export const SELECT_TIME_SCRIPT = `
 
       if (!times.length) return false;
 
+      sessionStorage.setItem('__visaMesaEmpadronamientoTime', times[0].time);
+      window.ReactNativeWebView?.postMessage(JSON.stringify({
+        type: 'empadronamiento-selection',
+        payload: {time: times[0].time},
+      }));
       times[0].input.click();
       submit();
       return true;

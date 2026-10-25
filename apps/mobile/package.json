@@ -21,6 +21,7 @@
   "dependencies": {
     "@hookform/resolvers": "3.10.0",
     "@react-native-async-storage/async-storage": "3.1.0",
+    "@react-native-clipboard/clipboard": "1.16.3",
     "@react-native-community/datetimepicker": "9.1.0",
     "@react-native-google-signin/google-signin": "16.1.2",
     "@react-native-vector-icons/material-icons": "13.1.2",
