@@ -119,7 +119,8 @@ export function mapProfileToEx17Data(info: PersonalInfo) {
       address,
       mobilePhone: phoneNumber,
       email: info.email,
-      dehuConsent: false,
+      // Consent to electronic communications and notifications (DEHú).
+      dehuConsent: true,
     },
     request: {
       cardholderFullName: fullName,
