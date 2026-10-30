@@ -14,9 +14,10 @@ describe('buildTieSteps', () => {
       expect(steps).toHaveLength(TIE_STEP_ORDER.length)
       expect(steps[0]?.slug).toBe('empadronamiento')
       expect(steps[1]?.slug).toBe('required-documents')
-      expect(steps[2]?.slug).toBe('toma-de-huellas')
+      expect(steps[2]?.slug).toBe('pay-fee')
+      expect(steps[3]?.slug).toBe('toma-de-huellas')
       expect(steps[1]?.requirements).toHaveLength(1)
-      expect(steps[2]?.requirements).toHaveLength(1)
+      expect(steps[3]?.requirements).toHaveLength(1)
       expect(steps[4]?.requirements.some(r => r.key === 'attend-appointment')).toBe(true)
       expect(steps[5]?.requirements.some(r => r.key === 'attend-pickup')).toBe(true)
     }
