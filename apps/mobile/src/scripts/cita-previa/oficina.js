@@ -11,11 +11,12 @@ export const buildOficinaScript = tramitesOptionIndex => `
 
     const tramites =
       window.document.querySelector('#tramiteGrupo\\\\[0\\\\]') ||
-      window.document.querySelector('select[name="tramiteGrupo[0]"]');
+      window.document.querySelector('select[name="tramiteGrupo[0]"]') ||
+      window.document.querySelector('select');
 
     const tomarHuellaOption = tramites
       ? Array.from(tramites.options).find(option =>
-          normalize(option.text).includes('TOMA DE HUELLA'),
+          /TOMA\\s+DE\\s+HUELLAS?/.test(normalize(option.text)),
         )
       : null;
     const targetOption = tomarHuellaOption || tramites?.options?.[${tramitesOptionIndex}];
@@ -29,7 +30,10 @@ export const buildOficinaScript = tramitesOptionIndex => `
     tramites.dispatchEvent(new Event('input', {bubbles: true}));
     tramites.dispatchEvent(new Event('change', {bubbles: true}));
 
-    const acceptButton = window.document.querySelector('#btnAceptar');
+    const acceptButton =
+      window.document.querySelector('#btnAceptar') ||
+      Array.from(window.document.querySelectorAll('button, input[type="submit"]'))
+        .find(button => /aceptar/i.test(button.textContent || button.value || ''));
     if (acceptButton) {
       acceptButton.click();
     }

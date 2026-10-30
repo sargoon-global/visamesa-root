@@ -160,7 +160,7 @@ const buildCitaPreviaScriptEntries = (
         value: OFICINA_URL,
       },
       ready: {
-        selector: '#tramiteGrupo\\[0\\]',
+        selector: '#tramiteGrupo\\[0\\], select',
       },
     },
     {
