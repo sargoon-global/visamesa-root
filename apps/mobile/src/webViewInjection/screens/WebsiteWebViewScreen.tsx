@@ -165,6 +165,7 @@ const WebsiteWebViewScreen = () => {
   const isModelo790 = route.params?.automation === 'modelo-790-012';
   const isEmpadronamiento =
     !isModelo790 && route.params?.bookingAssistant === 'empadronamiento';
+  const isCitaPrevia = !isModelo790 && !isEmpadronamiento;
   const shouldHideModelo790WebView = isModelo790 && !modelo790ShowWebView;
   const shouldHideWebView =
     shouldHideModelo790WebView || isEmpadronamiento;
@@ -206,9 +207,8 @@ const WebsiteWebViewScreen = () => {
       <WebView
         ref={webViewRef}
         source={webViewSource}
-        userAgent={getWebViewUserAgent()}
+        userAgent={isCitaPrevia ? undefined : getWebViewUserAgent()}
         originWhitelist={['*']}
-        incognito={Boolean(route.params?.bookingAssistant)}
         javaScriptEnabled
         domStorageEnabled
         sharedCookiesEnabled
