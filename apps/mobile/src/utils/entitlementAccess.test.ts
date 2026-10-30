@@ -28,6 +28,12 @@ describe('entitlementAccess', () => {
     expect(canUseBookingAssistant(empadronamientoOnly, 'cita-previa')).toBe(false);
   });
 
+  it('blocks cita previa when booking is already confirmed', () => {
+    expect(
+      canUseBookingAssistant(fullService, 'cita-previa', {citaPreviaBooked: true}),
+    ).toBe(false);
+  });
+
   it('treats full service as access to any entitlement type', () => {
     expect(hasEntitlement(fullService, EntitlementType.GUIDANCE)).toBe(true);
   });

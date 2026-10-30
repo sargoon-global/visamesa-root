@@ -4,9 +4,11 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
+import {AppState} from 'react-native';
 
 import {useAuth} from '@/contexts/AuthContext';
 import {paymentService} from '@/services/paymentService';
@@ -33,8 +35,14 @@ function sleep(ms: number) {
 
 type EntitlementsContextValue = {
   entitlements: UserEntitlement[];
+  citaPreviaBookedAt: string | null;
+  personalDetailsLockedAt: string | null;
+  isCitaPreviaBooked: boolean;
+  isPersonalDetailsLocked: boolean;
   isLoading: boolean;
   refreshEntitlements: () => Promise<UserEntitlement[]>;
+  /** Optimistic update after POST personal-details-lock (refresh still runs afterward). */
+  applyPersonalDetailsLockedAt: (lockedAt: string) => void;
   waitForPaidService: () => Promise<boolean>;
   hasEntitlement: (type: EntitlementType) => boolean;
   hasPaidService: () => boolean;
@@ -48,19 +56,35 @@ const EntitlementsContext = createContext<EntitlementsContextValue | undefined>(
 export function EntitlementsProvider({ children }: { children: ReactNode }) {
   const { user, isAuthenticated } = useAuth();
   const [entitlements, setEntitlements] = useState<UserEntitlement[]>([]);
+  const [citaPreviaBookedAt, setCitaPreviaBookedAt] = useState<string | null>(
+    null,
+  );
+  const [personalDetailsLockedAt, setPersonalDetailsLockedAt] = useState<
+    string | null
+  >(null);
   const [isLoading, setIsLoading] = useState(false);
+  const hasLoadedEntitlementsRef = useRef(false);
 
   const refreshEntitlements = useCallback(async (): Promise<UserEntitlement[]> => {
     if (!isAuthenticated) {
+      hasLoadedEntitlementsRef.current = false;
       setEntitlements([]);
+      setCitaPreviaBookedAt(null);
+      setPersonalDetailsLockedAt(null);
+      setIsLoading(false);
       return [];
     }
 
-    setIsLoading(true);
+    if (!hasLoadedEntitlementsRef.current) {
+      setIsLoading(true);
+    }
 
     try {
       const response = await paymentService.getEntitlements();
+      hasLoadedEntitlementsRef.current = true;
       setEntitlements(response.entitlements);
+      setCitaPreviaBookedAt(response.citaPreviaBookedAt ?? null);
+      setPersonalDetailsLockedAt(response.personalDetailsLockedAt ?? null);
       return response.entitlements;
     } catch (error) {
       console.error('Failed to load entitlements:', error);
@@ -75,6 +99,11 @@ export function EntitlementsProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     }
   }, [isAuthenticated]);
+
+  const applyPersonalDetailsLockedAt = useCallback((lockedAt: string) => {
+    hasLoadedEntitlementsRef.current = true;
+    setPersonalDetailsLockedAt(lockedAt);
+  }, []);
 
   const waitForPaidService = useCallback(async (): Promise<boolean> => {
     for (let attempt = 0; attempt < ENTITLEMENT_POLL_ATTEMPTS; attempt += 1) {
@@ -93,21 +122,56 @@ export function EntitlementsProvider({ children }: { children: ReactNode }) {
   }, [refreshEntitlements]);
 
   useEffect(() => {
+    hasLoadedEntitlementsRef.current = false;
     refreshEntitlements().catch(() => {});
   }, [user?.id, refreshEntitlements]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      return;
+    }
+
+    const subscription = AppState.addEventListener('change', nextState => {
+      if (nextState === 'active') {
+        refreshEntitlements().catch(() => {});
+      }
+    });
+
+    return () => subscription.remove();
+  }, [isAuthenticated, refreshEntitlements]);
+
+  const isCitaPreviaBooked = citaPreviaBookedAt !== null;
+  const isPersonalDetailsLocked = personalDetailsLockedAt !== null;
 
   const value = useMemo<EntitlementsContextValue>(
     () => ({
       entitlements,
+      citaPreviaBookedAt,
+      personalDetailsLockedAt,
+      isCitaPreviaBooked,
+      isPersonalDetailsLocked,
       isLoading,
       refreshEntitlements,
+      applyPersonalDetailsLockedAt,
       waitForPaidService,
       hasEntitlement: type => checkEntitlement(entitlements, type),
       hasPaidService: () => checkHasPaidService(entitlements),
       canUseBookingAssistant: bookingAssistantId =>
-        checkBookingAssistantAccess(entitlements, bookingAssistantId),
+        checkBookingAssistantAccess(entitlements, bookingAssistantId, {
+          citaPreviaBooked: isCitaPreviaBooked,
+        }),
     }),
-    [entitlements, isLoading, refreshEntitlements, waitForPaidService],
+    [
+      citaPreviaBookedAt,
+      entitlements,
+      isCitaPreviaBooked,
+      isPersonalDetailsLocked,
+      personalDetailsLockedAt,
+      isLoading,
+      refreshEntitlements,
+      applyPersonalDetailsLockedAt,
+      waitForPaidService,
+    ],
   );
 
   return (
