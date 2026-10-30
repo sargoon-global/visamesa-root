@@ -61,6 +61,16 @@ interface CitaPreviaScriptEntry {
   ready?: WebViewInjectionRule['ready'];
 }
 
+const buildIcpApplicationMatch = (url: string): WebViewInjectionMatch => {
+  const path = new URL(url).pathname.replace(/^\/icpco\//, '');
+  return {
+    type: 'regex',
+    value: new RegExp(
+      `^https://icp\\.administracionelectronica\\.gob\\.es/(?:icpco|icpplus|icpplustieb)/${path}(?:[/?#]|$)`,
+    ),
+  };
+};
+
 const buildCitaPreviaScriptEntries = (
   profile: CitaPreviaBookingAssistantProfile,
 ): CitaPreviaScriptEntry[] => {
@@ -128,10 +138,7 @@ const buildCitaPreviaScriptEntries = (
     {
       url: CLAVE_URL,
       script: CLAVE_SCRIPT,
-      match: {
-        type: 'prefix',
-        value: CLAVE_URL,
-      },
+      match: buildIcpApplicationMatch(CLAVE_URL),
       ready: {
         selector: '#btnEntrar',
       },
@@ -139,10 +146,7 @@ const buildCitaPreviaScriptEntries = (
     {
       url: DETAILS_URL,
       script: detailsScript,
-      match: {
-        type: 'prefix',
-        value: DETAILS_URL,
-      },
+      match: buildIcpApplicationMatch(DETAILS_URL),
       ready: {
         selector: '#txtIdCitado',
         allSelectors: [
@@ -155,10 +159,7 @@ const buildCitaPreviaScriptEntries = (
     {
       url: OFICINA_URL,
       script: buildOficinaScript(profile.tramitesOptionIndex),
-      match: {
-        type: 'prefix',
-        value: OFICINA_URL,
-      },
+      match: buildIcpApplicationMatch(OFICINA_URL),
       ready: {
         selector: 'select[name^="tramiteGrupo"]',
       },
@@ -166,10 +167,7 @@ const buildCitaPreviaScriptEntries = (
     {
       url: PLACE_URL,
       script: placeScript,
-      match: {
-        type: 'prefix',
-        value: PLACE_URL,
-      },
+      match: buildIcpApplicationMatch(PLACE_URL),
       ready: {
         selector: '#idSede, select[name="idSede"]',
       },
@@ -177,10 +175,7 @@ const buildCitaPreviaScriptEntries = (
     {
       url: APPOINTMENT_FORM_URL,
       script: appointmentFormScript,
-      match: {
-        type: 'prefix',
-        value: APPOINTMENT_FORM_URL,
-      },
+      match: buildIcpApplicationMatch(APPOINTMENT_FORM_URL),
       ready: {
         selector: '#txtTelefonoCitado',
         allSelectors: ['#emailUNO', '#emailDOS', '#btnSiguiente'],
@@ -189,10 +184,7 @@ const buildCitaPreviaScriptEntries = (
     {
       url: SOLICITAR_CITA_URL,
       script: SOLICITAR_CITA_SCRIPT,
-      match: {
-        type: 'prefix',
-        value: SOLICITAR_CITA_URL,
-      },
+      match: buildIcpApplicationMatch(SOLICITAR_CITA_URL),
       ready: {
         selector: '#btnEnviar',
       },
@@ -200,10 +192,7 @@ const buildCitaPreviaScriptEntries = (
     {
       url: SLOT_PICKER_URL,
       script: SLOT_PICKER_SCRIPT,
-      match: {
-        type: 'prefix',
-        value: SLOT_PICKER_URL,
-      },
+      match: buildIcpApplicationMatch(SLOT_PICKER_URL),
       ready: {
         selector: '#captcha',
         allSelectors: ['#btnSiguiente'],
@@ -212,10 +201,7 @@ const buildCitaPreviaScriptEntries = (
     {
       url: APPOINTMENT_CONFIRMATION_URL,
       script: APPOINTMENT_CONFIRMATION_SCRIPT,
-      match: {
-        type: 'prefix',
-        value: APPOINTMENT_CONFIRMATION_URL,
-      },
+      match: buildIcpApplicationMatch(APPOINTMENT_CONFIRMATION_URL),
       ready: {
         selector: '#chkTotal',
         allSelectors: ['#citadoForm', '#btnConfirmar'],
@@ -224,10 +210,7 @@ const buildCitaPreviaScriptEntries = (
     {
       url: APPOINTMENT_FINAL_URL,
       script: APPOINTMENT_FINAL_SCRIPT,
-      match: {
-        type: 'prefix',
-        value: APPOINTMENT_FINAL_URL,
-      },
+      match: buildIcpApplicationMatch(APPOINTMENT_FINAL_URL),
       ready: {
         selector: '#justificanteFinal',
       },

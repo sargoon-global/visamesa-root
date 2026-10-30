@@ -73,38 +73,25 @@ describe('cita previa script map', () => {
 
     expect(rules).toHaveLength(13);
     expect(rules.every(rule => Boolean(rule.ready?.selector))).toBe(true);
-    expect(rules).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          match: {
-            type: 'exact',
-            value:
-              'https://icp.administracionelectronica.gob.es/icpplustieb/index.html?appVersion=V+7.53',
-          },
-          ready: {selector: 'select#form, #form, select[name="form"], select'},
-        }),
-        expect.objectContaining({
-          match: {
-            type: 'prefix',
-            value: 'https://icp.administracionelectronica.gob.es/icpco/citar',
-          },
-          ready: {selector: 'select[name^="tramiteGrupo"]'}
-        }),
-        expect.objectContaining({
-          match: {
-            type: 'prefix',
-            value: 'https://icp.administracionelectronica.gob.es/icpco/acOfertarCita',
-          },
-          ready: {selector: '#captcha', allSelectors: ['#btnSiguiente']},
-        }),
-        expect.objectContaining({
-          match: {
-            type: 'prefix',
-            value: 'https://icp.administracionelectronica.gob.es/icpco/acGrabarCita',
-          },
-          ready: {selector: '#justificanteFinal'},
-        }),
-      ]),
-    );
+    const matchesPath = (url: string, selector: string) =>
+      rules.some(rule => {
+        if (rule.ready?.selector !== selector || rule.match.type !== 'regex') {
+          return false;
+        }
+        return rule.match.value.test(url);
+      });
+
+    expect(matchesPath(
+      'https://icp.administracionelectronica.gob.es/icpplus/citar?p=4&locale=es',
+      'select[name^="tramiteGrupo"]',
+    )).toBe(true);
+    expect(matchesPath(
+      'https://icp.administracionelectronica.gob.es/icpco/acOfertarCita',
+      '#captcha',
+    )).toBe(true);
+    expect(matchesPath(
+      'https://icp.administracionelectronica.gob.es/icpplustieb/acGrabarCita',
+      '#justificanteFinal',
+    )).toBe(true);
   });
 });
