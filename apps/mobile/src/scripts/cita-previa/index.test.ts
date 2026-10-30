@@ -35,9 +35,6 @@ describe('cita previa script map', () => {
     );
 
     expect(scriptMap['https://icp.administracionelectronica.gob.es/icpco/citar']).toContain(
-      '#sede',
-    );
-    expect(scriptMap['https://icp.administracionelectronica.gob.es/icpco/citar']).toContain(
       'TOMA\\s+DE\\s+HUELLAS?',
     );
     expect(scriptMap['https://icp.administracionelectronica.gob.es/icpco/acEntrada']).toContain(
@@ -91,7 +88,7 @@ describe('cita previa script map', () => {
             type: 'prefix',
             value: 'https://icp.administracionelectronica.gob.es/icpco/citar',
           },
-          ready: {selector: '#sede, select[name^="tramiteGrupo"]'},
+          ready: {selector: 'select[name^="tramiteGrupo"]'}
         }),
         expect.objectContaining({
           match: {

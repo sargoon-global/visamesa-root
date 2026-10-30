@@ -1,36 +1,13 @@
 export const OFICINA_URL =
   'https://icp.administracionelectronica.gob.es/icpco/citar';
 
-export const buildOficinaScript = (
-  tramitesOptionIndex,
-  sedeOptionIndex = 0,
-) => `
+export const buildOficinaScript = tramitesOptionIndex => `
   (function() {
     const normalize = value =>
       (value || '')
         .normalize('NFD')
         .replace(/[\\u0300-\\u036f]/g, '')
         .toUpperCase();
-
-    const selectOffice = () => {
-      const office = window.document.querySelector('#sede');
-      if (!office) {
-        return;
-      }
-
-      const options = Array.from(office.options).filter(option =>
-        option.value && !option.disabled,
-      );
-      const target = options[${sedeOptionIndex}] || options[0];
-      if (!target) {
-        return;
-      }
-
-      office.value = target.value;
-      target.selected = true;
-      office.dispatchEvent(new Event('input', {bubbles: true}));
-      office.dispatchEvent(new Event('change', {bubbles: true}));
-    };
 
     const selectTomaDeHuellas = () => {
       const tramites = Array.from(
@@ -68,7 +45,6 @@ export const buildOficinaScript = (
       }
     };
 
-    selectOffice();
     if (selectTomaDeHuellas()) {
       accept();
       return;

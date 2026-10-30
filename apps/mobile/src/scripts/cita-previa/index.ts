@@ -154,16 +154,13 @@ const buildCitaPreviaScriptEntries = (
     },
     {
       url: OFICINA_URL,
-      script: buildOficinaScript(
-        profile.tramitesOptionIndex,
-        profile.sedeOptionIndex ?? 0,
-      ),
+      script: buildOficinaScript(profile.tramitesOptionIndex),
       match: {
         type: 'prefix',
         value: OFICINA_URL,
       },
       ready: {
-        selector: '#sede, select[name^="tramiteGrupo"]',
+        selector: 'select[name^="tramiteGrupo"]',
       },
     },
     {
