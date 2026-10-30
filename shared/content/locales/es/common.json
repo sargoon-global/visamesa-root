@@ -157,6 +157,14 @@
       "detailsUnavailableMessage": "El servicio oficial no proporcionó todos los datos de la cita. Revisa el correo electrónico y el SMS de confirmación e inténtalo de nuevo si es necesario."
     }
   },
+  "citaPrevia": {
+    "errors": {
+      "confirmationUnavailableTitle": "No se pudo continuar con la confirmación de la cita",
+      "confirmationUnavailableMessage": "No se encontró el diálogo o botón oficial de confirmación. Vuelve atrás e inténtalo de nuevo.",
+      "detailsUnavailableTitle": "No se pudieron leer los datos de la cita",
+      "detailsUnavailableMessage": "El servicio oficial no proporcionó todos los datos de la cita. Comprueba la pantalla de confirmación e inténtalo de nuevo."
+    }
+  },
   "bookingAssistant": {
     "missingProfile": "Falta la información del perfil del caso",
     "stopTitle": "Detener asistente de reserva",

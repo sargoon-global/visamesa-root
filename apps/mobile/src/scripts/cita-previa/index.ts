@@ -14,6 +14,21 @@ import {
 import {buildPlaceScript, PLACE_URL} from './place';
 import {buildProvinciaScript, PROVINCIA_URL} from './provincia';
 import {SOLICITAR_CITA_SCRIPT, SOLICITAR_CITA_URL} from './solicitarCita';
+import {
+  SLOT_PICKER_SCRIPT,
+  SLOT_PICKER_URL,
+} from './slotpicker';
+import {
+  APPOINTMENT_CONFIRMATION_SCRIPT,
+  APPOINTMENT_CONFIRMATION_URL,
+} from './confirmation';
+import {APPOINTMENT_FINAL_SCRIPT, APPOINTMENT_FINAL_URL} from './final';
+export {
+  isCitaPreviaMessage,
+  type CitaPreviaAppointmentDraft,
+  type CitaPreviaErrorCode,
+  type CitaPreviaWebViewMessage,
+} from './messages';
 
 export const CITA_PREVIA_SEDE_ENTRY_URL =
   'https://sede.administracionespublicas.gob.es/icpplus/index.html';
@@ -160,6 +175,41 @@ const buildCitaPreviaScriptEntries = (
       },
       ready: {
         selector: '#btnEnviar',
+      },
+    },
+    {
+      url: SLOT_PICKER_URL,
+      script: SLOT_PICKER_SCRIPT,
+      match: {
+        type: 'prefix',
+        value: SLOT_PICKER_URL,
+      },
+      ready: {
+        selector: '#captcha',
+        allSelectors: ['#btnSiguiente'],
+      },
+    },
+    {
+      url: APPOINTMENT_CONFIRMATION_URL,
+      script: APPOINTMENT_CONFIRMATION_SCRIPT,
+      match: {
+        type: 'prefix',
+        value: APPOINTMENT_CONFIRMATION_URL,
+      },
+      ready: {
+        selector: '#chkTotal',
+        allSelectors: ['#citadoForm', '#btnConfirmar'],
+      },
+    },
+    {
+      url: APPOINTMENT_FINAL_URL,
+      script: APPOINTMENT_FINAL_SCRIPT,
+      match: {
+        type: 'prefix',
+        value: APPOINTMENT_FINAL_URL,
+      },
+      ready: {
+        selector: '#justificanteFinal',
       },
     },
   ];

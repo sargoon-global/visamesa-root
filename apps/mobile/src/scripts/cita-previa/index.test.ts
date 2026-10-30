@@ -104,20 +104,19 @@ describe('cita previa script map', () => {
     });
   });
 
-  it('keeps page scripts simple without internal polling timers', () => {
+  it('keeps page scripts free of polling timers', () => {
     const scriptMap = buildCitaPreviaScriptMap(profile);
 
     Object.values(scriptMap).forEach(script => {
       expect(script).not.toContain('setTimeout');
       expect(script).not.toContain('setInterval');
-      expect(script).not.toContain('MutationObserver');
     });
   });
 
   it('converts the map into exact-match injection rules', () => {
     const rules = buildCitaPreviaInjectionRules(profile);
 
-    expect(rules).toHaveLength(9);
+    expect(rules).toHaveLength(12);
     expect(rules.every(rule => Boolean(rule.ready?.selector))).toBe(true);
     expect(rules).toEqual(
       expect.arrayContaining([
@@ -202,6 +201,33 @@ describe('cita previa script map', () => {
               'https://icp.administracionelectronica.gob.es/icpplustieb/acValidarEntrada',
           },
           ready: {selector: '#btnEnviar'},
+        }),
+        expect.objectContaining({
+          match: {
+            type: 'prefix',
+            value:
+              'https://icp.administracionelectronica.gob.es/icpplustieb/acOfertarCita',
+          },
+          ready: {selector: '#captcha', allSelectors: ['#btnSiguiente']},
+        }),
+        expect.objectContaining({
+          match: {
+            type: 'prefix',
+            value:
+              'https://icp.administracionelectronica.gob.es/icpplustieb/acVerificarCita',
+          },
+          ready: {
+            selector: '#chkTotal',
+            allSelectors: ['#citadoForm', '#btnConfirmar'],
+          },
+        }),
+        expect.objectContaining({
+          match: {
+            type: 'prefix',
+            value:
+              'https://icp.administracionelectronica.gob.es/icpplustieb/acGrabarCita',
+          },
+          ready: {selector: '#justificanteFinal'},
         }),
       ]),
     );

@@ -33,6 +33,9 @@ import {
 import {
   buildCitaPreviaInjectionRules,
   CITA_PREVIA_START_URL,
+  isCitaPreviaMessage,
+  type CitaPreviaAppointmentDraft,
+  type CitaPreviaErrorCode,
 } from '@/scripts/cita-previa';
 import {
   buildEmpadronamientoInjectionRules,
@@ -90,6 +93,13 @@ function isTrustedModelo790MessageUrl(url: string | undefined): boolean {
   return isTrustedOfficialMessageUrl(url, 'sede.policia.gob.es');
 }
 
+function isTrustedCitaPreviaMessageUrl(url: string | undefined): boolean {
+  return isTrustedOfficialMessageUrl(
+    url,
+    'icp.administracionelectronica.gob.es',
+  );
+}
+
 function isTrustedEmpadronamientoMessageUrl(
   url: string | undefined,
 ): boolean {
@@ -99,8 +109,10 @@ function isTrustedEmpadronamientoMessageUrl(
   );
 }
 
-function isCompleteEmpadronamientoAppointment(
-  appointment: EmpadronamientoAppointmentDraft,
+function isCompleteBookingAppointment(
+  appointment:
+    | EmpadronamientoAppointmentDraft
+    | CitaPreviaAppointmentDraft,
 ): appointment is BookingAssistantAppointmentSummary & {
   confirmationCode: string;
 } {
@@ -178,6 +190,7 @@ export function useWebsiteWebViewScreen(
     useState(false);
   const pdfInFlight = useRef(false);
   const empadronamientoCompletionInFlight = useRef(false);
+  const citaPreviaCompletionInFlight = useRef(false);
   const bookingAssistantExitAllowedRef = useRef(false);
   const modelo790CaptchaReadyRef = useRef(false);
   const webViewRef = useRef<WebViewHandle>(null);
@@ -443,7 +456,7 @@ export function useWebsiteWebViewScreen(
             };
             (async () => {
               try {
-                if (!isCompleteEmpadronamientoAppointment(appointmentDraft)) {
+                if (!isCompleteBookingAppointment(appointmentDraft)) {
                   setEmpadronamientoSubmitting(false);
                   setWebViewError({
                     title: t('empadronamiento.errors.detailsUnavailableTitle'),
@@ -493,6 +506,86 @@ export function useWebsiteWebViewScreen(
             })();
             return;
           }
+        }
+
+        if (isCitaPreviaMessage(message)) {
+          if (!isTrustedCitaPreviaMessageUrl(event.nativeEvent.url)) {
+            return;
+          }
+
+          if (message.type === 'cita-previa-error') {
+            const errorKeyByCode: Record<
+              CitaPreviaErrorCode,
+              {title: string; message: string}
+            > = {
+              slot_confirmation_unavailable: {
+                title: t('citaPrevia.errors.confirmationUnavailableTitle'),
+                message: t('citaPrevia.errors.confirmationUnavailableMessage'),
+              },
+              appointment_confirmation_unavailable: {
+                title: t('citaPrevia.errors.confirmationUnavailableTitle'),
+                message: t('citaPrevia.errors.confirmationUnavailableMessage'),
+              },
+            };
+            setWebViewError(errorKeyByCode[message.payload.code]);
+            return;
+          }
+
+          if (citaPreviaCompletionInFlight.current) {
+            return;
+          }
+          citaPreviaCompletionInFlight.current = true;
+          const appointmentDraft = message.payload;
+          (async () => {
+            try {
+              if (!isCompleteBookingAppointment(appointmentDraft)) {
+                citaPreviaCompletionInFlight.current = false;
+                setWebViewError({
+                  title: t('citaPrevia.errors.detailsUnavailableTitle'),
+                  message: t('citaPrevia.errors.detailsUnavailableMessage'),
+                });
+                return;
+              }
+
+              const appointment: BookingAssistantAppointmentSummary = {
+                office: appointmentDraft.office.trim(),
+                date: appointmentDraft.date.trim(),
+                time: appointmentDraft.time.trim(),
+                location: appointmentDraft.location?.trim() || undefined,
+                confirmationCode: appointmentDraft.confirmationCode.trim(),
+              };
+              const completion = route.params?.bookingCompletion;
+              if (completion) {
+                const progress = await fetchUserProgress();
+                await updateRequirementProgress(
+                  progress,
+                  completion.stepId,
+                  completion.requirementKey,
+                  {
+                    completed: true,
+                    source: {
+                      type: ASSISTED_BOOKING_REQUIREMENT_TYPE,
+                      bookingAssistantId: 'cita-previa',
+                      completedAt: new Date().toISOString(),
+                      appointment,
+                    },
+                  },
+                );
+              }
+              bookingAssistantExitAllowedRef.current = true;
+              navigation.goBack();
+            } catch (error) {
+              citaPreviaCompletionInFlight.current = false;
+              setWebViewError({
+                title: t('bookingAssistant.bookingFailedTitle'),
+                message:
+                  error instanceof Error
+                    ? error.message
+                    : t('bookingAssistant.unknownError'),
+              });
+            }
+          })();
+          return;
         }
 
         if (isModelo790 && isModelo790Error(message)) {

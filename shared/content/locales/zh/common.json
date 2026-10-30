@@ -157,6 +157,14 @@
       "detailsUnavailableMessage": "官方服务未提供完整的预约信息。请查看确认邮件和短信，必要时重试。"
     }
   },
+  "citaPrevia": {
+    "errors": {
+      "confirmationUnavailableTitle": "无法继续确认预约",
+      "confirmationUnavailableMessage": "未找到官方确认对话框或按钮。请返回后重试。",
+      "detailsUnavailableTitle": "无法读取预约详情",
+      "detailsUnavailableMessage": "官方服务未提供完整的预约详情。请检查确认页面后重试。"
+    }
+  },
   "bookingAssistant": {
     "missingProfile": "缺少案例资料信息",
     "stopTitle": "停止预约助手",

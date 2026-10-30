@@ -157,6 +157,14 @@
       "detailsUnavailableMessage": "The official service did not provide complete appointment details. Please check the confirmation email and SMS, then try again if needed."
     }
   },
+  "citaPrevia": {
+    "errors": {
+      "confirmationUnavailableTitle": "Appointment confirmation could not continue",
+      "confirmationUnavailableMessage": "The official appointment confirmation dialog or button was unavailable. Please go back and try again.",
+      "detailsUnavailableTitle": "Appointment details could not be read",
+      "detailsUnavailableMessage": "The official service did not provide complete appointment details. Please check the confirmation page and try again."
+    }
+  },
   "bookingAssistant": {
     "missingProfile": "Case profile information is missing",
     "stopTitle": "Stop booking assistant",

@@ -51,6 +51,13 @@ jest.mock('@/webViewInjection/useWebViewInjection', () => ({
   }),
 }));
 
+const citaRoute = {
+  params: {
+    bookingAssistant: 'cita-previa' as const,
+    bookingCompletion: {stepId: 2, requirementKey: 'appointment-confirmation'},
+  },
+} as never;
+
 const route = {
   params: {
     bookingAssistant: 'empadronamiento' as const,
@@ -74,6 +81,76 @@ function appointmentMessage(url: string, confirmationCode = '16723178') {
     },
   } as never;
 }
+
+function citaAppointmentMessage(url: string, confirmationCode = '3584AX7F') {
+  return {
+    nativeEvent: {
+      url,
+      data: JSON.stringify({
+        type: 'cita-previa-booking-complete',
+        payload: {
+          office: 'CNP Comisaría Oficina de tramitación',
+          date: '04/11/2026',
+          time: '09:15',
+          location: 'Olaguibel 15 Vitoria-Gasteiz 01071',
+          confirmationCode,
+        },
+      }),
+    },
+  } as never;
+}
+
+describe('useWebsiteWebViewScreen Cita Previa completion', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (fetchUserProgress as jest.Mock).mockResolvedValue({steps: []});
+    updateProgress.mockResolvedValue({steps: []});
+  });
+
+  it('persists a valid final confirmation from the official host', async () => {
+    const getState = renderHook(() => useWebsiteWebViewScreen(citaRoute));
+    await flushAsyncEffects();
+
+    await act(async () => {
+      getState().onMessage(
+        citaAppointmentMessage(
+          'https://icp.administracionelectronica.gob.es/icpplustieb/acGrabarCita',
+        ),
+      );
+      await Promise.resolve();
+    });
+
+    expect(updateRequirementProgress).toHaveBeenCalledWith(
+      {steps: []},
+      2,
+      'appointment-confirmation',
+      expect.objectContaining({
+        completed: true,
+        source: expect.objectContaining({
+          bookingAssistantId: 'cita-previa',
+          appointment: expect.objectContaining({
+            date: '04/11/2026',
+            confirmationCode: '3584AX7F',
+          }),
+        }),
+      }),
+    );
+    expect(mockNavigation.goBack).toHaveBeenCalledTimes(1);
+  });
+
+  it('rejects Cita Previa completion messages from an untrusted host', async () => {
+    const getState = renderHook(() => useWebsiteWebViewScreen(citaRoute));
+    await flushAsyncEffects();
+
+    await act(async () => {
+      getState().onMessage(citaAppointmentMessage('https://evil.example/acGrabarCita'));
+      await Promise.resolve();
+    });
+
+    expect(updateRequirementProgress).not.toHaveBeenCalled();
+    expect(mockNavigation.goBack).not.toHaveBeenCalled();
+  });
+});
 
 describe('useWebsiteWebViewScreen empadronamiento completion', () => {
   beforeEach(() => {
