@@ -208,6 +208,7 @@ const WebsiteWebViewScreen = () => {
         source={webViewSource}
         userAgent={getWebViewUserAgent()}
         originWhitelist={['*']}
+        incognito={Boolean(route.params?.bookingAssistant)}
         javaScriptEnabled
         domStorageEnabled
         sharedCookiesEnabled
