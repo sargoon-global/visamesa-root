@@ -1,5 +1,5 @@
 export const CLAVE_URL =
-  'https://icp.administracionelectronica.gob.es/icpplustieb/acInfo';
+  'https://icp.administracionelectronica.gob.es/icpco/acInfo';
 
 export const CLAVE_SCRIPT = `
   (function() {

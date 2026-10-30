@@ -1,5 +1,5 @@
 export const APPOINTMENT_CONFIRMATION_URL =
-  'https://icp.administracionelectronica.gob.es/icpplustieb/acVerificarCita';
+  'https://icp.administracionelectronica.gob.es/icpco/acVerificarCita';
 
 export const APPOINTMENT_CONFIRMATION_SCRIPT = `
   (function() {

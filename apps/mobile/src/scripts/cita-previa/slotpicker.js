@@ -1,5 +1,5 @@
 export const SLOT_PICKER_URL =
-  'https://icp.administracionelectronica.gob.es/icpplustieb/acOfertarCita';
+  'https://icp.administracionelectronica.gob.es/icpco/acOfertarCita';
 
 export const SLOT_PICKER_SCRIPT = `
   (function() {

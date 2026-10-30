@@ -1,5 +1,5 @@
 export const APPOINTMENT_FORM_URL =
-  'https://icp.administracionelectronica.gob.es/icpplustieb/acVerFormulario';
+  'https://icp.administracionelectronica.gob.es/icpco/acVerFormulario';
 
 export const buildAppointmentFormScript = (details = {}) => {
   const phone = JSON.stringify(details.phone ?? '');

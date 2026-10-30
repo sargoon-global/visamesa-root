@@ -1,5 +1,5 @@
 export const APPOINTMENT_FINAL_URL =
-  'https://icp.administracionelectronica.gob.es/icpplustieb/acGrabarCita';
+  'https://icp.administracionelectronica.gob.es/icpco/acGrabarCita';
 
 export const APPOINTMENT_FINAL_SCRIPT = `
   (function() {

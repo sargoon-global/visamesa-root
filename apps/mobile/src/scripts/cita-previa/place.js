@@ -1,5 +1,5 @@
 export const PLACE_URL =
-  'https://icp.administracionelectronica.gob.es/icpplustieb/acOpciones';
+  'https://icp.administracionelectronica.gob.es/icpco/acOpciones';
 
 export const buildPlaceScript = (sedeOptionIndex = 0) => `
   (function() {

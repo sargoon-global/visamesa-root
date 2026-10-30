@@ -1,5 +1,5 @@
 export const SOLICITAR_CITA_URL =
-  'https://icp.administracionelectronica.gob.es/icpplustieb/acValidarEntrada';
+  'https://icp.administracionelectronica.gob.es/icpco/acValidarEntrada';
 
 export const SOLICITAR_CITA_SCRIPT = `
   (function() {

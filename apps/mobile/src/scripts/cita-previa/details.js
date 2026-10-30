@@ -1,5 +1,5 @@
 export const DETAILS_URL =
-  'https://icp.administracionelectronica.gob.es/icpplustieb/acEntrada';
+  'https://icp.administracionelectronica.gob.es/icpco/acEntrada';
 
 export const buildDetailsScript = (details = {}) => {
   const nie = JSON.stringify(details.nie ?? '');

@@ -1,5 +1,5 @@
 export const OFICINA_URL =
-  'https://icp.administracionelectronica.gob.es/icpplustieb/citar?p=8&locale=es';
+  'https://icp.administracionelectronica.gob.es/icpco/citar';
 
 export const buildOficinaScript = tramitesOptionIndex => `
   (function() {
