@@ -30,7 +30,7 @@ type RequirementItemProps = {
   onRequirementCheckboxToggle?: () => void;
   onBookingAssistantPress?: () => void;
   onViewAppointmentPress?: () => void;
-  onClearBookingAssistantPress?: () => void;
+  onConfirmBookingPress?: () => void;
   onFormPress?: () => void;
   showApproveDownload?: boolean;
   canApproveDownload?: boolean;
@@ -53,7 +53,7 @@ export function RequirementItem({
   onRequirementCheckboxToggle,
   onBookingAssistantPress,
   onViewAppointmentPress,
-  onClearBookingAssistantPress,
+  onConfirmBookingPress,
   onFormPress,
   showApproveDownload = false,
   canApproveDownload = false,
@@ -75,19 +75,10 @@ export function RequirementItem({
       : requirement.type === 'form'
         ? completed && canUncheck
         : false);
-  const bookingAssistantSource =
-    progress.source?.type === ASSISTED_BOOKING_REQUIREMENT_TYPE
-      ? progress.source
-      : undefined;
-  const hasConfirmedAppointment = Boolean(bookingAssistantSource?.appointment);
-  const canClearBookingAssistant =
-    interactive &&
-    requirement.type === ASSISTED_BOOKING_REQUIREMENT_TYPE &&
-    completed &&
-    !hasConfirmedAppointment &&
-    canUncheck;
   const showBookAction =
     !completed && requirement.type === ASSISTED_BOOKING_REQUIREMENT_TYPE;
+  const showConfirmBookingAction =
+    showBookAction && Boolean(onConfirmBookingPress);
   const showFormAction = !completed && requirement.type === 'form';
   const canPerformActions =
     requirement.type === ASSISTED_BOOKING_REQUIREMENT_TYPE ||
@@ -249,6 +240,19 @@ export function RequirementItem({
             accessibilityHint={dependencyHint}
             style={styles.actionButtonNested}
           />
+          {showConfirmBookingAction ? (
+            <Button
+              label={t('confirmBooking')}
+              variant="tonal"
+              disabled={!actionsEnabled}
+              onPress={onConfirmBookingPress}
+              accessibilityLabel={t('confirmBookingAccessibilityLabel', {
+                label: requirement.label,
+              })}
+              accessibilityHint={dependencyHint}
+              style={styles.actionButtonNested}
+            />
+          ) : null}
         </View>
       ) : null}
       {showFormAction ? (
@@ -320,19 +324,6 @@ export function RequirementItem({
               </View>
             </Button>
           ) : null}
-        </View>
-      ) : null}
-      {canClearBookingAssistant ? (
-        <View style={styles.completedActions}>
-          <Button
-            label={t('markAsNotBooked')}
-            variant="outline"
-            onPress={onClearBookingAssistantPress}
-            accessibilityLabel={t('markAsNotBookedAccessibilityLabel', {
-              label: requirement.label,
-            })}
-            style={styles.actionButton}
-          />
         </View>
       ) : null}
     </View>

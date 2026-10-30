@@ -16,13 +16,13 @@ export const tieSteps = [
   },
   {
     id: 3,
-    title: 'Cita previa toma de huellas',
-    description: 'Book a fingerprint appointment (toma de huellas) on the official Policía Nacional site.',
+    title: 'Modelo 790 TIE fee (código 012)',
+    description: 'Pay the government TIE issuance fee with Modelo 790 código 012 before your appointment.',
   },
   {
     id: 4,
-    title: 'Modelo 790 TIE fee (código 012)',
-    description: 'Pay the government TIE issuance fee with Modelo 790 código 012 before your appointment.',
+    title: 'Cita previa toma de huellas',
+    description: 'Book a fingerprint appointment (toma de huellas) on the official Policía Nacional site.',
   },
   {
     id: 5,

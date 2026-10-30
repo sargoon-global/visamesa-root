@@ -40,10 +40,6 @@ type UseUserProgressResult = {
     bookingAssistantId: BookingAssistantId,
     appointment?: BookingAssistantAppointmentSummary,
   ) => Promise<void>;
-  clearBookingAssistantRequirement: (
-    stepId: number,
-    requirementLabel: string,
-  ) => Promise<void>;
   completeFormRequirement: (
     stepId: number,
     requirementLabel: string,
@@ -183,23 +179,6 @@ export function useUserProgress(): UseUserProgressResult {
     [applyProgress, progress],
   );
 
-  const clearBookingAssistantRequirement = useCallback(
-    async (stepId: number, requirementLabel: string) => {
-      if (!progress) {
-        return;
-      }
-
-      const next = await updateRequirementProgress(
-        progress,
-        stepId,
-        requirementLabel,
-        {completed: false},
-      );
-      await applyProgress(next);
-    },
-    [applyProgress, progress],
-  );
-
   const completeFormRequirement = useCallback(
     async (stepId: number, requirementLabel: string, formId: string) => {
       if (!progress) {
@@ -233,7 +212,6 @@ export function useUserProgress(): UseUserProgressResult {
     completeStep,
     toggleSelfDeclaredRequirement,
     completeBookingAssistantRequirement,
-    clearBookingAssistantRequirement,
     completeFormRequirement,
   };
 }

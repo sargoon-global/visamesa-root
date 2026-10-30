@@ -13,6 +13,8 @@ export const API_ENDPOINTS = {
   encryptedDetails: '/users/me/encrypted-details',
   userConsent: '/users/me/consent',
   userProgress: '/users/me/progress',
+  citaPreviaBooking: '/users/me/cita-previa-booking',
+  personalDetailsLock: '/users/me/personal-details-lock',
   clientErrors: '/users/me/client-errors',
   supportTickets: '/users/support/tickets',
   publicSupportTickets: '/support/tickets',

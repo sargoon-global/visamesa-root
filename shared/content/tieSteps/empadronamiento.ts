@@ -1,4 +1,4 @@
-import { EMPADRONAMIENTO_CERTIFICATE_VALIDITY_DAYS } from './constants'
+import { EMPADRONAMIENTO_CERTIFICATE_VALIDITY_DAYS } from './constants.js'
 
 export function isEmpadronamientoCertificateValid(
   issuedAt: string | Date,

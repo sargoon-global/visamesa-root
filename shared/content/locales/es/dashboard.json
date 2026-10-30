@@ -51,14 +51,17 @@
   "formDownloaded": "Formulario guardado en tu dispositivo",
   "formDownloadCancelled": "Descarga cancelada",
   "approveDownloadAccessibilityLabel": "Aprobar y descargar {{label}}",
+  "confirmBooking": "Ya tengo mi cita",
+  "confirmBookingAccessibilityLabel": "Confirmar cita de {{label}}",
+  "confirmBookingTitle": "Confirmar cita",
+  "confirmBookingMessage": "Confirma solo si recibiste la confirmación oficial de la cita.",
+  "confirmBookingFailed": "No se pudo confirmar la cita. Inténtalo de nuevo.",
   "bookViaVisaMesa": "Reservar con VisaMesa",
   "reviewForm": "Revisar formulario rellenado por VisaMesa",
   "viewAppointment": "Ver cita",
-  "markAsNotBooked": "Marcar como no reservado",
   "bookAccessibilityLabel": "Reservar {{label}}",
   "reviewAccessibilityLabel": "Revisar {{label}}",
   "viewAppointmentAccessibilityLabel": "Ver cita de {{label}}",
-  "markAsNotBookedAccessibilityLabel": "Marcar {{label}} como no reservado",
   "requirementsInfoAccessibilityLabel": "Sobre la lista de tareas",
   "readinessTitle": "Antes de empezar",
   "readinessDescription": "Completa tu perfil para empezar el proceso",
@@ -71,5 +74,11 @@
     "notNow": "Ahora no",
     "action": "Completar perfil"
   },
-  "loadProgressFailed": "No se ha podido cargar el progreso"
+  "loadProgressFailed": "No se ha podido cargar el progreso",
+  "profileLockDialog": {
+    "title": "Confirmar pago en el banco y justificante sellado",
+    "message": "Confirma que has pagado en un banco español y que tienes el recibo de pago.\n\nPara proteger tu información, tus datos personales se bloquearán al continuar y ya no podrás cambiarlos. Tómate un momento para comprobar que todo es correcto.\n\nTu información seguirá guardada de forma segura.",
+    "confirm": "Continuar y bloquear datos",
+    "failed": "No hemos podido bloquear tu perfil. Comprueba la conexión e inténtalo de nuevo."
+  }
 }

@@ -270,15 +270,10 @@
           "description": "Imprime todas las copias — los códigos de barras deben ser legibles.",
           "detail": "Cuando el formulario esté listo, descárgalo e imprime todas las copias del Modelo 790. El banco se quedará una copia y te devolverá las restantes selladas como justificante de pago."
         },
-        "pay-at-bank": {
-          "label": "Paga en un banco español",
-          "description": "Lleva los formularios impresos a un banco español.",
-          "detail": "Lleva los formularios impresos a un banco en España que acepte el pago de tasas oficiales.\n\nBancos habituales donde suele pagarse esta tasa:\n• CaixaBank\n• BBVA\n• Banco Santander\n• Banco Sabadell\n• Bankinter\n\nEn el banco, entrega los formularios Modelo 790 impresos al cajero, paga la tasa con uno de los métodos de pago que acepte el banco y el banco sellará tus formularios para confirmar que se ha recibido el pago."
-        },
         "fee-payment-receipt": {
-          "label": "Justificante de pago sellado",
-          "description": "Conserva la copia que sella el banco para tu cita.",
-          "detail": "Después de pagar, el banco te devolverá tu copia sellada del Modelo 790.\n\nImportante: guarda este justificante sellado en un lugar seguro. Es la prueba oficial de que pagaste la tasa.\n\nCuando acudas a tu cita de toma de huellas en el Paso 5, debes llevar el justificante sellado del Modelo 790. Sin prueba de pago, tu cita puede no completarse."
+          "label": "Paga en el banco y guarda el justificante sellado",
+          "description": "Paga la tasa en un banco español y conserva la copia sellada para tu cita.",
+          "detail": "Lleva los formularios impresos a un banco en España que acepte el pago de tasas oficiales.\n\nBancos habituales donde suele pagarse esta tasa:\n• CaixaBank\n• BBVA\n• Banco Santander\n• Banco Sabadell\n• Bankinter\n\nEn el banco, entrega los formularios Modelo 790 impresos al cajero y paga la tasa con uno de los métodos de pago que acepte el banco. El banco sellará tus formularios y te devolverá tu copia sellada como justificante de pago.\n\nImportante: guarda este justificante sellado en un lugar seguro. Es la prueba oficial de que pagaste la tasa.\n\nCuando acudas a tu cita de toma de huellas en el Paso 5, debes llevar el justificante sellado del Modelo 790. Sin prueba de pago, tu cita puede no completarse."
         }
       }
     },
@@ -328,8 +323,8 @@
         },
         "modelo-790-receipt": {
           "label": "Modelo 790 pagado (recibo sellado)",
-          "description": "Del Paso 4 — la copia sellada que tienes en mano.",
-          "detail": "Es el recibo físico que el banco sella cuando pagas en el Paso 4. VisaMesa no puede verlo ni compartirlo — asegúrate de llevar esa copia sellada contigo."
+          "description": "Del Paso 3 — la copia sellada que tienes en mano.",
+          "detail": "Es el recibo físico que el banco sella cuando pagas en el Paso 3. VisaMesa no puede verlo ni compartirlo — asegúrate de llevar esa copia sellada contigo."
         },
         "valid-passport": {
           "label": "Pasaporte original",
@@ -358,8 +353,8 @@
         },
         "appointment-confirmation-doc": {
           "label": "Confirmación de Cita Previa",
-          "description": "Confirmación impresa de la reserva del Paso 3.",
-          "detail": "El correo de confirmación de Cita Previa tras reservar en el Paso 3 — indica la comisaría, la fecha y la hora. Imprímelo o muéstralo en el móvil."
+          "description": "Confirmación impresa de la reserva del Paso 4.",
+          "detail": "El correo de confirmación de Cita Previa tras reservar en el Paso 4 — indica la comisaría, la fecha y la hora. Imprímelo o muéstralo en el móvil."
         },
         "print-documents": {
           "label": "Imprime todos los documentos",

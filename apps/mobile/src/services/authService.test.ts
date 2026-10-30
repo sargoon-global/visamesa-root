@@ -23,6 +23,10 @@ jest.mock('@/features/pdfGeneration/forms/modelo790/modelo790Storage', () => ({
     mockClearModelo790InProgressSession(userId),
 }));
 
+jest.mock('@/features/dashboard/services/progressService', () => ({
+  clearStoredUserProgress: jest.fn(() => Promise.resolve()),
+}));
+
 jest.mock('@react-native-google-signin/google-signin', () => ({
   GoogleSignin: {
     configure: jest.fn(),

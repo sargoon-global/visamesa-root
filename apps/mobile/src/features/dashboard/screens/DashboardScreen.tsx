@@ -53,7 +53,7 @@ const DashboardScreen = ({navigation}: DashboardScreenProps) => {
     onRequirementCheckboxToggle,
     onBookingAssistantPress,
     onViewAppointmentPress,
-    onClearBookingAssistantPress,
+    onConfirmBookingPress,
     onFormPress,
     onApproveAndDownloadForm,
     onFormView,
@@ -121,7 +121,7 @@ const DashboardScreen = ({navigation}: DashboardScreenProps) => {
             onRequirementCheckboxToggle={onRequirementCheckboxToggle}
             onBookingAssistantPress={onBookingAssistantPress}
             onViewAppointmentPress={onViewAppointmentPress}
-            onClearBookingAssistantPress={onClearBookingAssistantPress}
+            onConfirmBookingPress={onConfirmBookingPress}
             onFormPress={onFormPress}
             onApproveAndDownloadForm={onApproveAndDownloadForm}
             onFormView={onFormView}

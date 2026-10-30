@@ -21,6 +21,10 @@ jest.mock('@/components/Toast/ToastProvider', () => ({
   }),
 }));
 
+jest.mock('@/features/pdfGeneration/forms/modelo790/modelo790Storage', () => ({
+  clearModelo790LocalSession: jest.fn(() => Promise.resolve()),
+}));
+
 jest.mock('@/features/profile/services/profileService', () => ({
   getProfile: jest.fn(),
   updateProfile: jest.fn(),
@@ -32,6 +36,7 @@ jest.mock('@/features/dashboard/services/progressService', () => ({
   saveUserProgress: (...args: unknown[]) => mockSaveUserProgress(...args),
   tryHydrateProgressFromServer: (...args: unknown[]) =>
     mockTryHydrateProgressFromServer(...args),
+  notifyProgressStoreChanged: jest.fn(),
 }));
 
 jest.mock('@/features/dashboard/services/empadronamientoProgressService', () => ({
@@ -80,6 +85,20 @@ describe('useProfile', () => {
     expect(getProfile).toHaveBeenCalled();
     expect(mockTryHydrateProgressFromServer).toHaveBeenCalled();
     expect(getHookState().profileData?.personal?.firstName).toBe('Jane');
+  });
+
+  it('does not set isLoading on background profile refresh', async () => {
+    const getHookState = await renderHookAsync(
+      () => useProfile(true),
+      state => !state.isLoading,
+    );
+
+    await act(async () => {
+      await getHookState().refreshProfile();
+    });
+
+    expect(getHookState().isLoading).toBe(false);
+    expect(getProfile).toHaveBeenCalledTimes(2);
   });
 
   it('prefills email from the authenticated user when profile email is empty', async () => {

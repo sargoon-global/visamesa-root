@@ -45,6 +45,10 @@
     "openLink": "Could not open the link",
     "loadServices": "Could not load pricing. Please refresh the page.",
     "openWebsite": "Unable to open the VisaMesa website",
+    "profileLocked": "Personal information is locked after you confirmed your stamped Modelo 790 payment receipt.",
+    "feePaymentReceiptRequired": "Mark your stamped Modelo 790 payment receipt complete in the journey before locking personal details.",
+    "entitlementRequired": "Payment is required before confirming this appointment.",
+    "citaPreviaAlreadyBooked": "You have already confirmed a Cita Previa on this account.",
     "api": {
       "notFound": "The requested resource was not found.",
       "unauthorized": "You need to sign in to continue.",

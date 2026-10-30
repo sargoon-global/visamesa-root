@@ -57,14 +57,14 @@ describe('modelo790Storage', () => {
     await setModelo790PendingReview({
       requirementKey: 'modelo-790-form',
       formId: 'modelo-790-012',
-      stepId: 4,
+      stepId: 3,
       showNextStepsAlert: true,
     });
 
     await expect(loadModelo790PendingReview()).resolves.toEqual({
       requirementKey: 'modelo-790-form',
       formId: 'modelo-790-012',
-      stepId: 4,
+      stepId: 3,
       showNextStepsAlert: true,
     });
   });

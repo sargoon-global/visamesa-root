@@ -10,7 +10,7 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 const mockShowToast = jest.fn();
 const mockLogout = jest.fn();
-const mockRefreshReadiness = jest.fn();
+const mockRefreshReadinessForProfileDisplay = jest.fn();
 const mockOpenPricing = jest.fn();
 const mockOpenPricingStatus = jest.fn();
 
@@ -82,7 +82,7 @@ function mockReadiness({
     isProfileComplete,
     missing: [...missing],
     isLoading,
-    refreshReadiness: mockRefreshReadiness,
+    refreshReadinessForProfileDisplay: mockRefreshReadinessForProfileDisplay,
   });
 }
 
@@ -90,8 +90,8 @@ describe('useProfileScreen', () => {
   beforeEach(() => {
     mockShowToast.mockReset();
     mockLogout.mockReset();
-    mockRefreshReadiness.mockReset();
-    mockRefreshReadiness.mockResolvedValue(undefined);
+    mockRefreshReadinessForProfileDisplay.mockReset();
+    mockRefreshReadinessForProfileDisplay.mockResolvedValue(undefined);
     mockUseFocusEffect.mockReset();
     mockReadiness();
     mockOpenPricing.mockReset();
@@ -140,7 +140,7 @@ describe('useProfileScreen', () => {
     expect(navigation.navigate).toHaveBeenCalledWith('Login');
   });
 
-  it('refreshes readiness when the screen gains focus', () => {
+  it('refreshes payment and legal readiness when the screen gains focus', () => {
     useAuth.mockReturnValue({
       user: {id: '1', email: 'user@example.com'},
       isLoading: false,
@@ -160,7 +160,7 @@ describe('useProfileScreen', () => {
       focusCallback();
     });
 
-    expect(mockRefreshReadiness).toHaveBeenCalled();
+    expect(mockRefreshReadinessForProfileDisplay).toHaveBeenCalled();
   });
 
   it('loads profile data when authenticated', () => {

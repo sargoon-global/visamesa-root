@@ -73,6 +73,7 @@
   "errors": {
     "alreadyEntitled": "You already have an active service on this account.",
     "stripeNoCheckoutUrl": "Stripe did not return a checkout URL",
-    "syncFailed": "Failed to confirm payment with the server"
+    "syncFailed": "Failed to confirm payment with the server",
+    "paymentUnavailable": "Checkout is temporarily unavailable. Please try again in a few minutes."
   }
 }

@@ -61,16 +61,10 @@ const payFeeRequirements: RequirementManifest[] = [
     dependsOnKeys: ['modelo-790-form'],
   },
   {
-    key: 'pay-at-bank',
-    type: 'self_declared',
-    location: 'in_person',
-    dependsOnKeys: ['print-modelo-790'],
-  },
-  {
     key: 'fee-payment-receipt',
     type: 'self_declared',
     location: 'in_person',
-    dependsOnKeys: ['pay-at-bank'],
+    dependsOnKeys: ['print-modelo-790'],
   },
 ]
 
@@ -161,7 +155,7 @@ export const tieStepManifest: Record<TieStepSlug, TieStepManifestEntry> = {
     requirements: empadronamientoRequirements,
   },
   'toma-de-huellas': {
-    id: 3,
+    id: 4,
     slug: 'toma-de-huellas',
     officialLinkUrls: [
       'https://sede.administracionespublicas.gob.es/icpplus/index.html',
@@ -177,7 +171,7 @@ export const tieStepManifest: Record<TieStepSlug, TieStepManifestEntry> = {
     requirements: requiredDocumentsRequirements,
   },
   'pay-fee': {
-    id: 4,
+    id: 3,
     slug: 'pay-fee',
     officialLinkUrls: ['https://sede.policia.gob.es/Tasa790_012/'],
     requirements: payFeeRequirements,

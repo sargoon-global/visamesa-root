@@ -225,8 +225,8 @@ Status: Initial audit complete; no code change made
 
 Findings 2026-10-10:
 
-- Manifest structure is coherent: `modelo-790-form` → `print-modelo-790` → `pay-at-bank` → `fee-payment-receipt`.
-- Step 5 `modelo-790-receipt` references Step 4 `fee-payment-receipt`.
+- Manifest structure is coherent: `modelo-790-form` → `print-modelo-790` → `fee-payment-receipt` (legacy `pay-at-bank` merged on load).
+- Step 5 `modelo-790-receipt` references Step 3 `fee-payment-receipt` (pay-fee step).
 - Content clearly separates generating/downloading Modelo 790 from printing, paying at a bank, and keeping stamped receipt.
 - No obvious dependency bug found in static audit.
 

@@ -18,6 +18,8 @@ export type UserEntitlement = {
 
 export type EntitlementsResponse = {
   entitlements: UserEntitlement[]
+  citaPreviaBookedAt: string | null
+  personalDetailsLockedAt: string | null
 }
 
 function activeTypes(entitlements: UserEntitlement[]): Set<string> {

@@ -1,4 +1,5 @@
 import { isAxiosError } from 'axios';
+import { Platform } from 'react-native';
 import { statusCodes } from '@react-native-google-signin/google-signin';
 import { i18n } from '@visamesa/content/i18n';
 
@@ -52,6 +53,22 @@ export function getGoogleSignInErrorMessage(error: unknown): string {
     message.toLowerCase().includes("couldn't sign in")
   ) {
     return t('googleAndroidMisconfig');
+  }
+
+  if (Platform.OS === 'ios') {
+    const lower = message.toLowerCase();
+
+    if (
+      lower.includes('network connection was lost') ||
+      lower.includes('network connection lost') ||
+      lower.includes('internet connection appears to be offline')
+    ) {
+      return t('googleIosNetworkLost');
+    }
+
+    if (lower.includes('safari') || lower.includes('invalid')) {
+      return t('googleIosMisconfig');
+    }
   }
 
   return message;

@@ -270,15 +270,10 @@
           "description": "Print all copies — barcodes must be clear.",
           "detail": "Once the form is ready, download and print all copies of the Modelo 790 form. The bank will keep one copy and return the remaining stamped copies to you as proof of payment."
         },
-        "pay-at-bank": {
-          "label": "Pay at a Spanish bank",
-          "description": "Take your printed forms to a Spanish bank.",
-          "detail": "Take the printed forms to a bank in Spain that accepts government fee payments.\n\nCommon banks where people usually pay this fee include:\n• CaixaBank\n• BBVA\n• Banco Santander\n• Banco Sabadell\n• Bankinter\n\nAt the bank, give the printed Modelo 790 forms to the cashier, pay the fee using one of the payment methods accepted by the bank, and the bank will stamp your forms to confirm that the payment has been received."
-        },
         "fee-payment-receipt": {
-          "label": "Stamped payment receipt",
-          "description": "Keep the copy the bank stamps for your appointment.",
-          "detail": "After paying, the bank will return your stamped copy of the Modelo 790 form.\n\nImportant: Keep this stamped receipt in a safe place. It is your official proof that you paid the government fee.\n\nWhen you attend your fingerprint appointment in Step 5, you must bring the stamped Modelo 790 receipt with you. Without proof of payment, your appointment may not be completed."
+          "label": "Pay at a bank and keep your stamped receipt",
+          "description": "Pay the fee at a Spanish bank and keep the stamped copy for your appointment.",
+          "detail": "Take the printed forms to a bank in Spain that accepts government fee payments.\n\nCommon banks where people usually pay this fee include:\n• CaixaBank\n• BBVA\n• Banco Santander\n• Banco Sabadell\n• Bankinter\n\nAt the bank, give the printed Modelo 790 forms to the cashier and pay the fee using one of the payment methods the bank accepts. The bank will stamp your forms and return your stamped copy as proof of payment.\n\nImportant: Keep this stamped receipt in a safe place. It is your official proof that you paid the government fee.\n\nWhen you attend your fingerprint appointment in Step 5, you must bring the stamped Modelo 790 receipt with you. Without proof of payment, your appointment may not be completed."
         }
       }
     },
@@ -328,8 +323,8 @@
         },
         "modelo-790-receipt": {
           "label": "Paid Modelo 790 (stamped receipt)",
-          "description": "From Step 4 — the bank-stamped copy in your hands.",
-          "detail": "This is the physical receipt the bank stamps when you pay in Step 4. VisaMesa cannot view or share it — make sure you have that stamped copy with you."
+          "description": "From Step 3 — the bank-stamped copy in your hands.",
+          "detail": "This is the physical receipt the bank stamps when you pay in Step 3. VisaMesa cannot view or share it — make sure you have that stamped copy with you."
         },
         "valid-passport": {
           "label": "Original passport",
@@ -358,8 +353,8 @@
         },
         "appointment-confirmation-doc": {
           "label": "Cita Previa confirmation",
-          "description": "Printed booking confirmation from Step 3.",
-          "detail": "The confirmation email from Cita Previa after you booked in Step 3 — it shows the police office, date, and time. Print it or show it on your phone."
+          "description": "Printed booking confirmation from Step 4.",
+          "detail": "The confirmation email from Cita Previa after you booked in Step 4 — it shows the police office, date, and time. Print it or show it on your phone."
         },
         "print-documents": {
           "label": "Print all documents",

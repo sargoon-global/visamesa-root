@@ -23,6 +23,21 @@ jest.mock('@/features/profile/context/ProfileDataContext', () => ({
   }),
 }));
 
+jest.mock('@/contexts/EntitlementsContext', () => ({
+  useEntitlements: () => ({isPersonalDetailsLocked: false}),
+}));
+
+jest.mock('@/features/profile/hooks/useStepInvalidationPrompt', () => ({
+  useStepInvalidationPrompt: () => ({
+    affectedSteps: [],
+    isDialogVisible: false,
+    isConfirming: false,
+    requestConfirmation: jest.fn(async () => 'save'),
+    cancel: jest.fn(),
+    confirm: jest.fn(),
+  }),
+}));
+
 jest.mock('@/features/profile/services/consentService', () => ({
   consentService: {
     hasAcceptedConsent: jest.fn(),

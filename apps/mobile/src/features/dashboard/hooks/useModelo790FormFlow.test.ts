@@ -82,15 +82,14 @@ type HookOptions = Parameters<typeof useModelo790FormFlow>[0];
 function createHookOptions(overrides: Partial<HookOptions> = {}): HookOptions {
   const translateTieSteps = createTieStepsTranslator(i18n);
   const steps = buildTieSteps(translateTieSteps);
-  const currentStep = steps.find(step => step.id === 4);
+  const currentStep = steps.find(step => step.id === 3);
   const progress = createUserProgress({
-    currentStepId: 4,
+    currentStepId: 3,
     steps: [
       {stepId: 1, status: 'completed', requirements: {}},
       {stepId: 2, status: 'completed', requirements: {}},
-      {stepId: 3, status: 'completed', requirements: {}},
       {
-        stepId: 4,
+        stepId: 3,
         status: 'in_progress',
         requirements: {'modelo-790-form': {completed: false}},
       },
@@ -100,7 +99,7 @@ function createHookOptions(overrides: Partial<HookOptions> = {}): HookOptions {
   return {
     navigation: createMockNavigation() as HookOptions['navigation'],
     currentStep,
-    currentStepId: 4,
+    currentStepId: 3,
     progress,
     canInteractWithRequirements: true,
     progressContext: {isProfileComplete: true, allSteps: steps},
@@ -145,7 +144,7 @@ describe('useModelo790FormFlow', () => {
       expect.objectContaining({
         automation: 'modelo-790-012',
         modelo790Review: {
-          stepId: 4,
+          stepId: 3,
           requirementKey: 'modelo-790-form',
           formId: MODELO790_FORM_ID,
         },
@@ -157,7 +156,7 @@ describe('useModelo790FormFlow', () => {
     mockLoadPending.mockResolvedValue({
       requirementKey: 'modelo-790-form',
       formId: MODELO790_FORM_ID,
-      stepId: 4,
+      stepId: 3,
     });
 
     const getState = renderHook(() => useModelo790FormFlow(hookOptions));
@@ -174,7 +173,7 @@ describe('useModelo790FormFlow', () => {
     mockLoadPending.mockResolvedValue({
       requirementKey: 'modelo-790-form',
       formId: MODELO790_FORM_ID,
-      stepId: 4,
+      stepId: 3,
     });
 
     const getState = renderHook(() => useModelo790FormFlow(hookOptions));
@@ -192,7 +191,7 @@ describe('useModelo790FormFlow', () => {
 
     expect(mockDownloadGeneratedPdf).toHaveBeenCalledWith(generatedFile);
     expect(mockCompleteFormRequirement).toHaveBeenCalledWith(
-      4,
+      3,
       'modelo-790-form',
       MODELO790_FORM_ID,
     );

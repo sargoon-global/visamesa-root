@@ -7,6 +7,7 @@ import {getGoogleSignInErrorMessage} from '@/services/authGoogleErrors'
 import {reportClientErrorFromException} from '@/services/clientErrorService'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import {clearStoredUserProgress} from '@/features/dashboard/services/progressService';
 import {clearModelo790InProgressSession} from '@/features/pdfGeneration/forms/modelo790/modelo790Storage';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin'
 import { consentService } from '@/features/profile/services/consentService'
@@ -88,6 +89,7 @@ export const authService = {
       AsyncStorage.removeItem(STORAGE_KEYS.USER_DATA),
       consentService.clearConsent(),
       clearModelo790InProgressSession(storedUser?.id),
+      clearStoredUserProgress(),
     ]);
   },
 

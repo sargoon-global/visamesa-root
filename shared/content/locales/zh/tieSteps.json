@@ -270,15 +270,10 @@
           "description": "打印全部副本——条形码必须清晰可辨。",
           "detail": "表格准备好后，请下载并打印 Modelo 790 的全部副本。银行会保留一份，并将其余盖章副本作为缴费证明退还给您。"
         },
-        "pay-at-bank": {
-          "label": "在西班牙银行缴费",
-          "description": "携带打印好的表格前往西班牙银行。",
-          "detail": "携带打印好的表格前往西班牙境内接受政府规费缴付的银行。\n\n常见可办理该规费的银行包括：\n• CaixaBank\n• BBVA\n• Banco Santander\n• Banco Sabadell\n• Bankinter\n\n在银行，将打印好的 Modelo 790 表格交给柜员，使用银行接受的付款方式缴纳费用，银行会在表格上盖章确认已收到款项。"
-        },
         "fee-payment-receipt": {
-          "label": "盖章缴费回执",
-          "description": "保留银行盖章的副本，预约时携带。",
-          "detail": "缴费后，银行会将盖章的 Modelo 790 副本退还给您。\n\n重要提示：请妥善保管该盖章回执，它是您已缴纳政府规费的官方证明。\n\n第 5 步出席指纹预约时，必须携带盖章的 Modelo 790 回执。如无缴费证明，预约可能无法完成。"
+          "label": "在银行缴费并保留盖章回执",
+          "description": "在西班牙银行缴纳规费，并保留盖章副本以备预约使用。",
+          "detail": "携带打印好的表格前往西班牙境内接受政府规费缴付的银行。\n\n常见可办理该规费的银行包括：\n• CaixaBank\n• BBVA\n• Banco Santander\n• Banco Sabadell\n• Bankinter\n\n在银行，将打印好的 Modelo 790 表格交给柜员，使用银行接受的付款方式缴纳费用。银行会在表格上盖章，并将盖章副本作为缴费证明退还给您。\n\n重要提示：请妥善保管该盖章回执，它是您已缴纳政府规费的官方证明。\n\n第 5 步出席指纹预约时，必须携带盖章的 Modelo 790 回执。如无缴费证明，预约可能无法完成。"
         }
       }
     },
@@ -328,8 +323,8 @@
         },
         "modelo-790-receipt": {
           "label": "已缴费的 Modelo 790（盖章回执）",
-          "description": "来自第 4 步——您手中的银行盖章副本。",
-          "detail": "这是第 4 步在银行缴费时获得的实体盖章回执。VisaMesa 无法查看或分享——请确认您已随身携带该盖章副本。"
+          "description": "来自第 3 步——您手中的银行盖章副本。",
+          "detail": "这是第 3 步在银行缴费时获得的实体盖章回执。VisaMesa 无法查看或分享——请确认您已随身携带该盖章副本。"
         },
         "valid-passport": {
           "label": "护照原件",
@@ -358,8 +353,8 @@
         },
         "appointment-confirmation-doc": {
           "label": "Cita Previa 确认函",
-          "description": "第 3 步预约的打印确认函。",
-          "detail": "第 3 步预约后 Cita Previa 发送的确认邮件——注明警局、日期和时间。请打印或在手机上展示。"
+          "description": "第 4 步预约的打印确认函。",
+          "detail": "第 4 步预约后 Cita Previa 发送的确认邮件——注明警局、日期和时间。请打印或在手机上展示。"
         },
         "print-documents": {
           "label": "打印全部文件",

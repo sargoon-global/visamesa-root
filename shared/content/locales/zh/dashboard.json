@@ -51,14 +51,17 @@
   "formDownloaded": "表格已保存到您的设备",
   "formDownloadCancelled": "已取消下载",
   "approveDownloadAccessibilityLabel": "确认并下载 {{label}}",
+  "confirmBooking": "我已获得预约",
+  "confirmBookingAccessibilityLabel": "确认 {{label}} 预约",
+  "confirmBookingTitle": "确认预约",
+  "confirmBookingMessage": "仅在收到官方预约确认后再确认。",
+  "confirmBookingFailed": "无法确认预约，请重试。",
   "bookViaVisaMesa": "通过 VisaMesa 预约",
   "reviewForm": "查看 VisaMesa 填写的表格",
   "viewAppointment": "查看预约",
-  "markAsNotBooked": "标记为未预约",
   "bookAccessibilityLabel": "预约 {{label}}",
   "reviewAccessibilityLabel": "查看 {{label}}",
   "viewAppointmentAccessibilityLabel": "查看 {{label}} 的预约",
-  "markAsNotBookedAccessibilityLabel": "将 {{label}} 标记为未预约",
   "requirementsInfoAccessibilityLabel": "关于清单",
   "readinessTitle": "开始之前",
   "readinessDescription": "请先完善个人资料，再开始办理流程",
@@ -71,5 +74,11 @@
     "notNow": "暂不",
     "action": "完善资料"
   },
-  "loadProgressFailed": "无法加载进度"
+  "loadProgressFailed": "无法加载进度",
+  "profileLockDialog": {
+    "title": "确认银行缴费与盖章回执",
+    "message": "请确认您已在西班牙银行完成付款并持有付款收据。\n\n为保护您的信息安全，继续后个人信息将被锁定且无法再修改。请花一点时间确认所有内容正确。\n\n您的信息将继续安全保存。",
+    "confirm": "继续并锁定信息",
+    "failed": "无法锁定您的资料。请检查网络连接后重试。"
+  }
 }

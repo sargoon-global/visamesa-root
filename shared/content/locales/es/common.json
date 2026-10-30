@@ -45,6 +45,10 @@
     "openLink": "No se ha podido abrir el enlace",
     "loadServices": "No se han podido cargar los precios. Actualiza la página.",
     "openWebsite": "No se ha podido abrir el sitio web de VisaMesa",
+    "profileLocked": "Los datos personales están bloqueados después de confirmar el recibo sellado del Modelo 790.",
+    "feePaymentReceiptRequired": "Marca el recibo sellado del Modelo 790 como completado en el proceso antes de bloquear tus datos personales.",
+    "entitlementRequired": "Se requiere pago antes de confirmar esta cita.",
+    "citaPreviaAlreadyBooked": "Ya confirmaste una Cita Previa con esta cuenta.",
     "api": {
       "notFound": "No se ha encontrado el recurso solicitado.",
       "unauthorized": "Debes iniciar sesión para continuar.",

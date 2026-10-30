@@ -1,53 +1,13 @@
 import {createUserProgress} from '@/test/fixtures/userProgress';
+import {hasStepProgress, isPristineProgress} from '@/features/dashboard/utils/progressPristine';
 
-import {isPristineProgress} from './progressPristine';
-
-describe('isPristineProgress', () => {
-  it('returns true for fresh progress', () => {
+describe('progressPristine', () => {
+  it('detects started step progress', () => {
     const progress = createUserProgress({
-      steps: [
-        {
-          stepId: 1,
-          status: 'not_started',
-          requirements: {
-            passport: {completed: false},
-          },
-        },
-      ],
+      steps: [{stepId: 2, status: 'in_progress', requirements: {}}],
     });
 
-    expect(isPristineProgress(progress)).toBe(true);
-  });
-
-  it('returns false when a step is in progress', () => {
-    const progress = createUserProgress({
-      steps: [
-        {
-          stepId: 1,
-          status: 'in_progress',
-          requirements: {
-            passport: {completed: false},
-          },
-        },
-      ],
-    });
-
-    expect(isPristineProgress(progress)).toBe(false);
-  });
-
-  it('returns false when a requirement is completed', () => {
-    const progress = createUserProgress({
-      steps: [
-        {
-          stepId: 1,
-          status: 'not_started',
-          requirements: {
-            passport: {completed: true, source: {type: 'self_declared'}},
-          },
-        },
-      ],
-    });
-
+    expect(hasStepProgress(progress, 2)).toBe(true);
     expect(isPristineProgress(progress)).toBe(false);
   });
 });

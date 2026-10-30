@@ -17,7 +17,7 @@ export const API_BASE_URL = 'https://api.visamesa.com'
  * TO LAUNCH: Set to false and remove waitlist code.
  * See visamesa_fe/docs/PRE_LAUNCH.md for the full checklist.
  */
-export const PRE_LAUNCH = true
+export const PRE_LAUNCH = false
 
 /** Published service price in EUR (matches visamesa_be payment.config.ts full_service). */
 export const SERVICE_PRICE_EUR = 100

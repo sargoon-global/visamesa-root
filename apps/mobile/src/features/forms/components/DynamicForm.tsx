@@ -14,6 +14,7 @@ import {createStyleSheet, useStyles} from 'react-native-unistyles';
 import {Button} from '@/components/ui/Button';
 import {Text} from '@/components/ui/Text';
 import {FormFieldRenderer} from '@/features/forms/components/FormFieldRenderer';
+import {FormDisabledProvider} from '@/features/forms/context/FormDisabledContext';
 import {generateDefaultValues} from '@/features/forms/utils/defaultValuesGenerator';
 import {isFieldVisible} from '@/features/forms/utils/formFieldVisibility';
 import {generateZodSchema} from '@/features/forms/utils/schemaGenerator';
@@ -25,6 +26,7 @@ type Props = {
   isSubmitting: boolean;
   initialValues?: Record<string, unknown>;
   submitButtonText?: string;
+  disabled?: boolean;
   children?: React.ReactNode;
 };
 
@@ -59,14 +61,20 @@ function FormSubmitButton({
   saveLabel,
   savingLabel,
   onSubmit,
+  disabled,
 }: {
   isSubmitting: boolean;
   saveLabel: string;
   savingLabel: string;
   onSubmit: (data: Record<string, unknown>) => void;
+  disabled: boolean;
 }) {
   const {handleSubmit} = useFormContext();
   const {isDirty} = useFormState();
+
+  if (disabled) {
+    return null;
+  }
 
   return (
     <Button
@@ -84,6 +92,7 @@ function DynamicFormContent({
   isSubmitting,
   initialValues = {},
   submitButtonText,
+  disabled = false,
   children,
 }: Props) {
   const {styles} = useStyles(stylesheet);
@@ -115,6 +124,7 @@ function DynamicFormContent({
 
   return (
     <FormProvider {...methods}>
+      <FormDisabledProvider disabled={disabled}>
       <View style={styles.container}>
         {schema.description ? (
           <Text variant="bodyMedium" color="onSurfaceVariant">
@@ -137,8 +147,10 @@ function DynamicFormContent({
           saveLabel={saveLabel}
           savingLabel={t('actions.saving')}
           onSubmit={onSubmit}
+          disabled={disabled}
         />
       </View>
+      </FormDisabledProvider>
     </FormProvider>
   );
 }

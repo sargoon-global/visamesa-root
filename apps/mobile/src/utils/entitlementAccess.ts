@@ -16,7 +16,12 @@ const BOOKING_ASSISTANT_ENTITLEMENT: Record<BookingAssistantId, EntitlementType>
 export function canUseBookingAssistant(
   entitlements: UserEntitlement[],
   bookingAssistantId: BookingAssistantId,
+  options?: {citaPreviaBooked?: boolean},
 ): boolean {
+  if (bookingAssistantId === 'cita-previa' && options?.citaPreviaBooked) {
+    return false;
+  }
+
   const required = BOOKING_ASSISTANT_ENTITLEMENT[bookingAssistantId];
   return hasEntitlement(entitlements, required);
 }

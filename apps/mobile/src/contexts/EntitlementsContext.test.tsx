@@ -54,6 +54,8 @@ describe('EntitlementsContext', () => {
           expiresAt: null,
         },
       ],
+      citaPreviaBookedAt: null,
+      personalDetailsLockedAt: null,
     });
 
     const getHookState = await renderHookAsync(
@@ -69,8 +71,16 @@ describe('EntitlementsContext', () => {
   it('polls until paid service is available', async () => {
     jest.useFakeTimers();
     getEntitlements
-      .mockResolvedValueOnce({entitlements: []})
-      .mockResolvedValueOnce({entitlements: []})
+      .mockResolvedValueOnce({
+        entitlements: [],
+        citaPreviaBookedAt: null,
+        personalDetailsLockedAt: null,
+      })
+      .mockResolvedValueOnce({
+        entitlements: [],
+        citaPreviaBookedAt: null,
+        personalDetailsLockedAt: null,
+      })
       .mockResolvedValueOnce({
         entitlements: [
           {
@@ -79,6 +89,8 @@ describe('EntitlementsContext', () => {
             expiresAt: null,
           },
         ],
+        citaPreviaBookedAt: null,
+        personalDetailsLockedAt: null,
       });
 
     const getHookState = renderHook(
@@ -105,6 +117,27 @@ describe('EntitlementsContext', () => {
     expect(getEntitlements.mock.calls.length).toBeGreaterThanOrEqual(3);
   });
 
+  it('does not set isLoading on background refresh after initial load', async () => {
+    getEntitlements.mockResolvedValue({
+      entitlements: [],
+      citaPreviaBookedAt: null,
+      personalDetailsLockedAt: null,
+    });
+
+    const getHookState = await renderHookAsync(
+      () => useEntitlements(),
+      state => !state.isLoading,
+      EntitlementsWrapper,
+    );
+
+    await act(async () => {
+      await getHookState().refreshEntitlements();
+    });
+
+    expect(getHookState().isLoading).toBe(false);
+    expect(getEntitlements).toHaveBeenCalledTimes(2);
+  });
+
   it('keeps existing entitlements when refresh fails', async () => {
     getEntitlements
       .mockResolvedValueOnce({
@@ -115,6 +148,8 @@ describe('EntitlementsContext', () => {
             expiresAt: null,
           },
         ],
+        citaPreviaBookedAt: null,
+        personalDetailsLockedAt: null,
       })
       .mockRejectedValueOnce(new Error('Network error'));
 
@@ -136,7 +171,11 @@ describe('EntitlementsContext', () => {
 
   it('returns false when paid service never arrives', async () => {
     jest.useFakeTimers();
-    getEntitlements.mockResolvedValue({entitlements: []});
+    getEntitlements.mockResolvedValue({
+      entitlements: [],
+      citaPreviaBookedAt: null,
+      personalDetailsLockedAt: null,
+    });
 
     const getHookState = renderHook(
       () => useEntitlements(),
@@ -159,5 +198,28 @@ describe('EntitlementsContext', () => {
     });
 
     expect(resolved).toBe(false);
+  });
+
+  it('applyPersonalDetailsLockedAt updates lock state without waiting for entitlements fetch', async () => {
+    getEntitlements.mockResolvedValue({
+      entitlements: [],
+      citaPreviaBookedAt: null,
+      personalDetailsLockedAt: null,
+    });
+
+    const getHookState = await renderHookAsync(
+      () => useEntitlements(),
+      state => !state.isLoading,
+      EntitlementsWrapper,
+    );
+
+    act(() => {
+      getHookState().applyPersonalDetailsLockedAt('2026-03-01T12:00:00.000Z');
+    });
+
+    expect(getHookState().isPersonalDetailsLocked).toBe(true);
+    expect(getHookState().personalDetailsLockedAt).toBe(
+      '2026-03-01T12:00:00.000Z',
+    );
   });
 });

@@ -16,6 +16,7 @@
     "./i18n/types": "./i18n/types.ts",
     "./i18n/useTranslation": "./i18n/useTranslation.ts",
     "./tieSteps/detail": "./tieSteps/index.ts",
+    "./tieSteps/profileLock": "./tieSteps/profileLock.ts",
     "./processOverview": "./processOverview/index.ts",
     "./products": "./products.ts",
     "./support": "./support/index.ts",

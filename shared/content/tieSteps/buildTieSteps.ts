@@ -1,4 +1,4 @@
-import { tieStepManifest } from './manifest'
+import { tieStepManifest } from './manifest.js'
 import {
   TIE_STEP_ORDER,
   type PrintableItem,
@@ -6,7 +6,7 @@ import {
   type TieStepDetail,
   type TieStepSlug,
   type TieStepTranslation,
-} from './types'
+} from './types.js'
 
 export type TieStepsTranslateFn = (
   key: string,
@@ -20,7 +20,7 @@ function buildRequirements(
 ): Requirement[] {
   const manifest = tieStepManifest[slug]
 
-  return manifest.requirements.map((entry) => {
+  return manifest.requirements.map((entry: typeof manifest.requirements[number]) => {
     const copy = translation.requirements[entry.key]
 
     if (!copy) {
@@ -75,7 +75,7 @@ function buildPrintables(
 
   const copy = translation.printables ?? {}
 
-  return manifest.map((entry) => {
+  return manifest.map((entry: typeof manifest[number]) => {
     const itemCopy = copy[entry.key]
 
     if (!itemCopy) {
@@ -95,10 +95,10 @@ function buildPrintables(
 
 export function buildTieSteps(t: TieStepsTranslateFn): TieStepDetail[] {
   const slugToId = Object.fromEntries(
-    TIE_STEP_ORDER.map((slug) => [slug, tieStepManifest[slug].id]),
+    TIE_STEP_ORDER.map((slug: TieStepSlug) => [slug, tieStepManifest[slug].id]),
   ) as Record<TieStepSlug, number>
 
-  return TIE_STEP_ORDER.map((slug) => {
+  return TIE_STEP_ORDER.map((slug: TieStepSlug) => {
     const manifest = tieStepManifest[slug]
     const translation = t(`tieSteps:steps.${slug}`, { returnObjects: true }) as TieStepTranslation
 
@@ -116,7 +116,7 @@ export function buildTieSteps(t: TieStepsTranslateFn): TieStepDetail[] {
       completionPrompt: translation.completionPrompt,
       cta: translation.cta,
       estimatedTime: translation.estimatedTime,
-      officialLinks: manifest.officialLinkUrls.map((url, index) => ({
+      officialLinks: manifest.officialLinkUrls.map((url: string, index: number) => ({
         url,
         label: translation.officialLinks[index]?.label ?? url,
       })),

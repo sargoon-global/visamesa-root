@@ -47,5 +47,8 @@ export type UserProgress = {
 
 export type ProgressContext = {
   isProfileComplete?: boolean;
+  isCitaPreviaBooked?: boolean;
+  citaPreviaBookedAt?: string | null;
+  isPersonalDetailsLocked?: boolean;
   allSteps?: import('@/features/home/types/TieStepDetail').TieStepDetail[];
 };
