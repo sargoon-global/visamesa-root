@@ -28,11 +28,27 @@ export const buildOficinaScript = tramitesOptionIndex => `
         return false;
       }
 
+      const targetIndex = Array.from(tramites.options).indexOf(targetOption);
+      tramites.focus();
+      tramites.selectedIndex = targetIndex;
       tramites.value = targetOption.value;
       targetOption.selected = true;
-      tramites.dispatchEvent(new Event('input', {bubbles: true}));
-      tramites.dispatchEvent(new Event('change', {bubbles: true}));
-      return true;
+      targetOption.click();
+      tramites.dispatchEvent(new Event('input', {bubbles: true, cancelable: true}));
+      tramites.dispatchEvent(new Event('change', {bubbles: true, cancelable: true}));
+
+      if (typeof tramites.onchange === 'function') {
+        tramites.onchange(new Event('change', {bubbles: true, cancelable: true}));
+      }
+
+      console.debug('[Cita Previa] Toma de Huellas selected', {
+        name: tramites.name,
+        id: tramites.id,
+        value: tramites.value,
+        selectedIndex: tramites.selectedIndex,
+        text: targetOption.text,
+      });
+      return tramites.value === targetOption.value;
     };
 
     const accept = () => {
