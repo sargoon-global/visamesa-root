@@ -16,7 +16,7 @@ export function getStepsToInvalidate(
   }
 
   const changedSet = new Set(changedFields);
-  let earliestOrderIndex = TIE_STEP_ORDER.length;
+  let earliestOrderIndex: number = TIE_STEP_ORDER.length;
 
   TIE_STEP_ORDER.forEach((slug, index) => {
     const deps = STEP_PROFILE_DEPENDENCIES[slug];

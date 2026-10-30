@@ -17,7 +17,7 @@ type Props = {
 
 const fieldComponentMap: Record<
   string,
-  React.ComponentType<{field: FormField}>
+  React.ComponentType<{field: FormField; disabled?: boolean}>
 > = {
   text: TextInputField,
   date: DateInputField,
