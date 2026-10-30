@@ -53,7 +53,7 @@ describe('cita previa script map', () => {
         nationality: 88,
         documentType: 'nie',
       },
-      provinceOptionIndex: 4,
+      provinceOptionIndex: 5,
       tramitesOptionIndex: 17,
       sedeOptionIndex: 0,
     });

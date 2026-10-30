@@ -62,7 +62,7 @@ interface CitaPreviaScriptEntry {
 }
 
 const buildIcpApplicationMatch = (url: string): WebViewInjectionMatch => {
-  const path = new URL(url).pathname.replace(/^\/icpco\//, '');
+  const path = new URL(url).pathname.replace('/icpco/', '');
   return {
     type: 'regex',
     value: new RegExp(

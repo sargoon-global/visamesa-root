@@ -14,9 +14,9 @@ export interface CitaPreviaBookingAssistantProfile {
   sedeOptionIndex?: number;
 }
 
-/** Temporary debug target: option index 4 (expected Almería). */
+/** Temporary debug target: option index 5 (expected Asturias). */
 export const CITA_PREVIA_BOOKING_DEFAULTS = {
-  provinceOptionIndex: 4,
+  provinceOptionIndex: 5,
   tramitesOptionIndex: 17,
   defaultNationality: 88,
 } as const;
