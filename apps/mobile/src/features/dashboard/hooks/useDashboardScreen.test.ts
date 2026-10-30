@@ -20,6 +20,14 @@ async function renderDashboardScreen(
   return getHookState;
 }
 
+jest.mock('@/services/personalDetailsLockService', () => ({
+  personalDetailsLockService: {
+    lockPersonalDetails: jest.fn(() =>
+      Promise.resolve({personalDetailsLockedAt: '2026-01-01T00:00:00.000Z'}),
+    ),
+  },
+}));
+
 jest.mock('@/features/pdfGeneration/forms/modelo790/modelo790Storage', () => ({
   loadModelo790PendingReview: jest.fn(() => Promise.resolve(null)),
   loadModelo790ReviewFile: jest.fn(() => Promise.resolve(null)),
@@ -59,12 +67,23 @@ jest.mock('@/components/Toast/ToastProvider', () => ({
   }),
 }));
 
+jest.mock('@/services/citaPreviaBookingService', () => ({
+  citaPreviaBookingService: {
+    confirm: jest.fn(),
+  },
+}));
+
 jest.mock('@/contexts/EntitlementsContext', () => ({
   useEntitlements: () => ({
     hasPaidService: () => true,
     canUseBookingAssistant: () => true,
+    isCitaPreviaBooked: false,
+    citaPreviaBookedAt: null,
+    personalDetailsLockedAt: null,
+    isPersonalDetailsLocked: false,
     isLoading: false,
     refreshEntitlements: jest.fn(),
+    applyPersonalDetailsLockedAt: jest.fn(),
   }),
 }));
 
@@ -98,6 +117,7 @@ jest.mock('@/features/dashboard/services/empadronamientoProgressService', () => 
 
 jest.mock('@/features/dashboard/services/progressService', () => ({
   saveUserProgress: jest.fn((progress: unknown) => Promise.resolve(progress)),
+  syncStoredProgressToBackend: jest.fn(() => Promise.resolve()),
   subscribeToProgressReset: jest.fn(() => () => {}),
   buildInitialProgressFromSteps: (
     steps: Array<{id: number; requirements: Array<{key: string}>}>,
@@ -169,7 +189,6 @@ describe('useDashboardScreen', () => {
   const completeStep = jest.fn();
   const toggleSelfDeclaredRequirement = jest.fn();
   const completeBookingAssistantRequirement = jest.fn();
-  const clearBookingAssistantRequirement = jest.fn();
   const completeFormRequirement = jest.fn();
 
   beforeEach(() => {
@@ -192,7 +211,6 @@ describe('useDashboardScreen', () => {
     completeStep.mockReset();
     toggleSelfDeclaredRequirement.mockReset();
     completeBookingAssistantRequirement.mockReset();
-    clearBookingAssistantRequirement.mockReset();
     completeFormRequirement.mockReset();
     mockUseAuth.mockReturnValue({
       user: {id: 'test', email: 'test@example.com'},
@@ -236,7 +254,7 @@ describe('useDashboardScreen', () => {
       completeStep,
       toggleSelfDeclaredRequirement,
       completeBookingAssistantRequirement,
-      clearBookingAssistantRequirement,
+      completeBookingAssistantRequirement,
       completeFormRequirement,
       refreshProgress: jest.fn(),
     });
@@ -280,7 +298,7 @@ describe('useDashboardScreen', () => {
       completeStep,
       toggleSelfDeclaredRequirement,
       completeBookingAssistantRequirement,
-      clearBookingAssistantRequirement,
+      completeBookingAssistantRequirement,
       completeFormRequirement,
       refreshProgress: jest.fn(),
     });
@@ -320,7 +338,7 @@ describe('useDashboardScreen', () => {
       completeStep,
       toggleSelfDeclaredRequirement,
       completeBookingAssistantRequirement,
-      clearBookingAssistantRequirement,
+      completeBookingAssistantRequirement,
       completeFormRequirement,
       refreshProgress: jest.fn(),
     });
@@ -368,7 +386,7 @@ describe('useDashboardScreen', () => {
       completeStep,
       toggleSelfDeclaredRequirement,
       completeBookingAssistantRequirement,
-      clearBookingAssistantRequirement,
+      completeBookingAssistantRequirement,
       completeFormRequirement,
       refreshProgress,
     });
@@ -467,7 +485,7 @@ describe('useDashboardScreen', () => {
       completeStep,
       toggleSelfDeclaredRequirement,
       completeBookingAssistantRequirement,
-      clearBookingAssistantRequirement,
+      completeBookingAssistantRequirement,
       completeFormRequirement,
     });
 
@@ -515,7 +533,7 @@ describe('useDashboardScreen', () => {
       completeStep,
       toggleSelfDeclaredRequirement,
       completeBookingAssistantRequirement,
-      clearBookingAssistantRequirement,
+      completeBookingAssistantRequirement,
       completeFormRequirement,
       refreshProgress: jest.fn(),
     });
@@ -555,12 +573,11 @@ describe('useDashboardScreen', () => {
     useTieSteps.mockReturnValue({steps, isLoading: false, error: null});
     useUserProgress.mockReturnValue({
       progress: createUserProgress({
-        currentStepId: 4,
+        currentStepId: 3,
         steps: [
           {stepId: 1, status: 'completed', requirements: {}},
           {stepId: 2, status: 'completed', requirements: {}},
-          {stepId: 3, status: 'completed', requirements: {}},
-          {stepId: 4, status: 'in_progress', requirements: {'modelo-790-form': {completed: false}}},
+          {stepId: 3, status: 'in_progress', requirements: {'modelo-790-form': {completed: false}}},
         ],
       }),
       isLoading: false,
@@ -568,7 +585,7 @@ describe('useDashboardScreen', () => {
       completeStep,
       toggleSelfDeclaredRequirement,
       completeBookingAssistantRequirement,
-      clearBookingAssistantRequirement,
+      completeBookingAssistantRequirement,
       completeFormRequirement,
       refreshProgress: jest.fn(),
     });
@@ -582,7 +599,7 @@ describe('useDashboardScreen', () => {
     expect(navigation.navigate).toHaveBeenCalledWith('WebsiteWebView', {
       automation: 'modelo-790-012',
       modelo790Review: {
-        stepId: 4,
+        stepId: 3,
         requirementKey: 'modelo-790-form',
         formId: 'modelo-790-012',
       },
@@ -623,7 +640,7 @@ describe('useDashboardScreen', () => {
       completeStep,
       toggleSelfDeclaredRequirement,
       completeBookingAssistantRequirement,
-      clearBookingAssistantRequirement,
+      completeBookingAssistantRequirement,
       completeFormRequirement,
       refreshProgress: jest.fn(),
     });
@@ -676,7 +693,7 @@ describe('useDashboardScreen', () => {
       completeStep,
       toggleSelfDeclaredRequirement,
       completeBookingAssistantRequirement,
-      clearBookingAssistantRequirement,
+      completeBookingAssistantRequirement,
       completeFormRequirement,
       refreshProgress: jest.fn(),
     });

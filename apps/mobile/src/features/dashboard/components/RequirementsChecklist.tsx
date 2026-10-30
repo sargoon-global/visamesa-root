@@ -32,7 +32,10 @@ type RequirementsChecklistProps = {
   onRequirementCheckboxToggle: (requirementKey: string) => void;
   onBookingAssistantPress: (bookingAssistantId: BookingAssistantId, requirementKey: string) => void;
   onViewAppointmentPress: (requirementKey: string) => void;
-  onClearBookingAssistantPress: (requirementKey: string) => void;
+  onConfirmBookingPress: (
+    bookingAssistantId: BookingAssistantId,
+    requirementKey: string,
+  ) => void;
   onFormPress: (formId: string, requirementKey: string) => void;
   onApproveAndDownloadForm: (formId: string, requirementKey: string) => void;
   onFormView: (formId: string, requirementKey: string) => void;
@@ -45,7 +48,7 @@ export function RequirementsChecklist({
   onRequirementCheckboxToggle,
   onBookingAssistantPress,
   onViewAppointmentPress,
-  onClearBookingAssistantPress,
+  onConfirmBookingPress,
   onFormPress,
   onApproveAndDownloadForm,
   onFormView,
@@ -116,8 +119,13 @@ export function RequirementsChecklist({
                 onViewAppointmentPress={() =>
                   onViewAppointmentPress(requirement.key)
                 }
-                onClearBookingAssistantPress={() =>
-                  onClearBookingAssistantPress(requirement.key)
+                onConfirmBookingPress={() =>
+                  requirement.bookingAssistantId
+                    ? onConfirmBookingPress(
+                        requirement.bookingAssistantId,
+                        requirement.key,
+                      )
+                    : undefined
                 }
                 onFormPress={() =>
                   requirement.formId

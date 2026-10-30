@@ -30,6 +30,7 @@ import {
   buildInitialProgressFromSteps,
   saveUserProgress,
   subscribeToProgressReset,
+  syncStoredProgressToBackend,
 } from '@/features/dashboard/services/progressService';
 import {useUserProgress} from '@/features/dashboard/hooks/useUserProgress';
 import {
@@ -49,6 +50,13 @@ import {
   isRequirementExternallyCompleted,
 } from '@/features/dashboard/utils/progressUtils';
 import {getProfile, loadBookingAssistantInjectionProfiles} from '@/features/profile/services/profileService';
+import {
+  FEE_PAYMENT_RECEIPT_REQUIREMENT_KEY,
+  PAY_FEE_STEP_SLUG,
+} from '@visamesa/content/tieSteps/profileLock';
+import {citaPreviaBookingService} from '@/services/citaPreviaBookingService';
+import {getAxiosApiErrorMessage} from '@/services/apiErrors';
+import {personalDetailsLockService} from '@/services/personalDetailsLockService';
 import {useTieSteps} from '@/features/home/hooks/useTieSteps';
 import {
   ProcessReadinessMissing,
@@ -92,7 +100,10 @@ export type UseDashboardScreenResult = {
   onRequirementCheckboxToggle: (requirementKey: string) => void;
   onBookingAssistantPress: (bookingAssistantId: BookingAssistantId, label: string) => void;
   onViewAppointmentPress: (label: string) => void;
-  onClearBookingAssistantPress: (label: string) => void;
+  onConfirmBookingPress: (
+    bookingAssistantId: BookingAssistantId,
+    requirementKey: string,
+  ) => void;
   onFormPress: (formId: string, requirementKey: string) => void;
   onApproveAndDownloadForm: (formId: string, requirementKey: string) => void;
   onFormView: (formId: string, requirementKey: string) => void;
@@ -152,7 +163,14 @@ export function useDashboardScreen(
   const {t: tHome} = useTranslation('home');
   const {t: tCommon} = useTranslation('common');
   const {user, isLoading: isAuthLoading} = useAuth();
-  const {canUseBookingAssistant: canUseBookingAssistantEntitlement} = useEntitlements();
+  const {
+    canUseBookingAssistant: canUseBookingAssistantEntitlement,
+    refreshEntitlements,
+    applyPersonalDetailsLockedAt,
+    isCitaPreviaBooked,
+    citaPreviaBookedAt,
+    isPersonalDetailsLocked,
+  } = useEntitlements();
   const {showToast} = useToast();
   const {showAlert} = useAppDialog();
   const {openPricing} = usePricingLink();
@@ -164,7 +182,7 @@ export function useDashboardScreen(
     refreshProgress,
     completeStep,
     toggleSelfDeclaredRequirement,
-    clearBookingAssistantRequirement,
+    completeBookingAssistantRequirement,
     completeFormRequirement,
   } = useUserProgress();
   const {
@@ -211,9 +229,18 @@ export function useDashboardScreen(
   const progressContext = useMemo<ProgressContext>(
     () => ({
       isProfileComplete,
+      isCitaPreviaBooked,
+      citaPreviaBookedAt,
+      isPersonalDetailsLocked,
       allSteps: steps,
     }),
-    [isProfileComplete, steps],
+    [
+      citaPreviaBookedAt,
+      isCitaPreviaBooked,
+      isPersonalDetailsLocked,
+      isProfileComplete,
+      steps,
+    ],
   );
 
   useEffect(() => {
@@ -520,6 +547,58 @@ export function useDashboardScreen(
       return;
     }
 
+    const markingReceiptComplete =
+      requirementKey === FEE_PAYMENT_RECEIPT_REQUIREMENT_KEY &&
+      currentStep.slug === PAY_FEE_STEP_SLUG &&
+      !stored.completed;
+
+    if (markingReceiptComplete) {
+      showAlert(
+        tDashboard('profileLockDialog.title'),
+        tDashboard('profileLockDialog.message'),
+        [
+          {text: tCommon('cancel'), style: 'cancel'},
+          {
+            text: tDashboard('profileLockDialog.confirm'),
+            onPress: async () => {
+              try {
+                await toggleSelfDeclaredRequirement(
+                  currentStep.id,
+                  requirementKey,
+                  true,
+                );
+                await syncStoredProgressToBackend({strict: true});
+                const lockResult =
+                  await personalDetailsLockService.lockPersonalDetails();
+                applyPersonalDetailsLockedAt(
+                  lockResult.personalDetailsLockedAt,
+                );
+                await refreshEntitlements();
+              } catch (error) {
+                try {
+                  await toggleSelfDeclaredRequirement(
+                    currentStep.id,
+                    requirementKey,
+                    false,
+                  );
+                } catch {
+                  // Best-effort rollback if lock failed after marking receipt
+                }
+                showAlert(
+                  tCommon('errors.title'),
+                  getAxiosApiErrorMessage(
+                    error,
+                    'dashboard:profileLockDialog.failed',
+                  ),
+                );
+              }
+            },
+          },
+        ],
+      );
+      return;
+    }
+
     await toggleSelfDeclaredRequirement(
       currentStep.id,
       requirementKey,
@@ -636,7 +715,10 @@ export function useDashboardScreen(
     );
   };
 
-  const onClearBookingAssistantPress = async (requirementKey: string) => {
+  const onConfirmBookingPress = (
+    bookingAssistantId: BookingAssistantId,
+    requirementKey: string,
+  ) => {
     if (!currentStep || !progress || !canInteractWithRequirements) {
       return;
     }
@@ -649,13 +731,42 @@ export function useDashboardScreen(
       steps,
     );
 
-    if (!toggleState.canUncheck) {
-      showToast(tDashboard('requirementLockedHint'));
+    if (!toggleState.canUseActions) {
+      showToast(tDashboard('requirementDependencyHint'));
       return;
     }
 
-    await clearBookingAssistantRequirement(currentStep.id, requirementKey);
-    showToast(tDashboard('bookingStatusReset'));
+    const completeBooking = async () => {
+      try {
+        if (bookingAssistantId === 'cita-previa') {
+          await citaPreviaBookingService.confirm();
+          await refreshEntitlements();
+        }
+
+        await completeBookingAssistantRequirement(
+          currentStep.id,
+          requirementKey,
+          bookingAssistantId,
+        );
+        showToast(tDashboard('bookingAssistantSuccess'));
+      } catch {
+        showAlert(tCommon('errors.title'), tDashboard('confirmBookingFailed'));
+      }
+    };
+
+    showAlert(
+      tDashboard('confirmBookingTitle'),
+      tDashboard('confirmBookingMessage'),
+      [
+        {text: tCommon('actions.cancel'), style: 'cancel'},
+        {
+          text: tCommon('actions.confirm'),
+          onPress: () => {
+            completeBooking().catch(() => {});
+          },
+        },
+      ],
+    );
   };
 
   const confirmFormRequirement = (formId: string, requirementKey: string) => {
@@ -778,7 +889,7 @@ export function useDashboardScreen(
     onRequirementCheckboxToggle,
     onBookingAssistantPress,
     onViewAppointmentPress,
-    onClearBookingAssistantPress,
+    onConfirmBookingPress,
     onFormPress,
     onApproveAndDownloadForm,
     onFormView,

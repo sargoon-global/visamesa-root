@@ -1,3 +1,5 @@
+import {FEE_PAYMENT_RECEIPT_REQUIREMENT_KEY} from '@visamesa/content/tieSteps/profileLock';
+
 import { ASSISTED_BOOKING_REQUIREMENT_TYPE, TieStepDetail } from '@/features/home/types/TieStepDetail';
 import {
   ProgressContext,
@@ -156,7 +158,12 @@ export function getRequirementToggleState(
     context,
   );
 
+  const receiptLocked =
+    context.isPersonalDetailsLocked &&
+    requirementKey === FEE_PAYMENT_RECEIPT_REQUIREMENT_KEY;
+
   const canUncheckStored =
+    !receiptLocked &&
     isStoredDone &&
     canUncheckRequirement(progress, step, requirementKey, context) &&
     (stored.source?.type === 'self_declared' ||
