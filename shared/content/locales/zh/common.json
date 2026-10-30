@@ -45,6 +45,10 @@
     "openLink": "无法打开链接",
     "loadServices": "无法加载价格，请刷新页面。",
     "openWebsite": "无法打开 VisaMesa 网站",
+    "profileLocked": "确认 Modelo 790 盖章付款收据后，个人信息已锁定。",
+    "feePaymentReceiptRequired": "锁定个人信息前，请先在流程中将 Modelo 790 盖章付款收据标记为已完成。",
+    "entitlementRequired": "确认此预约前需要先完成付款。",
+    "citaPreviaAlreadyBooked": "您已在此账户确认过 Cita Previa。",
     "api": {
       "notFound": "未找到请求的资源。",
       "unauthorized": "请先登录后再继续。",

@@ -18,6 +18,18 @@ describe('resolveApiErrorMessage', () => {
     )
   })
 
+  it('maps profile locked to common copy', () => {
+    expect(resolveApiErrorMessage({ code: 'PROFILE_LOCKED' }, translate)).toBe(
+      'common:errors.profileLocked',
+    )
+  })
+
+  it('maps fee payment receipt required for profile lock', () => {
+    expect(
+      resolveApiErrorMessage({ code: 'FEE_PAYMENT_RECEIPT_REQUIRED' }, translate),
+    ).toBe('common:errors.feePaymentReceiptRequired')
+  })
+
   it('falls back to the server message when code is unknown', () => {
     expect(
       resolveApiErrorMessage(

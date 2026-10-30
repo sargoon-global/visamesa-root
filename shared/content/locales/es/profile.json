@@ -12,6 +12,13 @@
   "otherDeviceMessage": "Este perfil se guardó en otro dispositivo. Introduce tus datos abajo para configurar este dispositivo. Al guardar, se reemplazará la copia cifrada de tu cuenta.",
   "loadFailed": "No se ha podido cargar el perfil",
   "saveFailed": "No se ha podido guardar el perfil",
+  "lockedNotice": "Confirmaste el recibo sellado del Modelo 790. Los datos personales están bloqueados y ya no se pueden modificar.",
+  "stepInvalidationDialog": {
+    "title": "Hay que repetir pasos",
+    "message": "Este cambio afecta a pasos que ya completaste. Se restablecerán estos pasos y deberás hacerlos de nuevo, en orden:",
+    "confirm": "Guardar y restablecer pasos",
+    "confirming": "Guardando…"
+  },
   "signOutFailed": "No se ha podido cerrar sesión",
   "signedOut": "Sesión cerrada",
   "consentDialog": {

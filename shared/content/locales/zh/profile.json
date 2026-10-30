@@ -12,6 +12,13 @@
   "otherDeviceMessage": "此个人资料保存在另一台设备上。请在下方输入您的信息以在此设备上设置。保存后将替换您账户中存储的加密副本。",
   "loadFailed": "无法加载个人资料",
   "saveFailed": "无法保存个人资料",
+  "lockedNotice": "您已确认 Modelo 790 盖章付款收据。个人信息已锁定，无法再修改。",
+  "stepInvalidationDialog": {
+    "title": "需要重新完成步骤",
+    "message": "此更改会影响您已完成的步骤。以下步骤将被重置，需按顺序重新完成：",
+    "confirm": "保存并重置步骤",
+    "confirming": "保存中…"
+  },
   "signOutFailed": "无法退出登录",
   "signedOut": "已退出登录",
   "consentDialog": {

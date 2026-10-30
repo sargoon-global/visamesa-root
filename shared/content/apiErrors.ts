@@ -21,6 +21,13 @@ const CHECKOUT_API_ERROR_KEYS: Record<string, string> = {
   ALREADY_ENTITLED: 'errors.alreadyEntitled',
 }
 
+const USER_API_ERROR_KEYS: Record<string, string> = {
+  PROFILE_LOCKED: 'errors.profileLocked',
+  FEE_PAYMENT_RECEIPT_REQUIRED: 'errors.feePaymentReceiptRequired',
+  ENTITLEMENT_REQUIRED: 'errors.entitlementRequired',
+  CITA_PREVIA_ALREADY_BOOKED: 'errors.citaPreviaAlreadyBooked',
+}
+
 export function resolveApiErrorMessage(
   input: { code?: string; message?: string },
   translate: ApiErrorTranslateFn,
@@ -32,6 +39,12 @@ export function resolveApiErrorMessage(
 
     if (checkoutKey) {
       return translate(checkoutKey, { ns: 'checkout' })
+    }
+
+    const userKey = USER_API_ERROR_KEYS[input.code]
+
+    if (userKey) {
+      return translate(userKey, { ns: 'common' })
     }
 
     const commonKey = COMMON_API_ERROR_KEYS[input.code]

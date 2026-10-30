@@ -73,6 +73,7 @@
   "errors": {
     "alreadyEntitled": "Ya tienes un servicio activo en esta cuenta.",
     "stripeNoCheckoutUrl": "Stripe no ha devuelto una URL de pago",
-    "syncFailed": "No se ha podido confirmar el pago con el servidor"
+    "syncFailed": "No se ha podido confirmar el pago con el servidor",
+    "paymentUnavailable": "El pago no está disponible temporalmente. Vuelve a intentarlo en unos minutos."
   }
 }

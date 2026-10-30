@@ -12,6 +12,13 @@
   "otherDeviceMessage": "This profile was saved on another device. Enter your details below to set up this device. Saving will replace the encrypted copy stored for your account.",
   "loadFailed": "Failed to load profile",
   "saveFailed": "Failed to save profile",
+  "lockedNotice": "You confirmed your stamped Modelo 790 payment receipt. Personal information is locked and can no longer be changed.",
+  "stepInvalidationDialog": {
+    "title": "Steps need to be redone",
+    "message": "Changing this information affects work you already completed. These steps will be reset and must be done again, in order:",
+    "confirm": "Save and reset steps",
+    "confirming": "Saving…"
+  },
   "signOutFailed": "Failed to sign out",
   "signedOut": "Signed out",
   "consentDialog": {

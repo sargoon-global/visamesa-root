@@ -51,14 +51,17 @@
   "formDownloaded": "Form saved to your device",
   "formDownloadCancelled": "Download cancelled",
   "approveDownloadAccessibilityLabel": "Approve and download {{label}}",
+  "confirmBooking": "I got my appointment",
+  "confirmBookingAccessibilityLabel": "Confirm {{label}} appointment",
+  "confirmBookingTitle": "Confirm appointment",
+  "confirmBookingMessage": "Only confirm if you received your official appointment confirmation.",
+  "confirmBookingFailed": "Could not confirm your appointment. Try again.",
   "bookViaVisaMesa": "Book via VisaMesa",
   "reviewForm": "Review form filled by VisaMesa",
   "viewAppointment": "View appointment",
-  "markAsNotBooked": "Mark as not booked",
   "bookAccessibilityLabel": "Book {{label}}",
   "reviewAccessibilityLabel": "Review {{label}}",
   "viewAppointmentAccessibilityLabel": "View appointment for {{label}}",
-  "markAsNotBookedAccessibilityLabel": "Mark {{label}} as not booked",
   "requirementsInfoAccessibilityLabel": "About Checklist",
   "readinessTitle": "Before we can start",
   "readinessDescription": "Complete your profile to start the process",
@@ -71,5 +74,11 @@
     "notNow": "Not now",
     "action": "Complete profile"
   },
-  "loadProgressFailed": "Failed to load progress"
+  "loadProgressFailed": "Failed to load progress",
+  "profileLockDialog": {
+    "title": "Confirm bank payment and stamped receipt",
+    "message": "Please confirm that you've paid through a Spanish bank and have your payment receipt ready.\n\nTo keep your information secure, your personal details will be locked after you continue and can no longer be changed. Please take a moment to check that everything is correct.\n\nYour information will remain securely saved.",
+    "confirm": "Continue and lock details",
+    "failed": "We couldn't lock your profile. Check your connection and try again."
+  }
 }
