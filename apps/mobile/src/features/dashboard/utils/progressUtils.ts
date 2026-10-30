@@ -1,4 +1,7 @@
-import {TieStepDetail} from '@/features/home/types/TieStepDetail';
+import {
+  ASSISTED_BOOKING_REQUIREMENT_TYPE,
+  TieStepDetail,
+} from '@/features/home/types/TieStepDetail';
 import {
   ProgressContext,
   RequirementProgress,
@@ -73,6 +76,21 @@ export function getEffectiveRequirementProgress(
     };
   }
 
+  if (
+    context.isCitaPreviaBooked &&
+    requirement.type === ASSISTED_BOOKING_REQUIREMENT_TYPE &&
+    requirement.bookingAssistantId === 'cita-previa'
+  ) {
+    return {
+      completed: true,
+      source: {
+        type: ASSISTED_BOOKING_REQUIREMENT_TYPE,
+        bookingAssistantId: 'cita-previa',
+        completedAt: context.citaPreviaBookedAt ?? new Date(0).toISOString(),
+      },
+    };
+  }
+
   if (requirement.referencesRequirement && context.allSteps) {
     const {stepId, requirementKey: referencedKey} =
       requirement.referencesRequirement;
@@ -115,6 +133,71 @@ export function areAllRequirementsComplete(
     getEffectiveRequirementProgress(progress, step, requirement.key, context)
       .completed,
   );
+}
+
+/**
+ * Writes effective (referenced) requirement completion into stored progress so
+ * synced snapshots match what the UI treats as complete.
+ */
+export function materializeEffectiveRequirements(
+  progress: UserProgress,
+  steps: TieStepDetail[],
+  context: ProgressContext = {},
+): UserProgress {
+  const ctx: ProgressContext = {
+    ...context,
+    allSteps: context.allSteps ?? steps,
+  };
+
+  let changed = false;
+
+  const newSteps = progress.steps.map(stepProgress => {
+    const stepDef = steps.find(item => item.id === stepProgress.stepId);
+
+    if (!stepDef) {
+      return stepProgress;
+    }
+
+    let stepChanged = false;
+    const requirements = {...stepProgress.requirements};
+
+    for (const requirement of stepDef.requirements) {
+      const stored = requirements[requirement.key];
+
+      if (stored?.completed) {
+        continue;
+      }
+
+      const effective = getEffectiveRequirementProgress(
+        progress,
+        stepDef,
+        requirement.key,
+        ctx,
+      );
+
+      if (!effective.completed) {
+        continue;
+      }
+
+      requirements[requirement.key] = effective.source
+        ? {completed: true, source: effective.source}
+        : {completed: true};
+      stepChanged = true;
+    }
+
+    if (!stepChanged) {
+      return stepProgress;
+    }
+
+    changed = true;
+    return {...stepProgress, requirements};
+  });
+
+  if (!changed) {
+    return progress;
+  }
+
+  return {...progress, steps: newSteps};
 }
 
 export function arePreviousStepsCompleted(

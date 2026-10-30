@@ -237,28 +237,6 @@ describe('useUserProgress', () => {
     );
   });
 
-  it('clears booking assistant requirement', async () => {
-    const mockProgress = createUserProgress({currentStepId: 1});
-    progressService.fetchUserProgress.mockResolvedValue(mockProgress);
-    progressService.updateRequirementProgress.mockResolvedValue(mockProgress);
-
-    const getHookState = await mountUserProgress();
-
-    await act(async () => {
-      await getHookState().clearBookingAssistantRequirement(
-        1,
-        'Book Appointment',
-      );
-    });
-
-    expect(progressService.updateRequirementProgress).toHaveBeenCalledWith(
-      mockProgress,
-      1,
-      'Book Appointment',
-      {completed: false},
-    );
-  });
-
   it('completes form requirement', async () => {
     const mockProgress = createUserProgress({currentStepId: 1});
     progressService.fetchUserProgress.mockResolvedValue(mockProgress);

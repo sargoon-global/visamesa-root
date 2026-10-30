@@ -7,6 +7,7 @@ import {
   getStepStatus,
   isStepAccessible,
   isStepCompleted,
+  materializeEffectiveRequirements,
 } from '@/features/dashboard/utils/progressUtils';
 import {createTieStep} from '@/test/fixtures/tieSteps';
 import {createUserProgress} from '@/test/fixtures/userProgress';
@@ -108,6 +109,105 @@ describe('progressUtils', () => {
 
     expect(effective.completed).toBe(true);
     expect(effective.source?.type).toBe('referenced_profile');
+  });
+
+  it('materializes referenced requirements into stored progress for sync', () => {
+    const sourceStep = createTieStep({
+      id: 2,
+      requirements: [
+        {
+          key: 'ex-17-form',
+          label: 'EX-17',
+          type: 'form',
+          location: 'in_app',
+        },
+      ],
+    });
+    const fingerprintStep = createTieStep({
+      id: 5,
+      requirements: [
+        {
+          key: 'ex-17-form',
+          label: 'EX-17',
+          type: 'self_declared',
+          location: 'in_app',
+          referencesRequirement: {
+            stepSlug: 'required-documents',
+            requirementKey: 'ex-17-form',
+            stepId: 2,
+          },
+        },
+      ],
+    });
+    const collectStep = createTieStep({
+      id: 6,
+      requirements: [
+        {
+          key: 'resguardo',
+          label: 'Resguardo',
+          type: 'self_declared',
+          location: 'in_app',
+          referencesStepId: 5,
+        },
+      ],
+    });
+    const allSteps = [sourceStep, fingerprintStep, collectStep];
+
+    const progress = createUserProgress({
+      steps: [
+        {
+          stepId: 2,
+          status: 'completed',
+          requirements: {
+            'ex-17-form': {
+              completed: true,
+              source: {type: 'form', formId: 'ex-17', confirmedAt: '2026-01-01'},
+            },
+          },
+        },
+        {
+          stepId: 5,
+          status: 'completed',
+          completedAt: '2026-01-02',
+          requirements: {
+            'ex-17-form': {completed: false},
+            'attend-appointment': {
+              completed: true,
+              source: {type: 'self_declared'},
+            },
+          },
+        },
+        {
+          stepId: 6,
+          status: 'completed',
+          completedAt: '2026-01-03',
+          requirements: {
+            resguardo: {completed: false},
+            'attend-pickup': {
+              completed: true,
+              source: {type: 'self_declared'},
+            },
+          },
+        },
+      ],
+    });
+
+    const materialized = materializeEffectiveRequirements(progress, allSteps, {
+      allSteps,
+    });
+
+    expect(
+      materialized.steps.find(s => s.stepId === 5)?.requirements['ex-17-form']
+        ?.completed,
+    ).toBe(true);
+    expect(
+      materialized.steps.find(s => s.stepId === 6)?.requirements.resguardo
+        ?.completed,
+    ).toBe(true);
+    expect(
+      materialized.steps.find(s => s.stepId === 6)?.requirements.resguardo
+        ?.source?.type,
+    ).toBe('referenced_step');
   });
 
   it('marks requirement-level references complete when source requirement is done', () => {
