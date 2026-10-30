@@ -4,6 +4,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -34,17 +35,23 @@ export function ConsentProvider({children}: {children: ReactNode}) {
   const [consentStatus, setConsentStatus] =
     useState<ConsentAcceptanceStatus>(EMPTY_CONSENT_STATUS);
   const [isLoading, setIsLoading] = useState(false);
+  const hasLoadedConsentRef = useRef(false);
 
   const refreshConsent = useCallback(async (): Promise<boolean> => {
     if (!user) {
+      hasLoadedConsentRef.current = false;
       setConsentStatus(EMPTY_CONSENT_STATUS);
+      setIsLoading(false);
       return false;
     }
 
-    setIsLoading(true);
+    if (!hasLoadedConsentRef.current) {
+      setIsLoading(true);
+    }
 
     try {
       const status = await consentService.getConsentStatus();
+      hasLoadedConsentRef.current = true;
       setConsentStatus(status);
       return status.privacyPolicy && status.termsOfService;
     } catch {
@@ -61,11 +68,13 @@ export function ConsentProvider({children}: {children: ReactNode}) {
 
   useEffect(() => {
     if (!user) {
+      hasLoadedConsentRef.current = false;
       setConsentStatus(EMPTY_CONSENT_STATUS);
       setIsLoading(false);
       return;
     }
 
+    hasLoadedConsentRef.current = false;
     refreshConsent().catch(() => {});
   }, [user, refreshConsent]);
 

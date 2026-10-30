@@ -173,6 +173,34 @@ describe('useProcessReadiness', () => {
     expect(getHookState().refreshReadiness).toEqual(expect.any(Function));
   });
 
+  it('refreshReadinessForProfileDisplay reloads consent and entitlements only', async () => {
+    const refreshCompletion = jest.fn().mockResolvedValue(true);
+    const refreshEntitlements = jest.fn().mockResolvedValue([]);
+    mockUseEntitlements.mockReturnValue({
+      hasPaidService: () => true,
+      isLoading: false,
+      refreshEntitlements,
+    } as never);
+
+    mockUseProfileCompletion.mockReturnValue({
+      isProfileComplete: true,
+      isLoading: false,
+      refreshCompletion,
+    } as never);
+
+    mockUseConsent.mockReturnValue(mockConsent());
+
+    const getHookState = await renderProcessReadiness();
+
+    await act(async () => {
+      await getHookState().refreshReadinessForProfileDisplay();
+    });
+
+    expect(refreshCompletion).not.toHaveBeenCalled();
+    expect(mockRefreshConsent).toHaveBeenCalledTimes(1);
+    expect(refreshEntitlements).toHaveBeenCalledTimes(1);
+  });
+
   it('refreshReadiness reloads profile, consent, and entitlements', async () => {
     const refreshCompletion = jest.fn().mockResolvedValue(true);
     const refreshEntitlements = jest.fn().mockResolvedValue([]);

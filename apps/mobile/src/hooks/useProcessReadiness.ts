@@ -17,6 +17,8 @@ export type UseProcessReadinessResult = {
   missing: ProcessReadinessMissing[];
   isLoading: boolean;
   refreshReadiness: () => Promise<void>;
+  /** Refreshes payment + legal badges without reloading encrypted profile. */
+  refreshReadinessForProfileDisplay: () => Promise<void>;
 };
 
 /**
@@ -43,6 +45,10 @@ export function useProcessReadiness(): UseProcessReadinessResult {
     ]);
   }, [refreshCompletion, refreshConsent, refreshEntitlements]);
 
+  const refreshReadinessForProfileDisplay = useCallback(async () => {
+    await Promise.all([refreshConsent(), refreshEntitlements()]);
+  }, [refreshConsent, refreshEntitlements]);
+
   const isLoading =
     isLoadingEntitlements || isLoadingProfile || isLoadingConsent;
 
@@ -63,6 +69,7 @@ export function useProcessReadiness(): UseProcessReadinessResult {
       missing,
       isLoading,
       refreshReadiness,
+      refreshReadinessForProfileDisplay,
     };
   }, [
     hasPaidService,
@@ -70,5 +77,6 @@ export function useProcessReadiness(): UseProcessReadinessResult {
     hasConsent,
     isLoading,
     refreshReadiness,
+    refreshReadinessForProfileDisplay,
   ]);
 }
