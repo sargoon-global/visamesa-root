@@ -1,15 +1,20 @@
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {i18n} from '@visamesa/content/i18n';
 
 import {useToast} from '@/components/Toast/ToastProvider';
 import {syncEmpadronamientoStepFromProfile} from '@/features/dashboard/services/empadronamientoProgressService';
 import {reconcileStepStatuses} from '@/features/dashboard/services/progressReconciliationService';
 import {isUserProgressEqual} from '@/features/dashboard/utils/userProgressEquality';
+import {getStepIdBySlug} from '@visamesa/content/tieSteps/detail';
+
+import {invalidateSteps} from '@/features/dashboard/utils/stepInvalidation';
 import {
   fetchUserProgress,
+  notifyProgressStoreChanged,
   saveUserProgress,
   tryHydrateProgressFromServer,
 } from '@/features/dashboard/services/progressService';
+import {clearModelo790LocalSession} from '@/features/pdfGeneration/forms/modelo790/modelo790Storage';
 import {fetchTieSteps} from '@/features/home/services/tieStepsService';
 import {normalizePhone, stringToPhone} from '@/features/forms/utils/phoneUtils';
 import {
@@ -38,7 +43,10 @@ export type UseProfileResult = {
   isProfileComplete: boolean;
   personalInitialValues: Record<string, unknown>;
   isSubmittingPersonal: boolean;
-  submitPersonal: (data: Record<string, unknown>) => Promise<void>;
+  submitPersonal: (
+    data: Record<string, unknown>,
+    options?: {invalidateStepIds?: number[]},
+  ) => Promise<void>;
   refreshProfile: () => Promise<boolean>;
 };
 
@@ -52,21 +60,26 @@ export function useProfile(
   const [error, setError] = useState<Error | null>(null);
   const [submitting, setSubmitting] =
     useState<SubmittingState>(INITIAL_SUBMITTING);
+  const hasLoadedProfileRef = useRef(false);
 
   const refreshProfile = useCallback(async (): Promise<boolean> => {
     if (!isEnabled) {
+      hasLoadedProfileRef.current = false;
       setProfileData(null);
       setIsLoading(false);
       setError(null);
       return false;
     }
 
-    setIsLoading(true);
+    if (!hasLoadedProfileRef.current) {
+      setIsLoading(true);
+    }
     setError(null);
 
     try {
       const data = await getProfile();
       setProfileData(data);
+      hasLoadedProfileRef.current = true;
 
       try {
         await tryHydrateProgressFromServer();
@@ -78,6 +91,7 @@ export function useProfile(
     } catch (err) {
       if (err instanceof ProfileDecryptionError) {
         setProfileData(EMPTY_PROFILE);
+        hasLoadedProfileRef.current = true;
         setError(err);
       } else {
         setError(
@@ -95,6 +109,7 @@ export function useProfile(
 
   useEffect(() => {
     if (!isEnabled) {
+      hasLoadedProfileRef.current = false;
       setProfileData(null);
       setIsLoading(false);
       setError(null);
@@ -152,6 +167,7 @@ export function useProfile(
     section: ProfileSection,
     data: Record<string, unknown>,
     successMessage: string,
+    options?: {invalidateStepIds?: number[]},
   ) => {
     setSubmitting(current => ({...current, [section]: true}));
 
@@ -181,7 +197,17 @@ export function useProfile(
           await tryHydrateProgressFromServer();
           const progress = await fetchUserProgress();
           const tieSteps = await fetchTieSteps();
-          let synced = await syncEmpadronamientoStepFromProfile(progress, result);
+          let synced = progress;
+
+          if (options?.invalidateStepIds?.length) {
+            synced = invalidateSteps(synced, options.invalidateStepIds);
+            const payFeeStepId = getStepIdBySlug('pay-fee');
+            if (options.invalidateStepIds.includes(payFeeStepId)) {
+              await clearModelo790LocalSession();
+            }
+          }
+
+          synced = await syncEmpadronamientoStepFromProfile(synced, result);
           synced = reconcileStepStatuses(synced, tieSteps, {
             isProfileComplete: complete,
             allSteps: tieSteps,
@@ -189,9 +215,14 @@ export function useProfile(
 
           if (!isUserProgressEqual(synced, progress)) {
             await saveUserProgress(synced);
+            notifyProgressStoreChanged();
           }
-        } catch {
-          // Progress sync is best-effort after profile save
+        } catch (progressError) {
+          if (options?.invalidateStepIds?.length) {
+            throw progressError instanceof Error
+              ? progressError
+              : new Error(i18n.t('saveFailed', {ns: 'profile'}));
+          }
         }
       }
 
@@ -215,11 +246,12 @@ export function useProfile(
     isProfileComplete: isPersonalInfoComplete,
     personalInitialValues,
     isSubmittingPersonal: submitting.personal,
-    submitPersonal: data =>
+    submitPersonal: (data, options) =>
       submitSection(
         'personal',
         data,
         i18n.t('personalSaved', {ns: 'profile'}),
+        options,
       ),
     refreshProfile,
   };

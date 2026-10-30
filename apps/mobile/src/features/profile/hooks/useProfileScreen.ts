@@ -43,7 +43,7 @@ export function useProfileScreen(
     isProfileComplete,
     missing,
     isLoading: isReadinessLoading,
-    refreshReadiness,
+    refreshReadinessForProfileDisplay,
   } = useProcessReadiness();
   const {showToast} = useToast();
   const {openPricing, openPricingStatus} = usePricingLink();
@@ -52,8 +52,8 @@ export function useProfileScreen(
 
   useFocusEffect(
     useCallback(() => {
-      refreshReadiness().catch(() => {});
-    }, [refreshReadiness]),
+      refreshReadinessForProfileDisplay().catch(() => {});
+    }, [refreshReadinessForProfileDisplay]),
   );
 
   const profileCompleteness = useMemo<ProfileCompleteness>(
