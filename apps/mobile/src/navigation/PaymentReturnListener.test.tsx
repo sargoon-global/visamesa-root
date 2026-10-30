@@ -98,6 +98,8 @@ describe('PaymentReturnListener', () => {
     });
     (paymentService.syncCheckoutSession as jest.Mock).mockResolvedValue({
       entitlements: [],
+      citaPreviaBookedAt: null,
+      personalDetailsLockedAt: null,
     });
   });
 
