@@ -1,4 +1,7 @@
 export const ICP_PLUS_URL =
+  'https://icp.administracionelectronica.gob.es/icpplustieb/index.html?appVersion=V+7.53';
+
+export const LEGACY_ICP_PLUS_GATEWAY_URL =
   'https://sede.administracionespublicas.gob.es/pagina/index/directorio/icpplus';
 
 export const INITIAL_PAGE_SCRIPT = `

@@ -116,13 +116,21 @@ describe('cita previa script map', () => {
   it('converts the map into exact-match injection rules', () => {
     const rules = buildCitaPreviaInjectionRules(profile);
 
-    expect(rules).toHaveLength(12);
+    expect(rules).toHaveLength(13);
     expect(rules.every(rule => Boolean(rule.ready?.selector))).toBe(true);
     expect(rules).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           match: {
             type: 'exact',
+            value:
+              'https://icp.administracionelectronica.gob.es/icpplustieb/index.html?appVersion=V+7.53',
+          },
+          ready: {selector: 'select#form, #form, select[name="form"]'},
+        }),
+        expect.objectContaining({
+          match: {
+            type: 'prefix',
             value:
               'https://sede.administracionespublicas.gob.es/pagina/index/directorio/icpplus',
           },

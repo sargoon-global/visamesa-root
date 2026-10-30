@@ -5,7 +5,11 @@ import type {
 import type {CitaPreviaBookingAssistantProfile} from './config';
 import {buildDetailsScript, DETAILS_URL} from './details';
 import {CLAVE_SCRIPT, CLAVE_URL} from './clave';
-import {INITIAL_PAGE_SCRIPT, ICP_PLUS_URL} from './initialPage';
+import {
+  ICP_PLUS_URL,
+  INITIAL_PAGE_SCRIPT,
+  LEGACY_ICP_PLUS_GATEWAY_URL,
+} from './initialPage';
 import {buildOficinaScript, OFICINA_URL} from './oficina';
 import {
   APPOINTMENT_FORM_URL,
@@ -82,7 +86,18 @@ const buildCitaPreviaScriptEntries = (
   return [
     {
       url: ICP_PLUS_URL,
+      script: provinciaScript,
+      ready: {
+        selector: 'select#form, #form, select[name="form"]',
+      },
+    },
+    {
+      url: LEGACY_ICP_PLUS_GATEWAY_URL,
       script: INITIAL_PAGE_SCRIPT,
+      match: {
+        type: 'prefix',
+        value: LEGACY_ICP_PLUS_GATEWAY_URL,
+      },
       ready: {
         selector: '#submit',
       },
