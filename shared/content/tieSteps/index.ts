@@ -1,9 +1,9 @@
-export { buildTieSteps, type TieStepsTranslateFn } from './buildTieSteps'
-export { parseTieMarketingSteps, parseTieStepFaqs, type TieMarketingStep, type TieStepFaq } from './marketingSteps'
-export { createTieStepsTranslator } from './translateTieSteps'
-export { EMPADRONAMIENTO_CERTIFICATE_VALIDITY_DAYS } from './constants'
-export { isEmpadronamientoCertificateValid } from './empadronamiento'
-export { getStepIdBySlug, getStepSlugById, tieStepManifest } from './manifest'
+export { buildTieSteps, type TieStepsTranslateFn } from './buildTieSteps.js'
+export { parseTieMarketingSteps, parseTieStepFaqs, type TieMarketingStep, type TieStepFaq } from './marketingSteps.js'
+export { createTieStepsTranslator } from './translateTieSteps.js'
+export { EMPADRONAMIENTO_CERTIFICATE_VALIDITY_DAYS } from './constants.js'
+export { isEmpadronamientoCertificateValid } from './empadronamiento.js'
+export { getStepIdBySlug, getStepSlugById, tieStepManifest } from './manifest.js'
 export {
   isTieStepSlug,
   TIE_STEP_ORDER,
@@ -20,4 +20,4 @@ export {
   type TieStepDetail,
   type TieStepSlug,
   type TieStepTranslation,
-} from './types'
+} from './types.js'

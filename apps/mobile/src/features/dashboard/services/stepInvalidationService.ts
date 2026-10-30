@@ -3,7 +3,6 @@ import type {TieStepDetail} from '@/features/home/types/TieStepDetail';
 import {fetchUserProgress} from '@/features/dashboard/services/progressService';
 import {
   getStepsToInvalidate,
-  invalidateSteps,
 } from '@/features/dashboard/utils/stepInvalidation';
 import {isPristineProgress} from '@/features/dashboard/utils/progressPristine';
 import {getChangedPersonalFields} from '@/features/profile/utils/getChangedPersonalFields';

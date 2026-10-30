@@ -38,6 +38,7 @@ export function migrateLegacyPayFeeStepProgress(
 
   const receipt =
     stepProgress.requirements[FEE_PAYMENT_RECEIPT_REQUIREMENT_KEY];
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const {[LEGACY_PAY_AT_BANK_KEY]: _removed, ...rest} = stepProgress.requirements;
 
   return {

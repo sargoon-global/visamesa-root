@@ -148,13 +148,14 @@ function mergeProgressWithStepDefinitions(
   };
 }
 
-const mergeProgressWithSteps = async (
-  stored: UserProgress,
-  prefetchedSteps?: TieStepDetail[],
-): Promise<UserProgress> => {
-  const steps = prefetchedSteps ?? (await fetchTieSteps());
-  return mergeProgressWithStepDefinitions(stored, steps);
-};
+// Unused helper - kept for potential future use
+// const mergeProgressWithSteps = async (
+//   stored: UserProgress,
+//   prefetchedSteps?: TieStepDetail[],
+// ): Promise<UserProgress> => {
+//   const steps = prefetchedSteps ?? (await fetchTieSteps());
+//   return mergeProgressWithStepDefinitions(stored, steps);
+// };
 
 async function mergeStoreWithSteps(
   store: LocalProgressStore,
@@ -201,6 +202,7 @@ function scheduleAuthorizedProgressSync(store: LocalProgressStore): void {
     return;
   }
 
+  // eslint-disable-next-line no-void
   void (async () => {
     try {
       if (!(await isDeviceAuthorizedForProgress())) {
@@ -421,11 +423,11 @@ export async function syncStoredProgressToBackend(options?: {
     return;
   }
 
-  const {isDeviceAuthorizedForProgress} = await import(
+  const {isDeviceAuthorizedForProgress: checkDeviceAuth} = await import(
     '@/features/dashboard/services/progressHydrationService'
   );
 
-  if (!(await isDeviceAuthorizedForProgress())) {
+  if (!(await checkDeviceAuth())) {
     if (options?.strict) {
       throw new Error('Progress sync requires device authorization');
     }

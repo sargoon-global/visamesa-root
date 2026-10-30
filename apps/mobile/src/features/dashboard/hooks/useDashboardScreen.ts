@@ -574,7 +574,7 @@ export function useDashboardScreen(
                   lockResult.personalDetailsLockedAt,
                 );
                 await refreshEntitlements();
-              } catch (error) {
+              } catch (lockError) {
                 try {
                   await toggleSelfDeclaredRequirement(
                     currentStep.id,
@@ -587,7 +587,7 @@ export function useDashboardScreen(
                 showAlert(
                   tCommon('errors.title'),
                   getAxiosApiErrorMessage(
-                    error,
+                    lockError,
                     'dashboard:profileLockDialog.failed',
                   ),
                 );

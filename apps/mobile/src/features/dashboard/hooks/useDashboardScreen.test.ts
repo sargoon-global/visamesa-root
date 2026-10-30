@@ -254,7 +254,6 @@ describe('useDashboardScreen', () => {
       completeStep,
       toggleSelfDeclaredRequirement,
       completeBookingAssistantRequirement,
-      completeBookingAssistantRequirement,
       completeFormRequirement,
       refreshProgress: jest.fn(),
     });
@@ -298,7 +297,6 @@ describe('useDashboardScreen', () => {
       completeStep,
       toggleSelfDeclaredRequirement,
       completeBookingAssistantRequirement,
-      completeBookingAssistantRequirement,
       completeFormRequirement,
       refreshProgress: jest.fn(),
     });
@@ -337,7 +335,6 @@ describe('useDashboardScreen', () => {
       error: null,
       completeStep,
       toggleSelfDeclaredRequirement,
-      completeBookingAssistantRequirement,
       completeBookingAssistantRequirement,
       completeFormRequirement,
       refreshProgress: jest.fn(),
@@ -385,7 +382,6 @@ describe('useDashboardScreen', () => {
       error: null,
       completeStep,
       toggleSelfDeclaredRequirement,
-      completeBookingAssistantRequirement,
       completeBookingAssistantRequirement,
       completeFormRequirement,
       refreshProgress,
@@ -485,7 +481,6 @@ describe('useDashboardScreen', () => {
       completeStep,
       toggleSelfDeclaredRequirement,
       completeBookingAssistantRequirement,
-      completeBookingAssistantRequirement,
       completeFormRequirement,
     });
 
@@ -532,7 +527,6 @@ describe('useDashboardScreen', () => {
       error: null,
       completeStep,
       toggleSelfDeclaredRequirement,
-      completeBookingAssistantRequirement,
       completeBookingAssistantRequirement,
       completeFormRequirement,
       refreshProgress: jest.fn(),
@@ -584,7 +578,6 @@ describe('useDashboardScreen', () => {
       error: null,
       completeStep,
       toggleSelfDeclaredRequirement,
-      completeBookingAssistantRequirement,
       completeBookingAssistantRequirement,
       completeFormRequirement,
       refreshProgress: jest.fn(),
@@ -640,7 +633,6 @@ describe('useDashboardScreen', () => {
       completeStep,
       toggleSelfDeclaredRequirement,
       completeBookingAssistantRequirement,
-      completeBookingAssistantRequirement,
       completeFormRequirement,
       refreshProgress: jest.fn(),
     });
@@ -692,7 +684,6 @@ describe('useDashboardScreen', () => {
       error: null,
       completeStep,
       toggleSelfDeclaredRequirement,
-      completeBookingAssistantRequirement,
       completeBookingAssistantRequirement,
       completeFormRequirement,
       refreshProgress: jest.fn(),
