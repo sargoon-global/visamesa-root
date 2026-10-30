@@ -37,6 +37,9 @@ describe('cita previa script map', () => {
     expect(scriptMap['https://icp.administracionelectronica.gob.es/icpco/citar']).toContain(
       'TOMA\\s+DE\\s+HUELLAS?',
     );
+    expect(scriptMap['https://icp.administracionelectronica.gob.es/icpco/citar']).toContain(
+      'HTMLFormElement.prototype.submit.call(form)',
+    );
     expect(scriptMap['https://icp.administracionelectronica.gob.es/icpco/acEntrada']).toContain(
       'Y1234567X',
     );

@@ -29,17 +29,10 @@ export const buildOficinaScript = tramitesOptionIndex => `
       }
 
       const targetIndex = Array.from(tramites.options).indexOf(targetOption);
-      tramites.focus();
       tramites.selectedIndex = targetIndex;
       tramites.value = targetOption.value;
       targetOption.selected = true;
-      targetOption.click();
       tramites.dispatchEvent(new Event('input', {bubbles: true, cancelable: true}));
-      tramites.dispatchEvent(new Event('change', {bubbles: true, cancelable: true}));
-
-      if (typeof tramites.onchange === 'function') {
-        tramites.onchange(new Event('change', {bubbles: true, cancelable: true}));
-      }
 
       console.debug('[Cita Previa] Toma de Huellas selected', {
         name: tramites.name,
@@ -52,6 +45,14 @@ export const buildOficinaScript = tramitesOptionIndex => `
     };
 
     const accept = () => {
+      const form =
+        window.document.querySelector('#portadaForm') ||
+        window.document.querySelector('form[name="portadaForm"]');
+      if (form instanceof HTMLFormElement) {
+        HTMLFormElement.prototype.submit.call(form);
+        return;
+      }
+
       const acceptButton =
         window.document.querySelector('#btnAceptar') ||
         Array.from(window.document.querySelectorAll('button, input[type="submit"]'))
