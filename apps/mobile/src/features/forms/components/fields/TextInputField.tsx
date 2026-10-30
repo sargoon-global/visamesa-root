@@ -10,6 +10,7 @@ import {
 
 type Props = {
   field: SchemaFieldType;
+  disabled?: boolean;
 };
 
 function resolveKeyboardType(
@@ -28,7 +29,7 @@ function resolveKeyboardType(
   return field.type === 'number' ? 'number-pad' : 'default';
 }
 
-export function TextInputField({field}: Props) {
+export function TextInputField({field, disabled = false}: Props) {
   const {control} = useFormContext();
 
   return (
@@ -51,6 +52,7 @@ export function TextInputField({field}: Props) {
           }
           autoComplete={field.autoComplete}
           maxLength={field.maxLength}
+          editable={!disabled}
         />
       )}
     />

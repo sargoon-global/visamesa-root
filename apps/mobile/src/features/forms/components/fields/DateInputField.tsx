@@ -13,6 +13,7 @@ import {FormField as SchemaFieldType} from '@/features/forms/types/formTypes';
 
 type Props = {
   field: SchemaFieldType;
+  disabled?: boolean;
 };
 
 const formatDate = (value: string) => {
@@ -35,7 +36,7 @@ const toIsoDate = (date: Date) => {
   return date.toISOString().split('T')[0];
 };
 
-export function DateInputField({field}: Props) {
+export function DateInputField({field, disabled = false}: Props) {
   const {styles, theme} = useStyles(stylesheet);
   const {control} = useFormContext();
   const {t} = useTranslation(['forms', 'common']);
@@ -84,8 +85,16 @@ export function DateInputField({field}: Props) {
             <Pressable
               accessibilityRole="button"
               accessibilityLabel={field.label}
-              android_ripple={{color: theme.colors.primaryContainer}}
-              onPress={() => setShowPicker(true)}
+              accessibilityState={{disabled}}
+              disabled={disabled}
+              android_ripple={
+                disabled ? undefined : {color: theme.colors.primaryContainer}
+              }
+              onPress={() => {
+                if (!disabled) {
+                  setShowPicker(true);
+                }
+              }}
               style={({pressed}) => [
                 getFormControlContainerStyle(theme, {
                   error: Boolean(fieldState.error),

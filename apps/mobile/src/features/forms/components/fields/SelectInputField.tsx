@@ -6,9 +6,10 @@ import {FormField as SchemaFieldType} from '@/features/forms/types/formTypes';
 
 type Props = {
   field: SchemaFieldType;
+  disabled?: boolean;
 };
 
-export function SelectInputField({field}: Props) {
+export function SelectInputField({field, disabled = false}: Props) {
   const {control} = useFormContext();
 
   return (
@@ -24,6 +25,7 @@ export function SelectInputField({field}: Props) {
           onChange={controllerField.onChange}
           placeholder={field.placeholder}
           error={fieldState.error?.message}
+          disabled={disabled}
         />
       )}
     />

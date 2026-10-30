@@ -12,6 +12,7 @@ export type DialogAction = {
   label: string;
   onPress: () => void;
   variant?: 'primary' | 'outline' | 'tonal' | 'destructive';
+  disabled?: boolean;
 };
 
 export type DialogProps = {
@@ -143,6 +144,7 @@ export function Dialog({
                       label={action.label}
                       onPress={action.onPress}
                       variant={action.variant ?? 'tonal'}
+                      disabled={action.disabled}
                     />
                   ))}
                 </View>

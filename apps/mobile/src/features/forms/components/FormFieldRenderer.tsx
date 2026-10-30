@@ -7,6 +7,7 @@ import {PhoneInputField} from '@/features/forms/components/fields/PhoneInputFiel
 import {SelectInputField} from '@/features/forms/components/fields/SelectInputField';
 import {TextInputField} from '@/features/forms/components/fields/TextInputField';
 import {FormField} from '@/features/forms/types/formTypes';
+import {useFormDisabled} from '@/features/forms/context/FormDisabledContext';
 import {isFieldVisible} from '@/features/forms/utils/formFieldVisibility';
 import {Text} from '@/components/ui/Text';
 
@@ -28,6 +29,7 @@ const fieldComponentMap: Record<
 export function FormFieldRenderer({field}: Props) {
   const {control} = useFormContext();
   const {t} = useTranslation('forms');
+  const formDisabled = useFormDisabled();
   const values = useWatch({control}) ?? {};
 
   if (!isFieldVisible(field, values)) {
@@ -44,5 +46,5 @@ export function FormFieldRenderer({field}: Props) {
     );
   }
 
-  return <FieldComponent field={field} />;
+  return <FieldComponent field={field} disabled={formDisabled} />;
 }

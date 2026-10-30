@@ -10,9 +10,10 @@ import {FormField as SchemaFieldType} from '@/features/forms/types/formTypes';
 
 type Props = {
   field: SchemaFieldType;
+  disabled?: boolean;
 };
 
-export function PhoneInputField({field}: Props) {
+export function PhoneInputField({field, disabled = false}: Props) {
   const {styles} = useStyles(stylesheet);
   const {control, formState} = useFormContext();
   const {t} = useTranslation('forms');
@@ -39,6 +40,7 @@ export function PhoneInputField({field}: Props) {
               maxLength={3}
               autoComplete="tel-country-code"
               containerStyle={styles.countryCode}
+              editable={!disabled}
             />
           )}
         />
@@ -55,6 +57,7 @@ export function PhoneInputField({field}: Props) {
               keyboardType="phone-pad"
               autoComplete="tel"
               containerStyle={styles.number}
+              editable={!disabled}
             />
           )}
         />
