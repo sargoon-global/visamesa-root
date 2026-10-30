@@ -88,7 +88,8 @@ const buildCitaPreviaScriptEntries = (
       url: ICP_PLUS_URL,
       script: provinciaScript,
       ready: {
-        selector: 'select#form, #form, select[name="form"]',
+        selector:
+          'select#form, #form, select[name="form"], select',
       },
     },
     {

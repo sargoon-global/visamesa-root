@@ -126,7 +126,7 @@ describe('cita previa script map', () => {
             value:
               'https://icp.administracionelectronica.gob.es/icpplustieb/index.html?appVersion=V+7.53',
           },
-          ready: {selector: 'select#form, #form, select[name="form"]'},
+          ready: {selector: 'select#form, #form, select[name="form"], select'},
         }),
         expect.objectContaining({
           match: {
