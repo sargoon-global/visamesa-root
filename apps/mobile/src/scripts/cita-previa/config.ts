@@ -14,9 +14,9 @@ export interface CitaPreviaBookingAssistantProfile {
   sedeOptionIndex?: number;
 }
 
-/** Site-specific dropdown indices for Barcelona TIE fingerprint appointments. */
+/** Temporary debug target: option index 3 (expected Alicante). */
 export const CITA_PREVIA_BOOKING_DEFAULTS = {
-  provinceOptionIndex: 9,
+  provinceOptionIndex: 3,
   tramitesOptionIndex: 17,
   defaultNationality: 88,
 } as const;
