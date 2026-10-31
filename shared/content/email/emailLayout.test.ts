@@ -67,7 +67,7 @@ describe('emailLayout', () => {
       previewText: 'preview',
       heading: 'Hello',
       paragraphs: ['First', 'Second'],
-      cta: { label: 'Confirm', url: 'https://visamesa.com/en/waitlist/confirm/tok' },
+      cta: { label: 'Confirm', url: 'https://visamesa.com/en/support' },
       signature: {
         farewell: 'Talk soon,',
         name: 'Pejman',
@@ -80,7 +80,7 @@ describe('emailLayout', () => {
     expect(text).toContain('Hello')
     expect(text).toContain('First')
     expect(text).toContain('Second')
-    expect(text).toContain('Confirm: https://visamesa.com/en/waitlist/confirm/tok')
+    expect(text).toContain('Confirm: https://visamesa.com/en/support')
     expect(text).toContain('Talk soon,')
     expect(text).toContain('Pejman')
     expect(text).toContain('Co-founder, VisaMesa')

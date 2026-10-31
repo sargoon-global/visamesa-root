@@ -1,3 +1,7 @@
+/**
+ * Shared HTML/plain-text layout for transactional email (exported via @visamesa/content/email).
+ * Used by tests today; wire up from backend or other senders when adding templated mail.
+ */
 import { EMAIL_TAGLINE, SITE_NAME, SITE_URL, SUPPORT_EMAIL } from '../siteConstants.js'
 import type { SupportedLanguage } from '../i18n/types.js'
 
