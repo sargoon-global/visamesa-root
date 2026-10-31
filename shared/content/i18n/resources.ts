@@ -13,7 +13,6 @@ import settingsEn from '../locales/en/settings.json'
 import supportEn from '../locales/en/support.json'
 import processOverviewEn from '../locales/en/processOverview.json'
 import tieStepsEn from '../locales/en/tieSteps.json'
-import waitlistEn from '../locales/en/waitlist.json'
 import authEs from '../locales/es/auth.json'
 import checkoutEs from '../locales/es/checkout.json'
 import commonEs from '../locales/es/common.json'
@@ -27,7 +26,6 @@ import settingsEs from '../locales/es/settings.json'
 import supportEs from '../locales/es/support.json'
 import processOverviewEs from '../locales/es/processOverview.json'
 import tieStepsEs from '../locales/es/tieSteps.json'
-import waitlistEs from '../locales/es/waitlist.json'
 import authZh from '../locales/zh/auth.json'
 import checkoutZh from '../locales/zh/checkout.json'
 import commonZh from '../locales/zh/common.json'
@@ -41,8 +39,6 @@ import settingsZh from '../locales/zh/settings.json'
 import supportZh from '../locales/zh/support.json'
 import processOverviewZh from '../locales/zh/processOverview.json'
 import tieStepsZh from '../locales/zh/tieSteps.json'
-import waitlistZh from '../locales/zh/waitlist.json'
-
 import { DEFAULT_LANGUAGE, type SupportedLanguage } from './types'
 
 export const translationResources = {
@@ -60,7 +56,6 @@ export const translationResources = {
     auth: authEn,
     home: homeEn,
     processOverview: processOverviewEn,
-    waitlist: waitlistEn,
   },
   es: {
     common: commonEs,
@@ -76,7 +71,6 @@ export const translationResources = {
     auth: authEs,
     home: homeEs,
     processOverview: processOverviewEs,
-    waitlist: waitlistEs,
   },
   zh: {
     common: commonZh,
@@ -92,7 +86,6 @@ export const translationResources = {
     auth: authZh,
     home: homeZh,
     processOverview: processOverviewZh,
-    waitlist: waitlistZh,
   },
 } satisfies Record<SupportedLanguage, Record<string, unknown>>
 

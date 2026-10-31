@@ -45,29 +45,20 @@
     "appStoreEyebrow": "Descargar en",
     "appStoreName": "App Store",
     "googlePlayEyebrow": "Disponible en",
-    "googlePlayName": "Google Play",
-    "preLaunch": {
-      "title": "App próximamente",
-      "lead": "Únete a la lista de espera para recibir aviso cuando lancemos las apps de iOS y Android."
-    }
+    "googlePlayName": "Google Play"
   },
   "closingCta": {
     "title": "¿Listo para empezar?",
-    "lead": "Completa el pago en nuestra web y continúa en la app móvil.",
-    "preLaunch": {
-      "title": "¿Listo para empezar?",
-      "lead": "Únete a nuestra lista de espera para acceder antes cuando VisaMesa se lance."
-    }
+    "lead": "Completa el pago en nuestra web y continúa en la app móvil."
   },
   "cta": {
     "getService": "Contratar servicio VisaMesa",
-    "getServiceShort": "Contratar servicio",
-    "joinWaitlist": "Unirme a la lista de espera"
+    "getServiceShort": "Contratar servicio"
   },
   "signInHint": "Usa la misma cuenta de Google que usarás en la app móvil.",
   "seo": {
     "homeTitle": "TIE estudiante Barcelona — empadronamiento, cita previa y EX-17 | VisaMesa",
-    "homeDescription": "Guía del TIE de estudiante en Barcelona (tarjeta de identidad de extranjero): empadronamiento, EX-17, tasa Modelo 790, cita previa toma de huellas y recogida. Lista de espera de la app VisaMesa. No es asesoramiento legal.",
+    "homeDescription": "Guía del TIE de estudiante en Barcelona (tarjeta de identidad de extranjero): empadronamiento, EX-17, tasa Modelo 790, cita previa toma de huellas y recogida. Ayuda paso a paso con la app VisaMesa. No es asesoramiento legal.",
     "pricingTitle": "Paga tu tarifa de servicio — VisaMesa",
     "pricingDescription": "Paga tu tarifa de servicio VisaMesa (€{{price}}) para el proceso del TIE de estudiante en Barcelona. Pago único y luego usa la app móvil con la misma cuenta de Google.",
     "privacyTitle": "Política de privacidad — VisaMesa",
