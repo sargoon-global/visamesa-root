@@ -26,12 +26,13 @@ export type TranslationNamespace =
   | 'legal'
   | 'tieSteps'
   | 'dashboard'
+  | 'forms'
   | 'profile'
   | 'settings'
+  | 'support'
   | 'auth'
   | 'home'
   | 'processOverview'
-  | 'waitlist'
 
 export function isSupportedLanguage(lang: string | undefined | null): lang is SupportedLanguage {
   return lang != null && SUPPORTED_LANGUAGES.includes(lang as SupportedLanguage)
