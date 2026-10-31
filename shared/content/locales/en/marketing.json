@@ -45,29 +45,20 @@
     "appStoreEyebrow": "Download on the",
     "appStoreName": "App Store",
     "googlePlayEyebrow": "Get it on",
-    "googlePlayName": "Google Play",
-    "preLaunch": {
-      "title": "App coming soon",
-      "lead": "Join the waitlist to be notified when the iOS and Android apps launch."
-    }
+    "googlePlayName": "Google Play"
   },
   "closingCta": {
     "title": "Ready to get started?",
-    "lead": "Complete checkout on our website and continue in the mobile app.",
-    "preLaunch": {
-      "title": "Ready to get started?",
-      "lead": "Join our waitlist for early access when VisaMesa launches."
-    }
+    "lead": "Complete checkout on our website and continue in the mobile app."
   },
   "cta": {
     "getService": "Get VisaMesa service",
-    "getServiceShort": "Get service",
-    "joinWaitlist": "Join waitlist"
+    "getServiceShort": "Get service"
   },
   "signInHint": "Use the same Google account you will use in the mobile app.",
   "seo": {
     "homeTitle": "Student TIE Barcelona — empadronamiento, cita previa & EX-17 | VisaMesa",
-    "homeDescription": "Guide to the Barcelona student TIE (tarjeta de identidad de extranjero): empadronamiento, EX-17, Modelo 790 fee, cita previa toma de huellas, and card pickup. Join the waitlist for the VisaMesa app. Not legal advice.",
+    "homeDescription": "Guide to the Barcelona student TIE (tarjeta de identidad de extranjero): empadronamiento, EX-17, Modelo 790 fee, cita previa toma de huellas, and card pickup. Get step-by-step help with the VisaMesa app. Not legal advice.",
     "pricingTitle": "Pay your service fee — VisaMesa",
     "pricingDescription": "Pay your VisaMesa service fee (€{{price}}) for the Barcelona student TIE process. One-time payment, then use the mobile app with the same Google account.",
     "privacyTitle": "Privacy Policy — VisaMesa",

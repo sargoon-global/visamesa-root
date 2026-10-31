@@ -45,29 +45,20 @@
     "appStoreEyebrow": "前往",
     "appStoreName": "App Store",
     "googlePlayEyebrow": "在",
-    "googlePlayName": "Google Play",
-    "preLaunch": {
-      "title": "应用即将上线",
-      "lead": "加入等候名单，在 iOS 和 Android 应用发布时第一时间收到通知。"
-    }
+    "googlePlayName": "Google Play"
   },
   "closingCta": {
     "title": "准备好开始了吗？",
-    "lead": "在本网站完成结账，然后在移动应用中继续办理。",
-    "preLaunch": {
-      "title": "准备好开始了吗？",
-      "lead": "加入等候名单，在 VisaMesa 上线时优先获得访问权限。"
-    }
+    "lead": "在本网站完成结账，然后在移动应用中继续办理。"
   },
   "cta": {
     "getService": "获取 VisaMesa 服务",
-    "getServiceShort": "获取服务",
-    "joinWaitlist": "加入等候名单"
+    "getServiceShort": "获取服务"
   },
   "signInHint": "请使用您将在移动应用中使用的同一 Google 账户。",
   "seo": {
     "homeTitle": "巴塞罗那学生 TIE — empadronamiento、cita previa、EX-17 | VisaMesa",
-    "homeDescription": "巴塞罗那学生 TIE（tarjeta de identidad de extranjero）指南：empadronamiento、EX-17、Modelo 790 费用、cita previa toma de huellas 与领卡。加入 VisaMesa 应用等候名单。非法律建议。",
+    "homeDescription": "巴塞罗那学生 TIE（tarjeta de identidad de extranjero）指南：empadronamiento、EX-17、Modelo 790 费用、cita previa toma de huellas 与领卡。使用 VisaMesa 应用获得分步指导。非法律建议。",
     "pricingTitle": "支付服务费 — VisaMesa",
     "pricingDescription": "支付 VisaMesa 巴塞罗那学生 TIE 办理服务费（€{{price}}）。一次性付款后，使用同一 Google 账户登录移动应用。",
     "privacyTitle": "隐私政策 — VisaMesa",

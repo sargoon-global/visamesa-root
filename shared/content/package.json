@@ -20,7 +20,6 @@
     "./processOverview": "./processOverview/index.ts",
     "./products": "./products.ts",
     "./support": "./support/index.ts",
-    "./waitlistEmail": "./waitlistEmailContent.ts",
     "./email": "./email/emailLayout.ts"
   },
   "peerDependencies": {

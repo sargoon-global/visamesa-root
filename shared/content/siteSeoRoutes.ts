@@ -18,4 +18,4 @@ export const PUBLIC_INDEXABLE_ROUTES = [
   })),
 ] as const
 
-export const PUBLIC_DISALLOW_PREFIXES = ['/checkout/', '/waitlist/'] as const
+export const PUBLIC_DISALLOW_PREFIXES = ['/checkout/'] as const
