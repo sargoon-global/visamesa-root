@@ -28,8 +28,8 @@ describe('siteSeoRoutes', () => {
     }
   })
 
-  it('disallows checkout and waitlist confirmation paths', () => {
+  it('disallows checkout paths', () => {
     expect(PUBLIC_DISALLOW_PREFIXES).toContain('/checkout/')
-    expect(PUBLIC_DISALLOW_PREFIXES).toContain('/waitlist/')
+    expect(PUBLIC_DISALLOW_PREFIXES).toHaveLength(1)
   })
 })
