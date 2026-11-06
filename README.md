@@ -78,7 +78,7 @@ See the app README for detailed setup instructions.
 
 ## Prerequisites
 
-- Node.js 18+
+- Node.js: `apps/mobile/package.json` requires `>= 22.11.0`. CI installs Node 24. Do not assume Node 18.
 - Xcode (iOS development)
 - Android Studio (Android development)
 - CocoaPods: `sudo gem install cocoapods`

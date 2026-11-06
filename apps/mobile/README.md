@@ -37,7 +37,7 @@ React Native app that guides users through the Spanish TIE process and automates
 ### Prerequisites
 
 - **macOS** (for iOS development)
-- **Node.js 18+** (via nvm recommended)
+- **Node.js** `>= 22.11.0` (`package.json` `engines`). CI installs Node 24. Do not assume Node 18.
 - **Xcode 15+** (macOS only)
 - **Android Studio** (for Android development)
 
@@ -220,130 +220,9 @@ curl -i http://localhost:3000/
 
 ---
 
-## Project Structure
+## Project structure
 
-```
-apps/mobile/
-├── src/
-│   ├── App.tsx                    # Main app component
-│   ├── features/                  # Feature modules (screens, hooks, services, components)
-│   │   ├── home/
-│   │   ├── dashboard/
-│   │   ├── profile/
-│   │   ├── auth/
-│   │   ├── legal/
-│   │   └── settings/
-│   ├── navigation/                # React Navigation stacks and tabs
-│   ├── components/                # Shared UI components
-│   ├── contexts/                  # App-wide React context
-│   ├── services/                  # Infrastructure (api, auth, crypto, payment)
-│   ├── webViewInjection/          # WebView booking assistant + WebsiteWebView screen
-│   ├── scripts/                   # Government site injection scripts
-│   │   ├── cita-previa/
-│   │   └── empadronamiento/
-│   ├── theme/                     # Unistyles theme configuration
-│   └── types/                     # Shared TypeScript types
-├── android/                       # Android native code
-├── ios/                          # iOS native code
-├── index.js                      # App entry point
-└── package.json                  # Dependencies
-```
-
----
-
-## Critical Fixes & Known Issues
-
-### ✅ FIXED: Metro Bundler Crash
-
-**Issue**: `Cannot read properties of undefined (reading 'handle')`
-
-**Cause**: `@react-native-community/cli` 16.x/20.x is incompatible with this project's React Native version.
-
-**Solution**: Keep CLI on the 15.x line in `package.json`. DO NOT upgrade to 16.x or 20.x.
-
-```json
-{
-  "@react-native-community/cli": "^15.0.0" // ← Keep on 15.x
-}
-```
-
-### ✅ FIXED: iOS Build Hermes Error
-
-**Issue**: `PhaseScriptExecution [CP-User] [Hermes] Replace Hermes failed`
-
-**Cause**: Committed `ios/.xcode.env.local` with wrong Node path
-
-**Solution**: File deleted and added to `.gitignore`. Never commit machine-specific paths.
-
-### ✅ FIXED: Android Kotlin Compilation Error
-
-**Issue**: `Cannot infer type for this parameter` in `react-native-safe-area-context`
-
-**Cause**: `react-native-safe-area-context` 5.x targets React Native 0.77+ and is incompatible with this project's RN 0.76 baseline.
-
-**Solution**: Use version 4.x for React Native 0.76:
-
-```json
-{
-  "react-native-safe-area-context": "^4.8.2" // ← Required for RN 0.76
-}
-```
-
-### ✅ FIXED: iOS Missing Source File / Pod Mismatch
-
-**Issue**: `Build input file cannot be found: ...PerformanceEntryCircularBuffer.cpp` or `Unable to find module dependency: 'ReactAppDependencyProvider'`
-
-**Cause**: `ios/Podfile.lock` and native iOS files were out of sync with the JavaScript `react-native` version (e.g. Pods from 0.77.x while `node_modules` has 0.76.x).
-
-**Solution**: Reinstall pods after changing the React Native version:
-
-```bash
-cd ios
-rm -rf Pods Podfile.lock build
-pod install
-cd ..
-```
-
-Also ensure `ios/VisaMesa/AppDelegate.swift` matches the React Native version template (0.77-only APIs like `ReactAppDependencyProvider` must not be used on 0.76).
-
-### ✅ FIXED: Android BuildConfig Error
-
-**Issue**: `Unresolved reference 'BuildConfig'`
-
-**Cause**: Android Gradle requires an explicit `buildConfig` feature flag for this project setup.
-
-**Solution**: Added to `android/app/build.gradle`:
-
-```gradle
-buildFeatures {
-  buildConfig = true
-}
-```
-
-### ✅ FIXED: App Name Registration Error
-
-**Issue**: `"VisaMesa" has not been registered`
-
-**Cause**: Metro cached old app name after rename
-
-**Solution**: Clear Metro cache:
-
-```bash
-npm start -- --reset-cache
-```
-
----
-
-## Dependency Versions (DO NOT CHANGE)
-
-| Package                          | Version | Why Locked?                                   |
-| -------------------------------- | ------- | --------------------------------------------- |
-| `@react-native-community/cli`    | ^15.0.0 | CLI 16.x has iOS bugs, 20.x breaks Metro      |
-| `react-native`                   | 0.76.8  | Project baseline                              |
-| `react-native-safe-area-context` | ^4.8.2  | 5.x targets RN 0.77+ and breaks this baseline |
-| `react-native-unistyles`         | 2.43.0  | Styling library used across screens           |
-
-**Warning**: Running `npm update` or `npm upgrade` may break the app. Always test in a branch first. After changing `react-native`, always reinstall iOS pods (see [Debug](#debug) below).
+App code is under `apps/mobile/src/`. Feature screens live in `src/features/`. Booking assistants live in `src/webViewInjection/` and `src/scripts/`. PDF forms live in `src/features/pdfGeneration/`. Shared copy and types live in `shared/` at the repo root. Dependency versions live in `package.json`, not in this file.
 
 ---
 
@@ -569,7 +448,7 @@ ENABLE_ANALYTICS=false
 
 ## Tech Stack
 
-- **Framework**: React Native 0.76.8
+- **Framework**: React Native (version in `package.json`)
 - **Language**: TypeScript
 - **Navigation**: React Navigation 6
 - **Styling**: react-native-unistyles
@@ -617,9 +496,3 @@ npm start -- --reset-cache
 ## License
 
 Proprietary - VisaMesa © 2026
-
----
-
-**Last Updated**: May 24, 2026  
-**React Native**: 0.76.8  
-**Node.js**: 18+
