@@ -1,0 +1,11 @@
+#!/bin/sh
+# GitHub branch protection also blocks main; this guards local mistakes before push.
+while read -r local_ref local_sha remote_ref remote_sha; do
+  case "$remote_ref" in
+    refs/heads/main)
+      printf '%s\n' 'Push to main was rejected. Use a branch and pull request.'
+      exit 1
+      ;;
+  esac
+done
+exit 0
