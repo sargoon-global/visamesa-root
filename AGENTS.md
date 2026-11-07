@@ -12,6 +12,11 @@ When a change makes a sentence in [README.md](README.md) or [apps/mobile/README.
 
 If the change affects what the app does on the device, what it uploads, or shared customer-facing wording, also update `docs/product.md` in `visamesa-os` when that repo is checked out. Otherwise say so in the pull request.
 
+## Git
+
+- Never push `main`. Use a branch and a pull request.
+- GitHub branch protection blocks direct pushes to `main` on this repository. In each clone, run once: `git config core.hooksPath .githooks` as a backup before the remote rejects the push.
+
 ## Boundaries
 
 - Booking assistance runs on the phone, in a WebView. Do not move it onto the server.
